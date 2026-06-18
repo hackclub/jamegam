@@ -2,7 +2,7 @@
   <img src="https://cdn.hackclub.com/019edc3e-c6d0-7948-9217-cce578db2f25/img-2026-06-18-15-39-21.png" alt="jame gam" />
 </p>
 
-# jame gam
+<h1 align="center">jame gam</h1>
 
 Landing page for [jamegam.hackclub.com](https://jamegam.hackclub.com).
 
