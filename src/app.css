@@ -1,0 +1,329 @@
+/* ============================================================================
+   GLOBAL STYLES — shared page infrastructure.
+
+   The site is a normal top-to-bottom FLOW of sections, each centred in a
+   ~752px column (the "middle column"). Side-column decorations are absolutely
+   positioned around that column and only shown on wide screens. There is no
+   more fixed 1280×3260 canvas / transform-scale — the page reflows for real.
+
+   Tiers (atelier-style, no fluid clamp):
+     • WIDE      : full comp layout, side decorations at their comp offsets
+     • NARROWING : side decorations ride INWARD with the shrinking gutter and
+                   pin a hair off the viewport edge (.gut-l / .gut-r below)
+                   instead of clipping; each hides via its own breakpoint once
+                   the gutter can no longer hold it (per section component)
+     • MOBILE <640px : single column, all decorations gone, stepped-up type
+
+   Section-specific layout lives in each section component's <style>. The
+   jiggle + logo classes MUST stay global: those nodes are created at runtime
+   by JS, so Svelte's component-scoping would never reach them.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'augiepixel';
+  src: url('/fonts/augiepixel.ttf') format('truetype');
+  font-display: block;
+}
+@font-face {
+  font-family: 'CS Marylin Pixel';
+  src: url('/fonts/csmarylinpixel.otf') format('opentype');
+  font-display: block;
+}
+
+:root {
+  --ink: #504b49;
+  --accent: #db9591;   /* accent red — default link colour */
+
+  /* global render scale — ONE knob shrinks the whole (fixed-px) design. 0.9 ≈
+     the "90% browser zoom" look, baked in at 100%. Every intrinsic px size — the
+     tokens below and the raw px in each section's <style> — is multiplied by it.
+     (var(--col)/var(--t-*) consumers inherit it; don't re-scale those.) */
+  --scale: 0.9;
+
+  /* middle-column geometry */
+  --col: calc(752px * var(--scale));     /* column max-width (≈ comp center span x:264–1016) */
+  --col-pad: calc(24px * var(--scale));  /* inline padding once the column hits the screen edge */
+
+  /* ---- side-decoration gutter math (atelier-style ride-inward) ----
+     --gut  = the width of ONE side gutter (the space between a column edge and
+              the viewport edge) while the column is at its max-width. Goes to 0
+              once the viewport is narrower than the column.
+     --deco-edge = how close a pinned decoration may get to the viewport edge.
+     Consumed by .gut-l / .gut-r below; see the .deco block. */
+  --gut: max(0px, calc((100vw - var(--col)) / 2));
+  --deco-edge: calc(14px * var(--scale));
+
+  /* ---- type scale — WIDE tier base values == original comp sizes ---- */
+  --t-title: calc(40px * var(--scale));  /* section titles + hero lines */
+  --t-list: calc(36px * var(--scale));   /* how-it-works ordered list */
+  --t-card: calc(32px * var(--scale));   /* who's-behind card copy */
+  --t-count: calc(65px * var(--scale));  /* this-month countdown */
+  --t-dur: calc(26px * var(--scale));    /* countdown duration line */
+  --t-small: calc(23px * var(--scale));  /* fine print */
+}
+
+/* MID tier: between mobile and wide. Column at max-width, gutter shrinking. */
+@media (max-width: 1279px) {
+  :root { --col-pad: calc(32px * var(--scale)); }
+}
+
+/* MOBILE tier: step type down so long lines wrap cleanly in a phone column. */
+@media (max-width: 639px) {
+  :root {
+    --t-title: calc(30px * var(--scale));
+    --t-list: calc(27px * var(--scale));
+    --t-card: calc(24px * var(--scale));
+    --t-count: calc(46px * var(--scale));
+    --t-dur: calc(20px * var(--scale));
+    --t-small: calc(18px * var(--scale));
+  }
+}
+
+html, body {
+  margin: 0;
+  background: #fbfbfb;
+  font-family: 'augiepixel', sans-serif;
+  -webkit-font-smoothing: none;
+  /* the footer rainbow grows its real height during overscroll, nudging
+     scrollHeight every frame; without this the browser's scroll anchoring would
+     fight back with little jumps. */
+  overflow-anchor: none;
+}
+/* `overflow-x: clip` (not `hidden`) contains horizontal overflow WITHOUT forcing
+   overflow-y to compute to `auto` — which would make <body> a clipping container
+   and crop the footer rainbow's overscroll stretch at the bottom edge. clip keeps
+   overflow-y `visible`, so nothing clips the glow as it grows past the page end. */
+body { overflow-x: clip; }
+
+/* custom pixel cursors — hotspot at each image's top-left corner (0 0).
+   cursor inherits by default, so setting the base on <html> covers the whole
+   document; interactive elements get the pointer variant on hover. */
+html { cursor: url('/cursor.png?v=3') 2 2, auto; }
+a, button, label, summary, select,
+[role="button"], [role="link"], [role="slider"],
+input, textarea,
+.clickable, [onclick] {
+  /* !important so it beats components' own scoped `cursor: pointer`, whose
+     class specificity (.foo.svelte-xxx) otherwise outranks these selectors. */
+  cursor: url('/cursor-pointer.png?v=3') 2 2, pointer !important;
+}
+
+/* default link colour: accent red. Components that want a different colour
+   (FAQ rainbow links, the body link that matches its paragraph, etc.) override
+   in their own scoped styles — this only covers links that don't specify one. */
+a { color: var(--accent); }
+
+/* GLOBAL RULE: every image on this site is always pixelated — no smoothing,
+   ever. !important so no component can override it (and the cascade can't
+   accidentally fall back to bilinear). */
+img {
+  image-rendering: crisp-edges;            /* fallback for engines w/o pixelated */
+  image-rendering: pixelated !important;   /* the law of the land */
+}
+
+/* ---- flow shell (replaces the old fixed canvas) ---- */
+#page    { position: relative; width: 100%; overflow-x: clip; }
+#content { position: relative; width: 100%; }
+
+/* Overscroll lift: while the Footer's rubber-band is active (html.overscrolling),
+   --overscroll-y (px, set on :root) lifts the WHOLE page UP at the bottom of the
+   scroll, so overscrolling reads as the page stretching. Compositor-only.
+   Gated by the class — NOT applied at rest — because a permanent transform here
+   makes #page a stacking context, which would break BottomGlow's z-interleaving
+   with the sections at the top. It's only ever active at the page bottom, where
+   BottomGlow is fully faded out, so that broken interleaving is never visible. */
+html.overscrolling #page {
+  transform: translateY(calc(var(--overscroll-y, 0) * -1px));
+}
+
+/* ---- above-the-fold first screen: hero + email signup as one block ----
+   Centres in the viewport MINUS a reserved bottom slice, so the next section
+   (ThisMonth) pokes up above the fold. The reserve covers ThisMonth's own top
+   padding (.sec-month, 32px) + the slice we want visible — the headline plus
+   the top of the juniper title image below it. min-height (not height) means a
+   viewport too short for the hero lets the block grow and sit flush at the top
+   — no clipping, just a smaller peek. */
+#first-screen {
+  /* 32px ThisMonth top pad + ~80px headline→image peek, scaled with the design.
+     100svh is a viewport unit (unscaled), so only the reserve carries --scale. */
+  --first-screen-reserve: calc(140px * var(--scale));
+  min-height: calc(100svh - var(--first-screen-reserve));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  /* a hair of breathing room above the first image at the very top */
+  padding-top: calc(12px * var(--scale));
+}
+/* viewports a bit taller than the short tier (just above ~751px): reserve a
+   touch more so a little more of ThisMonth's top peeks above the fold. */
+@media (min-height: 801px) and (max-height: 950px) {
+  #first-screen { --first-screen-reserve: calc(160px * var(--scale)); }
+}
+/* shorter viewports (e.g. ~751px tall): raise the hero block via padding-bottom
+   (biases the centred content up) WITHOUT changing #first-screen's height — so
+   ThisMonth keeps its position and only section 1 moves up. */
+@media (max-height: 800px) {
+  #first-screen { padding-bottom: calc(70px * var(--scale)); }
+}
+#page.booting { overflow: clip; }
+/* while booting / grown big, the faded page must not catch clicks (e.g. the
+   email box) — clicks fall through to the window listener that shrinks the logo */
+#page.booting #content { opacity: 0; transition: opacity .55s ease; pointer-events: none; }
+#content { transition: opacity .55s ease; }
+
+/* full-width grain overlay — spans the whole document, scrolls with the page.
+   position:absolute + height:100% on a body-height page == full document. */
+#noise {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 50;
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+  background-repeat: repeat;
+  background-size: calc(300px * var(--scale)) calc(300px * var(--scale));   /* coarser = lower-res grain */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ============================================================================
+   SECTION + COLUMN PRIMITIVES  (the pattern every section follows)
+
+   A section component's root is:
+
+     <section class="sec sec-NAME">
+       <div class="col"> …flowing centre-column content… </div>
+       <span class="deco …">…</span>   <!-- wide-only side decorations -->
+     </section>
+
+   - .sec is the full-width band; it's the positioning context for .deco.
+   - .col is the centred middle column; content inside it is NORMAL FLOW.
+   - .deco is an absolutely-positioned side decoration. Its `left` is measured
+     from the column's left edge (left:0 == column edge; negative == out into
+     the left gutter; > column width == out into the right gutter).
+
+   GUTTER DECORATIONS (atelier-style ride-inward): a deco that lives in a side
+   gutter adds .gut-l (left gutter) or .gut-r (right gutter) and declares:
+       --dx : its comp `left` (the offset above) — DON'T also set `left`
+       --dw : its rendered width        (.gut-r only — needed to clamp its
+                                          right edge against the viewport)
+   .gut-l / .gut-r then pin the deco a hair off the viewport edge (--deco-edge)
+   once the gutter shrinks past --dx, so it slides inward with the column rather
+   than being clipped. Each gutter deco still needs its OWN max-width hide rule
+   (in its section's <style>) for the point where it would reach the centred
+   content — that's the "not enough room, hide it" line.
+   ========================================================================== */
+.sec {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+}
+.col {
+  position: relative;
+  width: 100%;
+  max-width: var(--col);
+  margin: 0 auto;
+  padding-inline: var(--col-pad);
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+/* side decoration */
+.deco { position: absolute; z-index: 2; display: block; }
+.deco img { width: 100%; height: 100%; display: block; }
+
+/* The hero (z-index:2) is the tallest section and its full-width tagline/CTA
+   jiggle blocks reach down over the email section (z-index:1) below it. That's
+   fine for painting — the hero's empty lower area is transparent — but it means
+   the hero would SWALLOW pointer events meant for the interactive shark doodle
+   (.email-dec588) that pokes up into that overlap zone. Since the shark is
+   confined to the email section's stacking context, it can't out-z-index the
+   hero; instead, let the hero pass pointer events through its empty space and
+   re-enable only its genuinely interactive bits. jiggle physics ride a global
+   mousemove listener, so they're unaffected; re-enabling the per-letter glyphs
+   (.jc, small + centered, never over the gutter) keeps text selectable without
+   re-covering the shark. */
+.sec-hero { pointer-events: none; }
+.sec-hero a,
+.sec-hero button,
+.sec-hero .jc { pointer-events: auto; }
+
+/* gutter-anchored decos (see comment above): clamp into the gutter so they ride
+   inward and pin --deco-edge off the viewport edge instead of overflowing it.
+   .gut-l pins its LEFT edge; .gut-r pins its RIGHT edge (hence needs --dw). */
+.deco.gut-l { left: max(calc(var(--deco-edge) - var(--gut)), var(--dx)); }
+.deco.gut-r { left: min(var(--dx), calc(var(--col) + var(--gut) - var(--deco-edge) - var(--dw))); }
+
+/* MOBILE floor: below the single-column breakpoint there's no gutter at all, so
+   every decoration (gutter AND interior) is gone. Gutter decos additionally
+   hide earlier, each at its own breakpoint in its section's <style>. */
+@media (max-width: 639px) {
+  .deco { display: none !important; }
+}
+
+/* shared text primitive (no longer absolute — flows in the column) */
+.txt {
+  margin: 0; color: var(--ink); line-height: normal;
+  font-family: 'augiepixel', sans-serif;
+}
+/* sketchy title underline image */
+.ul { display: block; height: calc(14px * var(--scale)); }
+.ul img { width: 100%; height: 100%; display: block; }
+
+/* ===== jiggly text (per-letter physics; real text stays selectable) =====
+   Runtime-created spans → global. */
+.jiggle-vis { display: inline; }
+.jw { display: inline-block; white-space: nowrap; }   /* keep words intact when wrapping */
+/* rainbow scribble line tucked under the word "prizes" (Hero CTA). It's a
+   background of the word box itself, so it tracks "prizes" wherever it wraps. */
+/* the rainbow scribble under "prizes" is drawn live by use:rainbowUnderline
+   (jiggle.js attaches it to the prizes word) — a pixel-art canvas that follows
+   the letters and reacts as the jiggle physics bounce them. padding-bottom keeps
+   the same room under the word the baked background used to reserve. */
+.jw-prizes {
+  position: relative;
+  padding-bottom: calc(6px * var(--scale));
+}
+/* dynamic alternative to the baked .jw-prizes background: use:rainbowUnderline
+   injects this <canvas> covering the word and draws the underline into it as
+   pixel art (a rainbow_texture slice clipped by a procedural squiggle that
+   follows the letters). The canvas backing store is the design's pixel grid;
+   CSS scales it up nearest-neighbour, so it stays crisp + chunky like the rest
+   of the site. Inert unless the action creates it. */
+canvas.jw-ul {
+  position: absolute; left: 0; top: 0;
+  width: 100%;                 /* height is set by the action (may extend below the
+                                  word so the line can dip under moved letters) */
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+.jc { display: inline-block; will-change: transform; transform-origin: center center; }
+.jiggle-sr {                                          /* screen-reader-only clean sentence */
+  position: absolute !important; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  border: 0; padding: 0; margin: -1px;
+  user-select: none; -webkit-user-select: none;        /* excluded from copy/select-all */
+}
+
+/* ===== logo (animated, scales into place on load, stays live) =====
+   Runtime-created letter nodes → global. The stage is an absolute overlay
+   (sibling of #content so it floats above during boot); engine.js sets its
+   left/top each layout to track #logo-slot — a transparent flow placeholder
+   the Hero reserves in its column — so the resting logo follows the responsive
+   layout instead of a fixed canvas coordinate. */
+/* pointer-events:none — the logo overlay (z-index:6) floats over the hero and
+   reaches down over the interactive shark doodle in the gutter; it's purely
+   decorative and its byline physics ride a global mousemove listener, so it
+   never needs to catch pointer events itself. Lets drags reach the shark. */
+#logo-stage { position: absolute; left: 0; top: 0; z-index: 6; transform-origin: center center; pointer-events: none; }
+#logo-slot  { display: block; width: calc(298px * var(--scale)); max-width: 100%; height: calc(96px * var(--scale)); margin: 0 auto; pointer-events: none; }
+.word { position: relative; image-rendering: pixelated; }
+.letter {
+  position: absolute; top: 0; left: 0;
+  will-change: transform, background-color;
+  background-color: #2f2b29;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  transform: translate3d(0,0,0);
+}
