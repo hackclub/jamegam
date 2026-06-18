@@ -198,6 +198,8 @@
   }
   /* emphasised words (e.g. "may not") — full-strength ink, stands out of the dim */
   .faq-a :global(.faq-em) { color: #504b49; }
+  /* a fainter aside, dimmer than the already-dim answer body */
+  .faq-a :global(.faq-dim) { color: rgba(80, 75, 73, 0.5); }
   /* inline links pick up the item's rainbow colour */
   .faq-a :global(a) {
     color: var(--c);

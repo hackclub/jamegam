@@ -39,6 +39,10 @@ export const FAQS = [
     a: "sorry! jame gam is only open to those between the ages of 13 and 18 :("
   },
   {
+    q: 'do i need to use hackatime to track my time?',
+    a: '<a href="https://hackatime.hackclub.com/" target="_blank" rel="noopener">hackatime</a> is optional for jame gam, but if you track your time, you\'ll get sent a special bonus sticker! <span class="faq-dim">this is a test, so this might change in the future</span>'
+  },
+  {
     q: "what is this glorious font?",
     a: 'i drew it just for this, you can download it <a href="/fonts/augiepixel.ttf" download>here</a>'
   },
