@@ -37,6 +37,7 @@
     { src: 'po12',            alt: 'Teenage Engineering PO-12', name: 'teenage engineering po-12', c: '#91a4db', s: 90, r: -12, href: 'https://teenage.engineering/store/po-12' },
     { src: 'wacom',           alt: 'Wacom drawing tablet',   name: 'basic wacom drawing tablet', c: '#b991db', s: 110, r: 6,  href: 'https://www.wacom.com/en-us/products/pen-tablets/wacom-intuos' },
     { src: 'kenney',          alt: 'Kenney Game Assets All-in-1', name: 'kenney game asset bundle', c: '#db9591', s: 100, r: -7, lead: 'that’s the', href: 'https://kenney.itch.io/kenney-game-assets' },
+    { src: 'nanokey2',        alt: 'Korg nanoKEY2',           name: 'korg nanokey2',          c: '#91a4db', s: 124, r: -6,  href: 'https://www.korg.com/us/products/computergear/nanokey2/' },
     { src: 'tshirt',          alt: 'Jame Gam t-shirt',        name: 'jame gam t-shirt',       c: '#97db91', s: 96,  r: 8,   note: ' (preorder, ships early aug)' }
   ];
 
