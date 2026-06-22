@@ -4,9 +4,43 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="/favicon.png" />
+  <style>
+    /* Boot guard, inlined so it applies on the FIRST paint, before app.css
+       arrives. In dev Vite injects app.css via JS, so without this the page
+       flashes its unstyled content (section images, the "gullible" doodle,
+       fallback-font text) for a frame before the boot overlay hides it.
+       Mirrors the rules in app.css; keep the two in sync. */
+    html, body { margin: 0; background: #fbfbfb; }
+    #page.booting #content { opacity: 0; }
+
+    /* Boot vignette: a soft dark frame over the cream background, painted on the
+       very first frame (before any JS) so the load gap reads as an intentional
+       "curtain" rather than a slow blank page. The logo engine fades it out the
+       instant the fly-in begins (engine.js sets opacity 0; reduced-motion clears
+       it immediately). Sits under the logo (z 6) so letters fly in crisp. */
+    #boot-vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity .8s ease;
+      /* Four inward shadows, one per edge, rather than a radial oval. Each is
+         darkest at the edge and falls off quickly toward the middle, so the
+         centre stays clean and the corners (where two shadows overlap) read a
+         touch deeper. Stops are percentages of the box (the full viewport), so
+         the shadow depth is the same fraction of the screen on every size. */
+      background:
+        linear-gradient(to bottom, rgba(47, 43, 41, 0.22) 0%, rgba(47, 43, 41, 0.05) 5%, rgba(47, 43, 41, 0) 16%),
+        linear-gradient(to top,    rgba(47, 43, 41, 0.22) 0%, rgba(47, 43, 41, 0.05) 5%, rgba(47, 43, 41, 0) 16%),
+        linear-gradient(to right,  rgba(47, 43, 41, 0.22) 0%, rgba(47, 43, 41, 0.05) 4%, rgba(47, 43, 41, 0) 12%),
+        linear-gradient(to left,   rgba(47, 43, 41, 0.22) 0%, rgba(47, 43, 41, 0.05) 4%, rgba(47, 43, 41, 0) 12%);
+    }
+  </style>
   %sveltekit.head%
 </head>
 <body>
+  <div id="boot-vignette" aria-hidden="true"></div>
   <div style="display: contents">%sveltekit.body%</div>
 </body>
 </html>

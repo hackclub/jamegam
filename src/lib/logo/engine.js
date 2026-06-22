@@ -56,6 +56,10 @@ export function initLogo({ stage, word, setBooting }) {
   }
 
   const page = stage.closest('#page');
+  // boot vignette overlay (lives in app.html, painted before any JS). Faded out
+  // the moment the fly-in begins so the load gap reads as a staged reveal.
+  const vignette = document.getElementById('boot-vignette');
+  const liftVignette = () => { if (vignette) vignette.style.opacity = '0'; };
   word.style.width = (244 * SCALE) + 'px';
   word.style.height = (79 * SCALE) + 'px';
 
@@ -104,6 +108,7 @@ export function initLogo({ stage, word, setBooting }) {
   // (and the byline is fully opaque), so there's nothing to animate.
   if (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) {
     placeStage();
+    liftVignette();
     setBooting && setBooting(false);
     const onResizeStatic = () => placeStage();
     window.addEventListener('resize', onResizeStatic);
@@ -245,6 +250,7 @@ export function initLogo({ stage, word, setBooting }) {
 
   let live = false, handed = false, introT0 = null, last = performance.now();
   let rafId = 0;
+  let vignetteLifted = false;            // boot vignette fades once the fly-in starts
 
   function release() {
     handed = true;
@@ -262,6 +268,8 @@ export function initLogo({ stage, word, setBooting }) {
     const MS = (SCALE * curScale) / 4;
     if (introT0 === null) introT0 = now;
     const elapsed = now - introT0;
+    // lift the vignette exactly as the first letters are released into flight
+    if (!vignetteLifted && elapsed >= START_DELAY) { vignetteLifted = true; liftVignette(); }
     if (bylineStart === null && elapsed >= lastRelease + START_DELAY + 120) bylineStart = now;
 
     if (mouse.active && live) {
