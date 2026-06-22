@@ -2,6 +2,9 @@
   // FAQ data lives in $lib/faqs.js (shared with the FAQPage JSON-LD in
   // +page.svelte so the visible answers and the schema can't drift).
   import { FAQS } from '$lib/faqs.js';
+  // rebuilds the obfuscated contact email into a real mailto link, client-side
+  // only (keeps the address out of the prerendered HTML / JSON-LD).
+  import { deobfuscateEmail } from '$lib/actions/email.js';
 
   // rainbow palette borrowed from the bottom glow / how-it-works step markers
   const COLORS = ['#db9591', '#dbaf91', '#97db91', '#91a4db', '#b991db'];
@@ -37,7 +40,7 @@
 
     <!-- accordion: each question toggles its answer with a slide. the "+" mark
          is rainbow-tinted (cycling the palette) and spins to an "×" when open. -->
-    <ul class="faq">
+    <ul class="faq" use:deobfuscateEmail>
       {#each FAQS as item, i}
         <li class="faq-item" class:open={open[i] && i !== lastIndex} class:fixed={i === lastIndex} style="--c: {COLORS[i % COLORS.length]}">
           <button class="faq-q txt" onclick={() => toggle(i)} aria-expanded={open[i]} disabled={i === lastIndex} aria-controls={`faq-a-${i}`}>

@@ -52,6 +52,6 @@ export const FAQS = [
   },
   {
     q: 'i have more questions! i wanna talk to you!',
-    a: 'reach out to me at <a href="mailto:augie@hackclub.com">augie@hackclub.com</a>! if you\'re in the hack club slack, you can also message me <a href="https://hackclub.enterprise.slack.com/team/U07FCRNHS1J" target="_blank" rel="noopener">@augie</a>, or just send a message in <a href="https://hackclub.enterprise.slack.com/archives/C0BBFQASBV2" target="_blank" rel="noopener">#jame-gam</a>!'
+    a: 'reach out to me at <a class="email-obf" data-u="eigua" data-d="moc.bulckcah">augie on hackclub.com</a>! if you\'re in the hack club slack, you can also message me <a href="https://hackclub.enterprise.slack.com/team/U07FCRNHS1J" target="_blank" rel="noopener">@augie</a>, or just send a message in <a href="https://hackclub.enterprise.slack.com/archives/C0BBFQASBV2" target="_blank" rel="noopener">#jame-gam</a>!'
   }
 ];
