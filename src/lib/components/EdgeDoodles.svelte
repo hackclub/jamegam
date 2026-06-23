@@ -104,7 +104,10 @@
   <span class="ed right" style="--top:33%; --edge:72px;   --w:105px;"><img src="/assets/doodle_fries.png" alt="" /></span>
   <span class="ed left"  style="--top:39%; --edge:6px;    --w:150px;"><img src="/assets/doodle_duck.png" alt="" /></span>
   <span class="ed right" style="--top:44%; --edge:-50px;  --w:150px;"><img src="/assets/doodle_jester.png" alt="" /></span>
-  <span class="ed left"  style="--top:50%; --edge:-24px;  --w:200px;"><img src="/assets/doodle_bird.png" alt="" /></span>
+  <!-- the round seal doodle gains a faint "gullible" caption once the easter egg
+       fires (label nested INSIDE the .ed span so it inherits the seal's exact
+       faint opacity — 0.05, or 0.022 when crowded). -->
+  <span class="ed left seal" class:swapped style="--top:50%; --edge:-24px;  --w:200px;"><img src="/assets/doodle_bird.png" alt="" /><span class="seal-label">gullible</span></span>
   <span class="ed right" style="--top:55%; --edge:60px;   --w:300px;"><img src="/assets/doodle_dino.png" alt="" /></span>
   <span class="ed left"  style="--top:61%; --edge:90px;   --w:190px;"><img src="/assets/doodle_star.png" alt="" /></span>
   <span class="ed right" style="--top:67%; --edge:34px;   --w:300px;"><img src="/assets/doodle_hackclub.png" alt="" /></span>
@@ -161,6 +164,23 @@
   .ed:global(.crowded) { opacity: 0.022; }
 
   .ed img { display: block; width: 100%; height: auto; }
+
+  /* faint "gullible" caption under the seal doodle. Lives inside the .ed span,
+     so it inherits the span's faintness — automatically as faint as the seal
+     (and follows it into .crowded). Hidden until the easter egg swaps. */
+  .seal-label {
+    display: block;
+    text-align: center;
+    white-space: nowrap;
+    margin-top: calc(4px * var(--scale));
+    color: var(--ink);
+    font-family: 'augiepixel', sans-serif;
+    font-size: calc(40px * var(--scale));
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .ed.seal.swapped .seal-label { opacity: 1; }
 
   /* clickable bottom-left doodle: two stacked drawings that crossfade on click.
      pointer-events re-enabled just on this one (the layer itself is none). */
