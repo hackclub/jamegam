@@ -199,6 +199,14 @@ export function initLogo({ stage, word, setBooting }) {
     mode = 'transitioning';
     live = false;                                       // freeze mouse physics during the tween
     placeStage();                                       // re-glue the resting spot to the slot
+    // The slot can shift down while the logo flies in (the augiepixel font and
+    // hero content settle after first paint). placeStage() just moved the stage
+    // box, but the big transform still on it was calibrated for the OLD box — so
+    // without this the logo teleports by the layout delta before shrinking.
+    // Re-pin the centred-big transform to the re-placed box (same pattern as
+    // expand()), then tween home from there with no jump.
+    stage.style.transform = computeBig();               // commits identity + remeasures; transition already 'none'
+    void stage.offsetWidth;                             // flush so SHRINK animates from this point
     stage.style.transition = SHRINK;
     stage.style.transform = '';
     setTimeout(() => setBooting && setBooting(false), 600);  // fade page in near the end (no overlap)
