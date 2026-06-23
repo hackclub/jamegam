@@ -32,6 +32,11 @@
   let topLayer;
   // the bottom-left doodle toggles to a second drawing when clicked (short crossfade)
   let swapped = false;
+  // easter egg: clicking the doodle also retitles the tab to "gullible"
+  const reveal = () => {
+    swapped = true;
+    document.title = 'gullible';
+  };
 
   onMount(() => {
     let raf = 0;
@@ -112,7 +117,7 @@
   <!-- --pd = on-screen px per SOURCE px, shared by both images so they render at
        identical pixel density despite different native sizes (129x87 vs 97x100).
        Click is one-way: first -> second only; once swapped it's no longer clickable. -->
-  <span class="ed left swap" class:swapped style="--top:87%; --edge:40px; --pd:1.4;" role="button" tabindex="-1" on:click={() => swapped = true}>
+  <span class="ed left swap" class:swapped style="--top:87%; --edge:40px; --pd:1.4;" role="button" tabindex="-1" on:click={reveal}>
     <img class="a" src="/assets/doodle_bottom.png" alt="" width="129" height="87" />
     <img class="b" src="/assets/doodle_bottom2.png" alt="" width="97" height="100" />
   </span>
