@@ -95,3 +95,43 @@ export function parseAddress(addr) {
   if (!text) return null;
   return { line1: lines[0] || '', line2: lines.slice(1).join(', '), city, region, postal, country, text };
 }
+
+// HCA users can have multiple mailing addresses; /api/v1/me returns them as an
+// `addresses` array (address scope), each with a `primary` flag. Normalize to the
+// parts the form + picker use. Falls back to the single OIDC `address` claim if
+// the array isn't present.
+export function normalizeAddresses(meAddresses, claimAddress) {
+  const out = [];
+  if (Array.isArray(meAddresses)) {
+    for (const a of meAddresses) {
+      out.push({
+        id: String(a.id ?? out.length),
+        line1: a.line_1 || '',
+        line2: a.line_2 || '',
+        city: a.city || '',
+        region: a.state || '',
+        postal: a.postal_code || '',
+        country: a.country || '',
+        phone: a.phone_number || '',
+        primary: !!a.primary
+      });
+    }
+  }
+  if (!out.length) {
+    const p = parseAddress(claimAddress);
+    if (p) {
+      out.push({
+        id: '0',
+        line1: p.line1,
+        line2: p.line2,
+        city: p.city,
+        region: p.region,
+        postal: p.postal,
+        country: p.country,
+        phone: '',
+        primary: true
+      });
+    }
+  }
+  return out;
+}

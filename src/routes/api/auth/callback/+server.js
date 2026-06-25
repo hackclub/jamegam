@@ -5,7 +5,7 @@
 //   - submit flow  -> back into the Fillout form, identity prefilled in the URL
 //     (hca_token carries HCA's signed id_token as the anti-forgery anchor).
 import { redirect } from '@sveltejs/kit';
-import { exchangeCode, fetchMe, decodeIdToken, parseAddress } from '$lib/server/hca.js';
+import { exchangeCode, fetchMe, decodeIdToken, normalizeAddresses } from '$lib/server/hca.js';
 import { upsertSignup, markById } from '$lib/server/airtable.js';
 import { inviteToChannel } from '$lib/server/slack.js';
 import { lookupSlackProfile } from '$lib/server/cachet.js';
@@ -81,8 +81,13 @@ export async function GET({ url, cookies }) {
       } catch (err) {
         console.error('[callback] id_token decode failed:', err);
       }
-      const birthday = id.birthdate || claims.birthdate || '';
-      const addr = parseAddress(id.address || claims.address);
+      // /api/v1/me returns `birthday` (not `birthdate`); fall back to the id_token's
+      // OIDC `birthdate` claim.
+      const birthday = id.birthday || claims.birthdate || '';
+      // Multiple mailing addresses possible; default to the primary, the form's
+      // picker can switch among the rest.
+      const addresses = normalizeAddresses(id.addresses, claims.address);
+      const active = addresses.find((a) => a.primary) || addresses[0] || null;
 
       const d = buildSubmitRedirect(ret, {
         email,
@@ -94,13 +99,15 @@ export async function GET({ url, cookies }) {
         status: id.verification_status,
         idToken: tokens.id_token,
         birthday,
-        addr1: addr?.line1,
-        addr2: addr?.line2,
-        city: addr?.city,
-        region: addr?.region,
-        postal: addr?.postal,
-        country: addr?.country,
-        addressText: addr?.text
+        addresses,
+        addrId: active?.id,
+        addr1: active?.line1,
+        addr2: active?.line2,
+        city: active?.city,
+        region: active?.region,
+        postal: active?.postal,
+        country: active?.country,
+        phone: active?.phone
       });
       if (d) dest = d;
     }

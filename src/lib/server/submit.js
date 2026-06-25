@@ -22,7 +22,9 @@ export const SUBMIT_PARAMS = [
   'state_province',
   'zip_postal_code',
   'country',
-  'address_text', // display-only (the card); the parts above are what get stored
+  'phone_number',
+  'addresses', // display/control-only: JSON list for the picker, not stored
+  'addr', // display/control-only: selected address id, not stored
   'hca_token' // HCA's own signed id_token - the anti-forgery anchor
 ];
 
@@ -64,7 +66,11 @@ export function buildSubmitRedirect(to, id) {
   set('state_province', id.region);
   set('zip_postal_code', id.postal);
   set('country', id.country);
-  set('address_text', id.addressText);
+  set('phone_number', id.phone);
+  if (id.addresses && id.addresses.length) {
+    u.searchParams.set('addresses', JSON.stringify(id.addresses));
+    set('addr', id.addrId);
+  }
   set('hca_token', id.idToken);
   return u.toString();
 }
