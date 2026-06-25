@@ -1,10 +1,15 @@
 // GET /api/auth/callback - Hack Club Auth redirects here after the user signs in
 // (or creates an account). We verify state, exchange the code, fetch the identity,
-// save it, and drop them into #jame-gam. Then back to the site.
+// save it, and drop them into #jame-gam. Then:
+//   - signup flow  -> back to the site (?join=ok)
+//   - submit flow  -> back into the Fillout form, identity prefilled in the URL
+//     (hca_token carries HCA's signed id_token as the anti-forgery anchor).
 import { redirect } from '@sveltejs/kit';
 import { exchangeCode, fetchMe } from '$lib/server/hca.js';
 import { upsertSignup, markById } from '$lib/server/airtable.js';
 import { inviteToChannel } from '$lib/server/slack.js';
+import { lookupSlackProfile } from '$lib/server/cachet.js';
+import { buildSubmitRedirect, submitErrorUrl } from '$lib/server/submit.js';
 import { config, F } from '$lib/server/config.js';
 
 export const prerender = false;
@@ -15,13 +20,19 @@ export async function GET({ url, cookies }) {
   const saved = cookies.get('hca_state');
   cookies.delete('hca_state', { path: '/' });
 
+  // Set only on the submit flow; presence is what distinguishes the two paths.
+  const ret = cookies.get('hca_return');
+  cookies.delete('hca_return', { path: '/' });
+
   const site = config.origin || url.origin;
+  const fail = ret ? submitErrorUrl(ret) : `${site}/?join=error`;
 
   // bad/forged callback or user denied - bounce back with an error flag
   if (!code || !state || !saved || state !== saved) {
-    redirect(302, `${site}/?join=error`);
+    redirect(302, fail);
   }
 
+  let dest = `${site}/?join=ok`;
   try {
     const tokens = await exchangeCode({ code, redirectUri: `${site}/api/auth/callback` });
     // /api/v1/me returns every field the app's scopes grant, including
@@ -48,10 +59,36 @@ export async function GET({ url, cookies }) {
         console.error('[callback] slack invite failed:', err);
       }
     }
+
+    // submit flow: return into the form with identity prefilled
+    if (ret) {
+      let slackHandle = null;
+      let slackAvatar = null;
+      if (slackId) {
+        try {
+          const prof = await lookupSlackProfile(slackId);
+          slackHandle = prof?.handle ?? null;
+          slackAvatar = prof?.imageUrl ?? null;
+        } catch (err) {
+          console.error('[callback] cachet profile lookup failed:', err);
+        }
+      }
+      const d = buildSubmitRedirect(ret, {
+        email,
+        firstName: id.first_name,
+        lastName: id.last_name,
+        slackId,
+        slackHandle,
+        slackAvatar,
+        status: id.verification_status,
+        idToken: tokens.id_token
+      });
+      if (d) dest = d;
+    }
   } catch (err) {
     console.error('[callback] oauth failed:', err);
-    redirect(302, `${site}/?join=error`);
+    dest = fail;
   }
 
-  redirect(302, `${site}/?join=ok`);
+  redirect(302, dest);
 }
