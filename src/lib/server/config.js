@@ -18,7 +18,12 @@ export const config = {
     issuer: (env.HCA_ISSUER || 'https://auth.hackclub.com').replace(/\/$/, ''),
     clientId: env.HCA_CLIENT_ID,
     clientSecret: env.HCA_CLIENT_SECRET,
-    scope: env.HCA_SCOPE || 'openid email name slack_id verification_status'
+    scope: env.HCA_SCOPE || 'openid email name slack_id verification_status',
+    // The submit flow steps up to address + birthdate (prize shipping + age).
+    // Signups stay on the minimal scope above; only submitters get the bigger consent.
+    submitScope:
+      env.HCA_SCOPE_SUBMIT ||
+      `${env.HCA_SCOPE || 'openid email name slack_id verification_status'} address birthdate`
   },
   slack: {
     botToken: env.SLACK_BOT_TOKEN,

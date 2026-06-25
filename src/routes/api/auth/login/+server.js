@@ -23,10 +23,12 @@ export async function GET({ url, cookies }) {
   cookies.set('hca_state', state, cookieOpts);
 
   // Submit flow: stash the (validated, forms.hackclub.com-only) form URL so the
-  // callback knows to send them back there instead of to the homepage.
+  // callback knows to send them back there instead of to the homepage. The submit
+  // flow also steps up to the address+birthdate scope; signups stay minimal.
   const ret = safeReturnUrl(url.searchParams.get('to'));
   if (ret) cookies.set('hca_return', ret.toString(), cookieOpts);
   else cookies.delete('hca_return', { path: '/' });
 
-  redirect(302, authorizeUrl({ redirectUri, state, loginHint: email }));
+  const scope = ret ? config.hca.submitScope : config.hca.scope;
+  redirect(302, authorizeUrl({ redirectUri, state, loginHint: email, scope }));
 }

@@ -15,6 +15,14 @@ export const SUBMIT_PARAMS = [
   'slack_handle',
   'slack_avatar', // display-only (the signed-in card); no need to store it
   'verification_status',
+  'birthday',
+  'address_line_1',
+  'address_line_2',
+  'city',
+  'state_province',
+  'zip_postal_code',
+  'country',
+  'address_text', // display-only (the card); the parts above are what get stored
   'hca_token' // HCA's own signed id_token - the anti-forgery anchor
 ];
 
@@ -49,6 +57,14 @@ export function buildSubmitRedirect(to, id) {
   set('slack_handle', id.slackHandle);
   set('slack_avatar', id.slackAvatar);
   set('verification_status', id.status);
+  set('birthday', id.birthday);
+  set('address_line_1', id.addr1);
+  set('address_line_2', id.addr2);
+  set('city', id.city);
+  set('state_province', id.region);
+  set('zip_postal_code', id.postal);
+  set('country', id.country);
+  set('address_text', id.addressText);
   set('hca_token', id.idToken);
   return u.toString();
 }

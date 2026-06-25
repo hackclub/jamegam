@@ -24,12 +24,12 @@ export function accountState(result) {
   return 'has';
 }
 
-export function authorizeUrl({ redirectUri, state, loginHint }) {
+export function authorizeUrl({ redirectUri, state, loginHint, scope }) {
   const p = new URLSearchParams({
     client_id: config.hca.clientId,
     redirect_uri: redirectUri,
     response_type: 'code',
-    scope: config.hca.scope,
+    scope: scope || config.hca.scope,
     state
   });
   // login_hint prefills the email on HCA's screen so they don't retype it
@@ -71,4 +71,27 @@ export async function exchangeCode({ code, redirectUri }) {
 export function decodeIdToken(idToken) {
   const payload = idToken.split('.')[1];
   return JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+}
+
+// Normalize HCA's `address` claim (OIDC structured object, or a plain string) into
+// the parts the submission form uses, plus a one-line `text` for the card. Returns
+// null when no address is set. Tolerant of key variants since the exact shape is
+// only confirmable against a real grant.
+export function parseAddress(addr) {
+  if (!addr) return null;
+  if (typeof addr === 'string') {
+    const t = addr.trim();
+    return t ? { line1: t, line2: '', city: '', region: '', postal: '', country: '', text: t } : null;
+  }
+  const street = String(addr.street_address || addr.line1 || '').trim();
+  const lines = street.split(/\r?\n/).filter(Boolean);
+  const city = addr.locality || addr.city || '';
+  const region = addr.region || addr.state || '';
+  const postal = addr.postal_code || addr.zip || '';
+  const country = addr.country || '';
+  const text =
+    addr.formatted ||
+    [street.replace(/\r?\n/g, ', '), city, region, postal, country].filter(Boolean).join(', ');
+  if (!text) return null;
+  return { line1: lines[0] || '', line2: lines.slice(1).join(', '), city, region, postal, country, text };
 }

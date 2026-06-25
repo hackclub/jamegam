@@ -5,7 +5,7 @@
 //   - submit flow  -> back into the Fillout form, identity prefilled in the URL
 //     (hca_token carries HCA's signed id_token as the anti-forgery anchor).
 import { redirect } from '@sveltejs/kit';
-import { exchangeCode, fetchMe } from '$lib/server/hca.js';
+import { exchangeCode, fetchMe, decodeIdToken, parseAddress } from '$lib/server/hca.js';
 import { upsertSignup, markById } from '$lib/server/airtable.js';
 import { inviteToChannel } from '$lib/server/slack.js';
 import { lookupSlackProfile } from '$lib/server/cachet.js';
@@ -73,6 +73,17 @@ export async function GET({ url, cookies }) {
           console.error('[callback] cachet profile lookup failed:', err);
         }
       }
+      // Address + birthdate ride in the id_token's claims (submit-flow scope).
+      // Fall back to /me in case HCA surfaces them there instead.
+      let claims = {};
+      try {
+        claims = decodeIdToken(tokens.id_token);
+      } catch (err) {
+        console.error('[callback] id_token decode failed:', err);
+      }
+      const birthday = id.birthdate || claims.birthdate || '';
+      const addr = parseAddress(id.address || claims.address);
+
       const d = buildSubmitRedirect(ret, {
         email,
         firstName: id.first_name,
@@ -81,7 +92,15 @@ export async function GET({ url, cookies }) {
         slackHandle,
         slackAvatar,
         status: id.verification_status,
-        idToken: tokens.id_token
+        idToken: tokens.id_token,
+        birthday,
+        addr1: addr?.line1,
+        addr2: addr?.line2,
+        city: addr?.city,
+        region: addr?.region,
+        postal: addr?.postal,
+        country: addr?.country,
+        addressText: addr?.text
       });
       if (d) dest = d;
     }
