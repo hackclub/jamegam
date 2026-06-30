@@ -41,10 +41,9 @@
   var IC = {
     check: '<svg class="hc-ic" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8.5l3.5 3.5L13 4"/></svg>',
     cal: '<svg class="hc-ic" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/></svg>',
-    pin: '<svg class="hc-ic" width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a5 5 0 0 0-5 5c0 3.6 5 9 5 9s5-5.4 5-9a5 5 0 0 0-5-5zm0 6.8A1.8 1.8 0 1 1 8 4.2a1.8 1.8 0 0 1 0 3.6z"/></svg>',
+    pin: '<svg class="hc-ic" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M8 1.5c-2.49 0-4.5 2.01-4.5 4.5 0 3.2 4.5 8 4.5 8s4.5-4.8 4.5-8c0-2.49-2.01-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.7"/></svg>',
     ext: '<svg class="hc-ic" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3H3v10h10v-3M9.5 2.5H14V7M14 2.5L7.5 9"/></svg>',
-    chev: '<svg class="hc-ic" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>',
-    phone: '<svg class="hc-ic" width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2c0-.55.45-1 1-1h2.1c.43 0 .8.27.94.67l.86 2.4a1 1 0 0 1-.25 1.05L6.4 6.3a8.5 8.5 0 0 0 3.3 3.3l1.18-1.25a1 1 0 0 1 1.05-.25l2.4.86c.4.14.67.5.67.94V13c0 .55-.45 1-1 1C7.6 14 3 9.4 3 3z"/></svg>'
+    phone: '<svg class="hc-ic" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M5.2 2H3.5c-.55 0-1 .45-1 1C2.5 8.2 6.8 12.5 12 12.5c.55 0 1-.45 1-1v-1.7c0-.43-.27-.8-.67-.94l-1.9-.63a1 1 0 0 0-1.03.24l-.8.8A8 8 0 0 1 5.07 6l.8-.8a1 1 0 0 0 .24-1.03l-.63-1.9A1 1 0 0 0 5.2 2z"/></svg>'
   };
   var CSS =
     '#hc-signin{font-family:inherit;margin:0 0 1.25rem;width:100%}' +
@@ -68,12 +67,13 @@
     '#hc-signin .hc-signout:hover{color:#666;text-decoration:underline}' +
     '#hc-signin .hc-ic{flex:0 0 auto}' +
     '#hc-signin .hc-line .hc-ic{margin-top:.13rem;color:#b3b3b3}' +
-    '#hc-signin .hc-addr-wrap{display:inline-flex;align-items:center;gap:.25rem;min-width:0}' +
-    '#hc-signin .hc-addr-wrap .hc-ic{margin-top:0}' +
-    '#hc-signin .hc-addr-sel{appearance:none;-webkit-appearance:none;border:0;background:transparent;font:inherit;color:inherit;line-height:inherit;padding:0;margin:0;max-width:100%;cursor:pointer}' +
-    '#hc-signin .hc-addr-sel:hover{color:#1a1a1a}' +
+    '#hc-signin .hc-addr-sel{appearance:none;-webkit-appearance:none;border:0;background-color:transparent;font:inherit;color:inherit;line-height:inherit;cursor:pointer;max-width:100%;margin:-2px -6px;padding:2px 24px 2px 6px;border-radius:6px;background-image:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 16 16%22 fill=%22none%22 stroke=%22%23b3b3b3%22 stroke-width=%222%22%3E%3Cpath d=%22M4 6l4 4 4-4%22/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:9px}' +
+    '#hc-signin .hc-addr-sel:hover{background-color:#f1f1f1}' +
     '#hc-signin .hc-addr-sel:focus{outline:none}' +
-    '#hc-signin .hc-err{color:#ec3750;font-size:.85rem;margin-top:.4rem}';
+    '#hc-signin .hc-btn .hc-req{opacity:.8;font-weight:500}' +
+    '#hc-signin .hc-err{color:#ec3750;font-size:.85rem;margin-top:.4rem}' +
+    // Page-level: hide the Fillout widget #widget-gLZC (and its wrapper).
+    'div:has(> div > div > #widget-gLZC){display:none !important}';
 
   var host = null; // the Fillout element holding the sentinel
   var container = null; // our injected #hc-signin
@@ -181,8 +181,7 @@
             (String(a.id) === String(selId) ? ' selected' : '') + '>' + esc(addrText(a)) + '</option>';
         }
         addrHtml = '<div class="hc-line hc-addr">' + IC.pin +
-          '<span class="hc-addr-wrap"><select class="hc-addr-sel" aria-label="Mailing address">' +
-          opts + '</select>' + IC.chev + '</span></div>';
+          '<select class="hc-addr-sel" aria-label="Mailing address">' + opts + '</select></div>';
       } else if (addresses.length === 1) {
         addrHtml = '<div class="hc-line">' + IC.pin + '<span>' + esc(addrText(addresses[0])) + '</span></div>';
       } else {
@@ -200,9 +199,9 @@
             '<span class="hc-status">' + IC.check + '<span>signed in</span></span>' +
           '</div>' +
           '<div class="hc-data">' +
-            (birthday ? '<div class="hc-line">' + IC.cal + '<span>' + esc(birthday) + '</span></div>' : '') +
+            (birthday ? '<div class="hc-line">' + IC.cal + '<span>' + esc(fmtBirthday(birthday)) + '</span></div>' : '') +
             addrHtml +
-            (phone ? '<div class="hc-line">' + IC.phone + '<span>' + esc(phone) + '</span></div>' : '') +
+            (phone ? '<div class="hc-line">' + IC.phone + '<span>' + esc(fmtPhone(phone)) + '</span></div>' : '') +
           '</div>' +
           '<div class="hc-foot">' +
             '<a class="hc-edit" href="' + HCA_SETTINGS + '" target="_blank" rel="noopener"><span>edit on Hack Club Auth</span>' + IC.ext + '</a>' +
@@ -216,7 +215,7 @@
       var url = BROKER + '?to=' + encodeURIComponent(location.origin + location.pathname);
       root.innerHTML =
         '<div class="hc-out">' +
-          '<a class="hc-btn" href="' + url + '">Sign in with Hack Club</a>' +
+          '<a class="hc-btn" href="' + url + '">Sign in with Hack Club <span class="hc-req">(required)</span></a>' +
           (q.get('hca_error')
             ? '<div class="hc-err">Sign-in did not go through - give it another try.</div>'
             : '') +
@@ -232,6 +231,19 @@
 
   function addrText(a) {
     return [a.line1, a.line2, a.city, a.region, a.postal, a.country].filter(Boolean).join(', ');
+  }
+
+  // Display-only formatters (the stored hidden fields keep the raw values).
+  function fmtBirthday(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || '');
+    return m ? m[2] + '/' + m[3] + '/' + m[1] : (s || ''); // ISO -> MM/DD/YYYY
+  }
+
+  function fmtPhone(s) {
+    if (!s) return '';
+    var d = String(s).replace(/[^\d+]/g, '');
+    var m = /^\+?1?(\d{3})(\d{3})(\d{4})$/.exec(d); // US / NANP only
+    return m ? '(' + m[1] + ') ' + m[2] + '-' + m[3] : s; // others: as-is
   }
 
   // Switch the active mailing address: reload the form with the chosen address in
