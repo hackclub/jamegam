@@ -5,9 +5,12 @@
   let countdownEl;
   let monthEl;
   let durEl;
+  let nextEl;
 
   onMount(() => {
     // dates come from $lib/jam.js (shared with the Event JSON-LD). times are UTC.
+    // the three branches below switch automatically off those dates, so next
+    // month just update JAM and this cycles through before/during/after again.
     const START = Date.parse(JAM.startDate);
     const END   = Date.parse(JAM.endDate);
     const z2 = (n) => String(n).padStart(2, '0');
@@ -26,9 +29,11 @@
         durEl.innerHTML = "it&rsquo;s never too late to join!!";
         clamp();
       } else {
+        // jam's over: past-tense the copy + invite them back next month
         countdownEl.textContent = "it's over!";
-        monthEl.innerHTML = "this month we&rsquo;re crashing";
+        monthEl.textContent = "this month we crashed";
         durEl.innerHTML = "this <span style=\"color:#ac534e;\">very serious</span> jam ran for a week!";
+        nextEl.style.display = "";   // reveal the "join us next month" line
         clamp();
       }
     }
@@ -69,6 +74,8 @@
     <!-- countdown -->
     <p bind:this={countdownEl} id="countdown" class="txt month-count">in 7:18:40:53</p>
     <p bind:this={durEl} id="jam-duration" class="txt month-dur">this <span style="color:#ac534e;">very serious</span> jam will run for a week!</p>
+    <!-- post-jam only: revealed by tick() once the jam has ended (hidden until then) -->
+    <p bind:this={nextEl} id="jam-next" class="txt month-next" style="display:none;">join us next month for another jam!</p>
     <p class="txt month-disclaimer">(not affiliated with juniper dev)</p>
 
     <!-- wide-only "watch the video" doodle, pointing at the video -->
@@ -161,11 +168,19 @@
     line-height: 1;
   }
   .month-dur {
-    margin-top: calc(7px * var(--scale));
+    margin-top: calc(2px * var(--scale));
     font-size: var(--t-dur);
     color: #4f4a48;
     line-height: 1.2;
     max-width: calc(520px * var(--scale));   /* allow wrap on mobile; clamp() may tighten it at runtime */
+  }
+  /* post-jam "join us next month" line (shown only in the ended state) */
+  .month-next {
+    margin-top: calc(2px * var(--scale));
+    font-size: var(--t-dur);
+    color: #4f4a48;
+    line-height: 1.2;
+    max-width: calc(520px * var(--scale));
   }
   .month-disclaimer {
     margin-top: calc(2px * var(--scale));
