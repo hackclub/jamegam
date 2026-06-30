@@ -1,10 +1,15 @@
 <script>
+  import { onMount } from 'svelte';
   import { jiggle } from '$lib/actions/jiggle.js';
+  import { prefillEmail } from '$lib/prefill.js';
 
   let email = $state('');
   let company = $state(''); // honeypot - real humans never fill this
   let status = $state('idle'); // idle | loading | done | error
   let message = $state('');
+
+  // prefill from a logged-in Hack Club session, but never clobber what they typed
+  onMount(() => prefillEmail.subscribe((v) => { if (v && !email) email = v; }));
 
   async function submit(e) {
     e.preventDefault();

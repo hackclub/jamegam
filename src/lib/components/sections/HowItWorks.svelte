@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { prefillEmail } from '$lib/prefill.js';
 
   let videoEl;
   let onScreen = false; // set by the IntersectionObserver; only play while visible
@@ -68,6 +69,9 @@
       message = 'network hiccup - try again?';
     }
   }
+
+  // prefill from a logged-in Hack Club session, but never clobber what they typed
+  onMount(() => prefillEmail.subscribe((v) => { if (v && !email) email = v; }));
 
   onMount(() => {
     // Ensure the muted *property* is set (not just the SSR'd attribute) — some
