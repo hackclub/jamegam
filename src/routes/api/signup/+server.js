@@ -3,7 +3,7 @@
 // puts them on the Loops list) -> send the right welcome email. Returns JSON.
 import { json } from '@sveltejs/kit';
 import { checkAccount, accountState } from '$lib/server/hca.js';
-import { upsertSignup } from '$lib/server/airtable.js';
+import { findByEmail, upsertSignup } from '$lib/server/airtable.js';
 import { sendTransactional } from '$lib/server/loops.js';
 import { lookupSlackIdByEmail, inviteToChannel } from '$lib/server/slack.js';
 import { rateLimit } from '$lib/server/ratelimit.js';
@@ -33,6 +33,19 @@ export async function POST({ request, getClientAddress }) {
 
   if (!rateLimit(getClientAddress())) {
     return json({ ok: false, error: 'slow down a sec - try again in a moment' }, { status: 429 });
+  }
+
+  // 0. already signed up? short-circuit on a repeat submit (same email, or a
+  //    second box further down the page) so we don't re-send the welcome email
+  //    or re-run the Slack invite. They're already captured + on the Loops list.
+  try {
+    const existing = await findByEmail(email);
+    if (existing) {
+      return json({ ok: true, hasAccount: !!existing.fields?.[F.hadAccount], alreadySignedUp: true });
+    }
+  } catch (err) {
+    // a find failure shouldn't block a signup - fall through to the normal path
+    console.error('[signup] dedup check failed, continuing:', err);
   }
 
   // 1. already a Hack Club account? (an account == being in the Slack)

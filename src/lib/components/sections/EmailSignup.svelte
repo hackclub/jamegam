@@ -2,35 +2,34 @@
   import { onMount } from 'svelte';
   import SharkPrize from '$lib/components/SharkPrize.svelte';
   import { prefillEmail } from '$lib/prefill.js';
+  import { signup, submitSignup } from '$lib/signup.js';
 
   let email = $state('');
   let company = $state(''); // honeypot - real humans never see or fill this
   let status = $state('idle'); // idle | loading | done | error
   let message = $state('');
 
-  // prefill from a logged-in Hack Club session, but never clobber what they typed
-  onMount(() => prefillEmail.subscribe((v) => { if (v && !email) email = v; }));
+  onMount(() => {
+    // prefill from a logged-in Hack Club session, but never clobber what they typed
+    prefillEmail.subscribe((v) => { if (v && !email) email = v; });
+    // if any box on the page already signed up, show "you're in" here too
+    signup.subscribe((s) => { if (s.done) { status = 'done'; message = s.message; } });
+  });
 
   async function submit(e) {
     e.preventDefault();
     const v = email.trim();
-    if (!v || status === 'loading') return;
+    if (!v || status === 'loading' || status === 'done') return;
     status = 'loading';
     message = '';
     try {
-      const res = await fetch('/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: v, company })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.ok) {
+      const r = await submitSignup({ email: v, company });
+      // success flips the shared `signup` store, which our subscription above
+      // turns into status = 'done'. We only handle the error case here.
+      if (!r.ok) {
         status = 'error';
-        message = data.error || 'hmm, that didn’t work - try again?';
-        return;
+        message = r.error || 'hmm, that didn’t work - try again?';
       }
-      status = 'done';
-      message = "you’re in! check your email :]";
     } catch {
       status = 'error';
       message = 'network hiccup - try again?';
