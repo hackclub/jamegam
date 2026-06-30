@@ -8,6 +8,7 @@ import { sendTransactional } from '$lib/server/loops.js';
 import { lookupSlackIdByEmail, inviteToChannel } from '$lib/server/slack.js';
 import { rateLimit } from '$lib/server/ratelimit.js';
 import { config, F } from '$lib/server/config.js';
+import { JAM } from '$lib/jam.js';
 
 export const prerender = false;
 
@@ -73,7 +74,8 @@ export async function POST({ request, getClientAddress }) {
   const fields = {
     [F.email]: email,
     [F.hadAccount]: hasAccount,
-    [F.signupOrigin]: new URL(origin).host
+    [F.signupOrigin]: new URL(origin).host,
+    [F.jam]: [JAM.airtableRecordId] // link to the current jam (a linked-record field)
   };
   if (accountState(result) !== 'unknown') fields[F.status] = result;
   if (slackId) {

@@ -42,5 +42,6 @@ export const F = {
   status: 'verification_status', // external/check result, then HCA verification_status
   slackInvited: 'is_slack_invited',
   hadAccount: 'had_account_at_signup', // did they already have an HCA account at signup (set once, immutable)
-  signupOrigin: 'signup_origin' // request origin host - prod vs dev
+  signupOrigin: 'signup_origin', // request origin host - prod vs dev
+  jam: 'jam' // link to the current jam's row in the "Jams" table (JAM.airtableRecordId)
 };
