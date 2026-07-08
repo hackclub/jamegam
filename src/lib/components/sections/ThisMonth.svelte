@@ -31,7 +31,11 @@
       } else {
         // jam's over: past-tense the copy + invite them back next month
         countdownEl.textContent = "it's over!";
-        monthEl.textContent = "this month we crashed";
+        // if the calendar has rolled past the jam's month (JAM not updated yet),
+        // "this month" would be wrong - say "last month" instead. UTC, like the dates.
+        const end = new Date(END), today = new Date(now);
+        const sameMonth = end.getUTCFullYear() === today.getUTCFullYear() && end.getUTCMonth() === today.getUTCMonth();
+        monthEl.textContent = sameMonth ? "this month we crashed" : "last month we crashed";
         durEl.innerHTML = "this <span style=\"color:#ac534e;\">very serious</span> jam ran for a week!";
         nextEl.style.display = "";   // reveal the "join us next month" line
         clamp();
