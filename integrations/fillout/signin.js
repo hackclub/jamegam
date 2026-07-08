@@ -11,7 +11,7 @@
 // map to the Submission Form columns:
 //   email, first_name, last_name, slack_id, slack_handle, verification_status,
 //   birthday, address_line_1, address_line_2, city, state_province,
-//   zip_postal_code, country, phone_number, hca_token
+//   zip_postal_code, country, phone_number, hca_id_token
 // Display/control-only (read by this script; NO hidden field needed):
 //   slack_avatar, addresses (JSON list for the address picker), addr (selected id)
 //
@@ -149,8 +149,8 @@
 
   function render(root) {
     var q = new URLSearchParams(location.search);
-    log('render; hca_token present =', !!q.get('hca_token'));
-    if (q.get('hca_token')) {
+    log('render; hca_id_token present =', !!q.get('hca_id_token'));
+    if (q.get('hca_id_token')) {
       var name = [q.get('first_name'), q.get('last_name')].filter(Boolean).join(' ');
       var email = q.get('email') || '';
       var handle = q.get('slack_handle') || '';
