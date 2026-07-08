@@ -25,7 +25,7 @@ export const SUBMIT_PARAMS = [
   'phone_number',
   'addresses', // display/control-only: JSON list for the picker, not stored
   'addr', // display/control-only: selected address id, not stored
-  'hca_token' // HCA's own signed id_token - the anti-forgery anchor
+  'hca_id_token' // HCA's own signed id_token - the anti-forgery anchor
 ];
 
 // Returns a validated URL object for an allowed return target, or null.
@@ -71,7 +71,7 @@ export function buildSubmitRedirect(to, id) {
     u.searchParams.set('addresses', JSON.stringify(id.addresses));
     set('addr', id.addrId);
   }
-  set('hca_token', id.idToken);
+  set('hca_id_token', id.idToken);
   return u.toString();
 }
 

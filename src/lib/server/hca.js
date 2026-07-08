@@ -49,6 +49,15 @@ export async function fetchMe(accessToken) {
   return data.identity ?? data;
 }
 
+// ISO expiry for a token-exchange response. Doorkeeper returns created_at and
+// expires_in (both seconds); HCA's configured lifetime is 6 months, used as
+// the fallback when either is missing.
+export function tokenExpiresAt(tokens) {
+  const created = tokens.created_at ?? Math.floor(Date.now() / 1000);
+  const ttl = tokens.expires_in ?? 182 * 24 * 3600;
+  return new Date((created + ttl) * 1000).toISOString();
+}
+
 export async function exchangeCode({ code, redirectUri }) {
   const res = await fetch(`${config.hca.issuer}/oauth/token`, {
     method: 'POST',

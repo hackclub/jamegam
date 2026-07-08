@@ -3,9 +3,15 @@
 // save it, and drop them into #jame-gam. Then:
 //   - signup flow  -> back to the site (?join=ok)
 //   - submit flow  -> back into the Fillout form, identity prefilled in the URL
-//     (hca_token carries HCA's signed id_token as the anti-forgery anchor).
+//     (hca_id_token carries HCA's signed id_token as the anti-forgery anchor).
 import { redirect } from '@sveltejs/kit';
-import { exchangeCode, fetchMe, decodeIdToken, normalizeAddresses } from '$lib/server/hca.js';
+import {
+  exchangeCode,
+  fetchMe,
+  decodeIdToken,
+  normalizeAddresses,
+  tokenExpiresAt
+} from '$lib/server/hca.js';
 import { upsertSignup, markById } from '$lib/server/airtable.js';
 import { inviteToChannel } from '$lib/server/slack.js';
 import { lookupSlackProfile } from '$lib/server/cachet.js';
@@ -42,13 +48,23 @@ export async function GET({ url, cookies }) {
     if (!email) throw new Error('no email from /api/v1/me - check HCA app scopes');
     const slackId = id.slack_id ?? null;
 
-    const rec = await upsertSignup({
+    const fields = {
       [F.email]: email,
       [F.firstName]: id.first_name ?? '',
       [F.lastName]: id.last_name ?? '',
       [F.slackId]: slackId ?? '',
       [F.status]: id.verification_status ?? 'needs_submission'
-    });
+    };
+    // Submit flow: keep the access token (valid ~6mo). /api/v1/me with it
+    // returns their *current* HCA data, so a later pull can grab an address
+    // they add after submitting - no re-auth needed. Clear the token once
+    // used. A repeat auth overwrites with the same token (HCA reuses
+    // unexpired tokens).
+    if (ret) {
+      fields[F.hcaToken] = tokens.access_token;
+      fields[F.hcaTokenExpires] = tokenExpiresAt(tokens);
+    }
+    const rec = await upsertSignup(fields);
 
     // HCA account == Slack account, so slack_id is present -> auto-add to #jame-gam
     if (slackId) {

@@ -43,5 +43,11 @@ export const F = {
   slackInvited: 'is_slack_invited',
   hadAccount: 'had_account_at_signup', // did they already have an HCA account at signup (set once, immutable)
   signupOrigin: 'signup_origin', // request origin host - prod vs dev
-  jam: 'jam' // link to the current jam's row in the "Jams" table (JAM.airtableRecordId)
+  jam: 'jam', // link to the current jam's row in the "Jams" table (JAM.airtableRecordId)
+  // Submit flow only: the HCA access token (~6mo) + its ISO expiry, kept so a
+  // later manual pull (GET {issuer}/api/v1/me with the token as Bearer) can
+  // fetch live identity data - e.g. an address added to HCA after submitting.
+  // Clear them once used.
+  hcaToken: 'hca_access_token',
+  hcaTokenExpires: 'hca_token_expires_at'
 };
