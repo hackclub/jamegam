@@ -5,41 +5,14 @@
   import { borderRipple } from '$lib/actions/borderRipple.js';
   import { jiggleImage } from '$lib/actions/jiggleImage.js';
   import { jiggle } from '$lib/actions/jiggle.js';
+  import { PRIZES, GAME_PICK_COUNT } from '$lib/prizes.js';
 
   // The prize loot, scattered INSIDE the rainbow border. Placement is a real
-  // randomised scatter (computed in JS, below) — no rows, no columns. Per item:
-  // s = bounding-box size (comp px, ×--scale; aspect kept), r = tilt.
-  const prizes = [
-    { src: 'shark',           alt: 'blahaj shark plush',    name: 'blahaj plushie',         c: '#db9591', s: 118, r: -9,  href: 'https://www.ikea.com/us/en/p/blahaj-soft-toy-shark-90373590/' },
-    { src: 'hollowknight',    alt: 'Hollow Knight',         name: 'hollow knight',          c: '#dbaf91', s: 94,  r: 7,   game: true, href: 'https://store.steampowered.com/app/367520/Hollow_Knight/' },
-    { src: 'controller',      alt: '8BitDo controller',      name: '8bitdo controller',      c: '#97db91', s: 102, r: 12,  lead: 'that’s an', href: 'https://www.8bitdo.com/' },
-    { src: 'steam',           alt: 'Steam gift card',        name: 'steam gift card',        c: '#91a4db', s: 74,  r: -15, href: 'https://store.steampowered.com/digitalgiftcards/' },
-    { src: 'duck',            alt: '150 rubber ducks',       name: '150 rubber ducks',       c: '#b991db', s: 98,  r: -6,  lead: 'that’s' },
-    { src: 'pico8',           alt: 'PICO-8 license',         name: 'pico-8 license',         c: '#db9591', s: 120, r: 4,   href: 'https://www.lexaloffle.com/pico-8.php' },
-    { src: 'mascot',          alt: 'Godot plush',            name: 'godot plush',            c: '#dbaf91', s: 96,  r: 10   },
-    { src: 'babaisyou',       alt: 'Baba Is You',            name: 'baba is you',            c: '#97db91', s: 92,  r: -8,  game: true, href: 'https://store.steampowered.com/app/736260/Baba_Is_You/' },
-    { src: 'celeste',         alt: 'Celeste',                name: 'celeste',                c: '#91a4db', s: 108, r: 9,   game: true, href: 'https://store.steampowered.com/app/504230/Celeste/' },
-    { src: 'floppies',        alt: 'floppy disk',            name: 'floppy disk',            c: '#b991db', s: 112, r: -11, note: ', only if your game is <1.4mb' },
-    { src: 'camera',          alt: 'Kodak Charmera',         name: 'kodak charmera',         c: '#db9591', s: 106, r: 6    },
-    { src: 'artofgamedesign', alt: 'The Art of Game Design', name: 'the art of game design', c: '#dbaf91', s: 92,  r: 13,  lead: 'that’s' },
-    { src: 'thumby',          alt: 'Thumby handheld',        name: 'thumby',                 c: '#97db91', s: 96,  r: -13, href: 'https://thumby.us/' },
-    { src: 'aseprite',        alt: 'Aseprite license',       name: 'aseprite license',       c: '#91a4db', s: 86,  r: -5,  lead: 'that’s an', href: 'https://www.aseprite.org/' },
-    { src: 'balatro',         alt: 'Balatro',                name: 'balatro',                c: '#b991db', s: 90,  r: 8,   game: true, href: 'https://store.steampowered.com/app/2379780/Balatro/' },
-    { src: 'stardew',         alt: 'Stardew Valley',         name: 'stardew valley',         c: '#97db91', s: 92,  r: -10, game: true, href: 'https://store.steampowered.com/app/413150/Stardew_Valley/' },
-    { src: 'undertale',       alt: 'Undertale',              name: 'undertale',              c: '#db9591', s: 88,  r: 6,   game: true, href: 'https://store.steampowered.com/app/391540/Undertale/' },
-    { src: 'vampiresurvivors',alt: 'Vampire Survivors',      name: 'vampire survivors',      c: '#dbaf91', s: 90,  r: -7,  game: true, href: 'https://store.steampowered.com/app/1794680/Vampire_Survivors/' },
-    { src: 'outerwilds',      alt: 'Outer Wilds',            name: 'outer wilds',            c: '#91a4db', s: 94,  r: 11,  game: true, href: 'https://store.steampowered.com/app/753640/Outer_Wilds/' },
-    { src: 'papersplease',    alt: 'Papers, Please',         name: 'papers, please',         c: '#b991db', s: 88,  r: -12, game: true, href: 'https://store.steampowered.com/app/239030/Papers_Please/' },
-    { src: 'pizzatower',      alt: 'Pizza Tower',            name: 'pizza tower',            c: '#97db91', s: 90,  r: 9,   game: true, href: 'https://store.steampowered.com/app/2231450/Pizza_Tower/' },
-    { src: 'tunic',           alt: 'TUNIC',                  name: 'tunic',                  c: '#db9591', s: 92,  r: -6,  game: true, href: 'https://store.steampowered.com/app/553420/TUNIC/' },
-    { src: 'pixelcomposer',   alt: 'Pixel Composer',         name: 'pixel composer',         c: '#dbaf91', s: 88,  r: -8,  lead: 'that’s', href: 'https://pixel-composer.com/' },
-    { src: 'lethalcompany',   alt: 'Lethal Company',         name: 'lethal company',         c: '#97db91', s: 92,  r: 9,   game: true, href: 'https://store.steampowered.com/app/1966720/Lethal_Company/' },
-    { src: 'po12',            alt: 'Teenage Engineering PO-12', name: 'teenage engineering po-12', c: '#91a4db', s: 90, r: -12, href: 'https://teenage.engineering/store/po-12' },
-    { src: 'wacom',           alt: 'Wacom drawing tablet',   name: 'basic wacom drawing tablet', c: '#b991db', s: 110, r: 6,  href: 'https://www.wacom.com/en-us/products/pen-tablets/wacom-intuos' },
-    { src: 'kenney',          alt: 'Kenney Game Assets All-in-1', name: 'kenney game asset bundle', c: '#db9591', s: 100, r: -7, lead: 'that’s the', href: 'https://kenney.itch.io/kenney-game-assets' },
-    { src: 'nanokey2',        alt: 'Korg nanoKEY2',           name: 'korg nanokey2',          c: '#91a4db', s: 124, r: -6,  href: 'https://www.korg.com/us/products/computergear/nanokey2/' },
-    { src: 'tshirt',          alt: 'Jame Gam t-shirt',        name: 'jame gam t-shirt',       c: '#97db91', s: 96,  r: 8,   note: ' (preorder, ships early aug)' }
-  ];
+  // randomised scatter (computed in JS, below) — no rows, no columns. The pool
+  // itself lives in $lib/prizes.js (shared with the /shop pick flow); the
+  // scatter only reads the per-item s (size) + r (tilt) fields from it.
+  // shopOnly items (late additions to the shop) stay out of the scatter.
+  const prizes = PRIZES.filter((p) => !p.shopOnly);
 
   let content;                                          // .prizes-content element
   let pos = $state(prizes.map(() => ({ x: 0, y: 0 }))); // per-item centre (px)
@@ -311,7 +284,7 @@
          hover, so showing it never shifts the page. -->
     <div class="prizes-caption" style={capW ? `width:${capW}px` : ''}>
       <p class="txt prizes-cap-main">every jam, you can choose any prize from the pool, + stickers &amp; a custom patch for this month&rsquo;s jam<br><span class="cap-faint">truly awesome games will get $100 steam publishing licenses</span></p>
-      <p class="txt prizes-cap-hover" class:show={hoverName} aria-hidden="true">{#if hoverName}{#if hoverGame}<span class="cap-lead">that&rsquo;s an</span> <span class="cap-name" style="color:{hoverColor}">indie game</span><span class="cap-lead">, you can pick 2</span>{:else}<span class="cap-lead">{hoverLead}</span> <span class="cap-name" style="color:{hoverColor}">{hoverName}</span>{#if hoverNote}<span class="cap-lead">{hoverNote}</span>{/if}{/if}{:else}&nbsp;{/if}</p>
+      <p class="txt prizes-cap-hover" class:show={hoverName} aria-hidden="true">{#if hoverName}{#if hoverGame}<span class="cap-lead">that&rsquo;s an</span> <span class="cap-name" style="color:{hoverColor}">indie game</span><span class="cap-lead">, you can pick {GAME_PICK_COUNT}</span>{:else}<span class="cap-lead">{hoverLead}</span> <span class="cap-name" style="color:{hoverColor}">{hoverName}</span>{#if hoverNote}<span class="cap-lead">{hoverNote}</span>{/if}{/if}{:else}&nbsp;{/if}</p>
     </div>
   </div>
 </section>

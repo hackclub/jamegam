@@ -29,6 +29,12 @@ export const config = {
     botToken: env.SLACK_BOT_TOKEN,
     channelId: env.SLACK_JAMEGAM_CHANNEL_ID // for conversations.invite; the channel URL lives in the Loops template
   },
+  shop: {
+    sessionSecret: env.SESSION_SECRET, // HMAC key for the shop session cookie
+    ordersTable: env.AIRTABLE_ORDERS_TABLE || 'Shop Orders',
+    submissionsTable: env.AIRTABLE_SUBMISSIONS_TABLE || 'Submission Form',
+    yswsTable: env.AIRTABLE_YSWS_TABLE || 'YSWS Project Submission' // the unified DB component
+  },
   origin: env.ORIGIN // optional; otherwise derived from the request origin
 };
 

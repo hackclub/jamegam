@@ -28,11 +28,11 @@
       // turns into status = 'done'. We only handle the error case here.
       if (!r.ok) {
         status = 'error';
-        message = r.error || 'hmm, that didn’t work - try again?';
+        message = r.error || 'hmm, that didn’t work. try again?';
       }
     } catch {
       status = 'error';
-      message = 'network hiccup - try again?';
+      message = 'network hiccup, try again?';
     }
   }
 </script>

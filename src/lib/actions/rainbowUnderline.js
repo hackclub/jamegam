@@ -98,7 +98,8 @@ function draw(word, canvas, opts) {
   const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--scale')) || 1;
   const art = Math.max(1, opts.art || 1);
   const f = (1 / scale) / art;                  // css px → art px (the original's pixel grid)
-  const radius = Math.max(2, Math.round(BRUSH / art)) / 2;
+  const brushD = opts.brush ?? BRUSH;           // per-word thickness (art px) for bigger type
+  const radius = Math.max(2, Math.round(brushD / art)) / 2;
 
   // baseline position inside each letter box, from font metrics
   const cs = getComputedStyle(els[0]);
@@ -195,7 +196,7 @@ function draw(word, canvas, opts) {
   ctx.drawImage(texImg, WIN.x, WIN.y, WIN.w, WIN.h, 0, 0, bw, bh);
   const img = ctx.getImageData(0, 0, bw, bh);
   const data = img.data;
-  const brush = buildBrush(Math.max(2, Math.round(BRUSH / art)));
+  const brush = buildBrush(Math.max(2, Math.round(brushD / art)));
   const mask = new Uint8Array(bw * bh);
   const stamp = (cx, cy) => {
     const ix = Math.round(cx), iy = Math.round(cy);

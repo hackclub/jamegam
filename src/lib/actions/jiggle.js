@@ -44,13 +44,17 @@ function buildNode(p) {
   // wiggle, live rainbow underline). Defaults to "prizes"; set per-node via
   // use:jiggle={{ prizeWord: 'ready' }} to give another word the same effect.
   const prizeWord = p.__jigglePrizeWord || 'prizes';
+  // rainbow: true = EVERY word gets the prizes treatment (rainbow flash, extra
+  // wiggle) - the logo-ish mode for standalone lines like the 404. No underline.
+  const rainbowAll = p.__jiggleRainbow === true;
+  const jigMul = p.__jiggleJig || 1; // extra wiggle multiplier on top of the treatment
   p.textContent = '';
   const sr = document.createElement('span'); sr.className = 'jiggle-sr'; sr.textContent = txt; p.appendChild(sr);
   const vis = document.createElement('span'); vis.className = 'jiggle-vis'; vis.setAttribute('aria-hidden', 'true'); p.appendChild(vis);
   txt.split(/(\s+)/).forEach((tok) => {
     if (tok === '') return;
     if (/^\s+$/.test(tok)) { vis.appendChild(document.createTextNode(tok)); return; } // real whitespace: wraps + copies
-    const isPrizes = tok.replace(/[^a-z]/gi, '').toLowerCase() === prizeWord;
+    const isPrizes = rainbowAll || tok.replace(/[^a-z]/gi, '').toLowerCase() === prizeWord;
     const w = document.createElement('span'); w.className = isPrizes ? 'jw jw-prizes' : 'jw';
     let ci = 0;
     for (const ch of tok) {
@@ -61,14 +65,14 @@ function buildNode(p) {
       chars.push({ el: c, p, base: base.slice(), flash, r: base[0], g: base[1], b: base[2],
                    x: 0, y: 0, vx: 0, vy: 0, armed: true, grazeColor: null, grazePeak: 0,
                    lastT: '', lastC: '', offX: 0, offY: 0, w: 0, h: 0,
-                   jig: isPrizes ? 2.5 : 1 });   // prizes wiggles much more than the rest
+                   jig: (isPrizes ? 2.5 : 1) * jigMul });   // prizes wiggles much more than the rest
       ci++;
     }
     vis.appendChild(w);
     // the prizes word gets the live rainbow underline — it follows the letters
     // and reacts as the jiggle physics move them. Opt out per-node with
     // use:jiggle={{ underline: false }} (the prizes-section title does this).
-    if (isPrizes && p.__jiggleUnderline !== false) w._ul = rainbowUnderline(w, { noHook: p.__jiggleUnderlineNoHook, extendLeft: p.__jiggleUnderlineExtendLeft });
+    if (isPrizes && !rainbowAll && p.__jiggleUnderline !== false) w._ul = rainbowUnderline(w, { noHook: p.__jiggleUnderlineNoHook, extendLeft: p.__jiggleUnderlineExtendLeft, brush: p.__jiggleUnderlineBrush });
   });
 }
 
@@ -174,6 +178,9 @@ export function jiggle(node, options = {}) {
   node.__jigglePrizeWord = options.prizeWord || 'prizes';
   node.__jiggleUnderlineNoHook = options.underlineNoHook === true;
   node.__jiggleUnderlineExtendLeft = options.underlineExtendLeft || 0;
+  node.__jiggleUnderlineBrush = options.underlineBrush; // art-px line thickness (default 4) for bigger type
+  node.__jiggleRainbow = options.rainbow === true; // whole line gets the prizes treatment
+  node.__jiggleJig = options.jig; // wiggle multiplier (1 = normal)
   nodes.add(node);
   ensureStarted();
   if (ready) { buildNode(node); measure(); } // late joiner: build immediately

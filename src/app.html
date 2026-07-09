@@ -4,6 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="/favicon.png" />
+  <!-- preload the pixel fonts: text is laid out with fallback-font metrics
+       until they arrive, so a late font load makes the whole page shift -->
+  <link rel="preload" as="font" type="font/ttf" href="/fonts/augiepixel.ttf" crossorigin />
+  <link rel="preload" as="font" type="font/otf" href="/fonts/csmarylinpixel.otf" crossorigin />
   <style>
     /* Boot guard, inlined so it applies on the FIRST paint, before app.css
        arrives. In dev Vite injects app.css via JS, so without this the page

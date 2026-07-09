@@ -21,15 +21,17 @@
 
   // `booting` is true while the opening logo animation plays — the glow stays
   // fully hidden until the page reveals, like the rest of the content.
-  let { booting = false } = $props();
+  // `pinned` keeps the gradient at full strength regardless of scroll (and
+  // drops the white bottom wash) — just the rainbow, no scroll behaviour.
+  let { booting = false, pinned = false } = $props();
 
   let scrollY = $state(0);
-  let scrollFade = $derived(Math.max(0, 1 - scrollY / FADE));
+  let scrollFade = $derived(pinned ? 1 : Math.max(0, 1 - scrollY / FADE));
   let opacity = $derived(PEAK * scrollFade);
   // page-bg fade: same start (1) and end point as the rainbow, but squared so
   // it drops off faster early — otherwise the opaque white lingers visibly
   // after the faint rainbow already looks gone.
-  let fadeOpacity = $derived(scrollFade * scrollFade);
+  let fadeOpacity = $derived(pinned ? 0 : scrollFade * scrollFade);
 </script>
 
 <svelte:window bind:scrollY />

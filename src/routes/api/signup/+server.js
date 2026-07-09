@@ -33,7 +33,7 @@ export async function POST({ request, getClientAddress }) {
   }
 
   if (!rateLimit(getClientAddress())) {
-    return json({ ok: false, error: 'slow down a sec - try again in a moment' }, { status: 429 });
+    return json({ ok: false, error: 'slow down a sec! try again in a moment' }, { status: 429 });
   }
 
   // 0. already signed up? short-circuit on a repeat submit (same email, or a
