@@ -308,7 +308,7 @@
       </p>
     </section>
   {:else if data.state === 'noaddress'}
-    <section class="panel">
+    <section class="panel addr-need">
       <p class="lede">
         your game{data.gameTitles.length ? ` "${data.gameTitles[0]}"` : ''} is approved! one thing
         first: i need a mailing address, since every prize ships with stickers and this month's
@@ -316,9 +316,8 @@
       </p>
       <ol class="steps">
         <li>
-          add your address to your
-          <a href="https://auth.hackclub.com" target="_blank" rel="noopener">hack club account</a>
-          (identity settings)
+          add an address to your hack club account at
+          <a href="https://auth.hackclub.com/addresses" target="_blank" rel="noopener">auth.hackclub.com/addresses</a>
         </li>
         <li>come back and sign in again so i can grab it fresh</li>
       </ol>
@@ -819,6 +818,20 @@
     padding-left: 1.4em;
     text-align: left;
     line-height: 1.5;
+  }
+
+  /* the noaddress state: the one slim state with real steps to follow, so it
+     breaks the centered-column mold - left-aligned, wider, steps spaced out */
+  .panel.addr-need {
+    max-width: calc(620px * var(--scale));
+    align-items: flex-start;
+    text-align: left;
+  }
+  .panel.addr-need .steps {
+    display: flex;
+    flex-direction: column;
+    gap: calc(12px * var(--scale));
+    line-height: 1.35;
   }
 
   /* actions are plain links (or link-shaped buttons) */
