@@ -30,6 +30,8 @@
   let submitting = $state(false);
   let errorMsg = $state('');
   let now = $state(Date.now()); // ticks every second for the deadline countdown
+  // with an order in place the grids collapse behind a "change my pick" link
+  let browsing = $state(false);
 
   if (data.order?.type === 'games') {
     gamePicks = data.order.games
@@ -139,6 +141,7 @@
       // the games order simply becomes the pick)
       if (body.type === 'prize') gamePicks = [];
       modal = null;
+      browsing = false; // collapse the grids back behind "change my pick"
       await invalidateAll(); // re-pull the order so the "your pick" block reflects it
       scrollTo({ top: 0, behavior: 'smooth' }); // the result lands at the top
     } catch (e) {
@@ -282,15 +285,15 @@
         <img src="/assets/signin.png" alt="sign in with hack club" />
       </a>
       {#if data.closed}
-        <p class="fine">heads up: the shop for the {jamMonth} jam has closed.</p>
+        <p class="fine">heads up: the shop for the {jamMonth} jam has closed!</p>
       {/if}
     </section>
   {:else if data.state === 'nosubmission'}
     <section class="panel">
       <p class="lede">
         hm, no {jamMonth} jam submission under {data.me.email}. if you submitted with a different
-        email, <a href="/api/auth/logout">sign out</a> and use that one. otherwise, ping me in
-        #jame-gam on slack and i'll sort it out.
+        email, <a href="/api/auth/logout">sign out</a> and use that one. otherwise, dm @augie on
+        slack and i'll sort it out.
       </p>
     </section>
   {:else if data.state === 'pending'}
@@ -304,67 +307,81 @@
     <section class="panel">
       <p class="lede">
         i couldn't approve your submission this time, so there's no prize pick here. if that seems
-        wrong, message me in #jame-gam on slack and i'll take another look!
+        wrong, dm @augie on slack and i'll take another look!
       </p>
     </section>
   {:else if data.state === 'noaddress'}
     <section class="panel addr-need">
       <p class="lede">
-        your game{data.gameTitles.length ? ` "${data.gameTitles[0]}"` : ''} is approved! one thing
-        first: i need a mailing address, since every prize ships with stickers and this month's
-        patch, even the digital ones.
+        your game{data.gameTitles.length ? ` "${data.gameTitles[0]}"` : ''} is approved! before you
+        can pick a prize, you need to set your mailing address on
+        <a href="https://auth.hackclub.com/addresses" target="_blank" rel="noopener">auth.hackclub.com/addresses</a>
       </p>
-      <ol class="steps">
-        <li>
-          add an address to your hack club account at
-          <a href="https://auth.hackclub.com/addresses" target="_blank" rel="noopener">auth.hackclub.com/addresses</a>
-        </li>
-        <li>come back and sign in again so i can grab it fresh</li>
-      </ol>
+      <p class="lede">once it's set, come back and sign in again so i can grab it fresh.</p>
       <a class="go" href="/api/auth/login?flow=shop">i added it, check again</a>
     </section>
   {:else if data.state === 'closed'}
     <section class="panel">
       <p class="lede">
-        the shop for the {jamMonth} jam closed {data.closesText} and you hadn't picked yet, sorry!
-        message me in #jame-gam on slack and i'll see what i can do.
+        the shop for the {jamMonth} jam closed {data.closesText}! dm @augie on slack if you forgot
+        to pick a prize or if you have questions
       </p>
     </section>
   {:else if data.state === 'error'}
     <section class="panel">
-      <p class="lede">something broke on my end! refresh to try again, or ping me in #jame-gam.</p>
+      <p class="lede">something broke on our end! refresh to try again, or ask in #jame-gam.</p>
     </section>
   {:else if data.state === 'shop'}
     {#if data.locked}
-      <!-- locked order (shop closed / already being fulfilled): read-only summary -->
-      <section class="panel">
-        <p class="lede">
-          {#if data.order.type === 'games'}
-            you picked <strong>{data.order.games.join(', ')}</strong>.
-          {:else}
-            you picked
-            <strong>{data.order.prize}{data.order.shirtSize ? ` (${data.order.shirtSize})` : ''}</strong>.
-          {/if}
-          stickers + this month's patch ride along either way.
-        </p>
-        <p class="fine">
-          ships to: {data.order.address.line1}{data.order.address.line2
-            ? `, ${data.order.address.line2}`
-            : ''}, {data.order.address.city}{data.order.address.region
-            ? `, ${data.order.address.region}`
-            : ''}
-          {data.order.address.postal}, {data.order.address.country}
-        </p>
-        <p class="fine">
-          {data.order.status === 'fulfilled'
-            ? 'this one is already on its way.'
-            : data.order.status === 'processing'
-              ? 'this one is being fulfilled, so the pick is final.'
-              : data.order.status === 'canceled'
-                ? 'your order was canceled, ping me if that seems wrong!'
-                : `the shop has closed, so this pick is final.`}
-        </p>
-      </section>
+      <!-- locked order: the rainbow your-pick card, read-only (no address
+           link, no change-my-pick). a canceled order collapses to one line. -->
+      {#if data.order.status === 'canceled'}
+        <section class="panel">
+          <p class="lede">
+            your order for {jamMonth} was cancelled, dm @augie if that sounds wrong!
+          </p>
+        </section>
+      {:else}
+        <section class="picked">
+          <div class="picked-card" class:stack={orderedSrcs.length > 1}>
+            <div
+              class="picked-border rainbow-box"
+              use:rainbowBorder={{ bleed: 8, notch: false }}
+              aria-hidden="true"
+            ></div>
+            <div class="picked-fig" class:multi={orderedSrcs.length > 1}>
+              {#each orderedSrcs as src (src)}
+                <span class="pk-sq" style="--rot:{rotOf(src)}deg">
+                  <img src={hdSrc(src)} alt="" />
+                </span>
+              {/each}
+            </div>
+            <div class="picked-info">
+              <p class="picked-label">your pick:</p>
+              <p class="picked-name">
+                {data.order.type === 'games'
+                  ? data.order.games.join(', ')
+                  : data.order.prize + (data.order.shirtSize ? ` (${data.order.shirtSize})` : '')}
+              </p>
+              <p class="fine">
+                ships to: {data.order.address.line1}{data.order.address.line2
+                  ? `, ${data.order.address.line2}`
+                  : ''}, {data.order.address.city}{data.order.address.region
+                  ? `, ${data.order.address.region}`
+                  : ''}
+                {data.order.address.postal}, {data.order.address.country}
+              </p>
+              <p class="fine">
+                {data.order.status === 'fulfilled'
+                  ? `your prize for ${jamMonth} has been marked as fulfilled!`
+                  : data.order.status === 'processing'
+                    ? `your prize for ${jamMonth} is being fulfilled!`
+                    : `the shop for ${jamMonth} has closed!`}
+              </p>
+            </div>
+          </div>
+        </section>
+      {/if}
     {:else}
       <!-- ===== the pick UI (whole page scrolls; nothing sticky) ===== -->
 
@@ -380,8 +397,12 @@
         <!-- shipping note lives in the your-pick card once an order exists -->
         {#if address && !data.order}
           <p class="ship-note">
-            {noPhysical ? 'not shipping you anything physical' : `shipping to ${address.line1}, ${address.city}`}
-            <button class="go" type="button" onclick={() => (modal = { kind: 'address' })}>change</button>
+            {#if !noPhysical}shipping to{/if}
+            <button class="addr-edit" type="button" onclick={() => (modal = { kind: 'address' })}>
+              {noPhysical
+                ? 'not shipping you anything physical'
+                : `${address.line1}, ${address.city}`}<img class="pencil" src="/assets/pencil.png" alt="" />
+            </button>
           </p>
         {/if}
       </header>
@@ -411,22 +432,33 @@
                   : data.order.prize + (data.order.shirtSize ? ` (${data.order.shirtSize})` : '')}
               </p>
               <p class="fine">
-                {noPhysical
-                  ? 'not shipping you anything physical'
-                  : `ships to: ${data.order.address.line1}, ${data.order.address.city}, ${data.order.address.country}`}
-                <button class="go" type="button" onclick={() => (modal = { kind: 'address' })}>change</button>
+                {#if !noPhysical}ships to:{/if}
+                <button class="addr-edit" type="button" onclick={() => (modal = { kind: 'address' })}>
+                  {noPhysical
+                    ? 'not shipping you anything physical'
+                    : `${data.order.address.line1}, ${data.order.address.city}, ${data.order.address.country}`}<img class="pencil" src="/assets/pencil.png" alt="" />
+                </button>
               </p>
-              <p class="fine">you can switch your pick below before i get around to fulfilling it ;)</p>
+              {#if browsing}
+                <p class="fine">you can switch your pick below before i get around to fulfilling it ;)</p>
+              {/if}
             </div>
           </div>
+          {#if !browsing}
+            <button class="go picked-change" type="button" onclick={() => (browsing = true)}>
+              change my pick<img class="chev" src="/assets/chevron.png" alt="" />
+            </button>
+          {/if}
         </section>
       {/if}
+
+      {#if !data.order || browsing}
 
       <section class="group">
         <!-- "how it works"-style header: tag at the left, line trailing right -->
         <div class="gh">
           <span class="gh-tag"><h2 class="txt gh-title">the stuff</h2></span>
-          <span class="gh-line" aria-hidden="true"><img src="/assets/underline550.png" alt="" /></span>
+          <span class="gh-line" aria-hidden="true"></span>
         </div>
         <p class="gh-sub"><span class="gh-sub-t">pick any one</span></p>
         <ul class="grid">
@@ -452,7 +484,7 @@
       <section class="group">
         <!-- "questions?"-style header: line filling left, tag at the right -->
         <div class="gh">
-          <span class="gh-line" aria-hidden="true"><img src="/assets/underline550.png" alt="" /></span>
+          <span class="gh-line" aria-hidden="true"></span>
           <span class="gh-tag"><h2 class="txt gh-title">indie games</h2></span>
         </div>
         <p class="gh-sub">
@@ -478,6 +510,7 @@
           {/each}
         </ul>
       </section>
+      {/if}
     {/if}
   {/if}
 
@@ -555,9 +588,8 @@
           {#if errorMsg}<p class="err">{errorMsg}</p>{/if}
           <div class="addr-foot">
             <p class="m-note">
-              wrong address? add one on
-              <a href="https://auth.hackclub.com" target="_blank" rel="noopener">auth.hackclub.com</a>
-              and sign in again
+              wrong address? edit it on
+              <a href="https://auth.hackclub.com/addresses" target="_blank" rel="noopener">auth.hackclub.com</a>
             </p>
             <button class="cta" type="button" disabled={submitting} onclick={confirmAddress}>
               {submitting ? 'saving...' : data.order ? 'update my order!' : 'sounds good!'}
@@ -754,6 +786,10 @@
   .page.slim .panel {
     margin-block: auto;
   }
+  /* the locked-order card centres like the slim panels do */
+  .page.slim .picked {
+    margin-block: auto;
+  }
 
   .head {
     text-align: center;
@@ -848,6 +884,43 @@
     opacity: 0.4;
   }
 
+  /* the shipping address IS the edit control: a red link with augie's pencil
+     doodle hanging off the end (opens the address modal) */
+  .addr-edit {
+    font-family: inherit;
+    font-size: inherit;
+    color: var(--accent);
+    background: none;
+    border: none;
+    padding: 0;
+    text-align: inherit;
+    text-decoration: underline;
+  }
+  .pencil {
+    height: calc(19px * var(--scale));
+    width: auto;
+    image-rendering: pixelated;
+    display: inline-block;
+    vertical-align: baseline;
+    margin-left: calc(7px * var(--scale));
+  }
+
+  /* "change my pick" - sits well clear of the rainbow card, dropdown chevron
+     hinting at the grids it reveals */
+  .picked-change {
+    margin-top: calc(38px * var(--scale));
+    color: var(--ink);
+    text-decoration-color: rgba(80, 75, 73, 0.3);
+  }
+  .chev {
+    height: calc(10px * var(--scale));
+    width: auto;
+    image-rendering: pixelated;
+    display: inline-block;
+    vertical-align: calc(1px * var(--scale));
+    margin-left: calc(8px * var(--scale));
+  }
+
   /* "sign in with hack club" - image button, same treatment as the landing
      page's "i'm in" (bare art, opacity lift on hover) */
   .signin {
@@ -884,6 +957,13 @@
     margin: calc(56px * var(--scale)) auto 0;
     text-align: center;
     color: rgba(80, 75, 73, 0.85);
+  }
+  /* short shop pages (grids collapsed): the free space goes above this line so
+     it always hugs the page bottom. Slim states keep their own auto-margin
+     centering, so only the full shop view gets the pin. */
+  .page:not(.slim) .who-bottom {
+    margin-top: auto;
+    padding-top: calc(56px * var(--scale));
   }
 
   .fine {
@@ -1044,18 +1124,18 @@
     line-height: 1;
     white-space: nowrap;
   }
+  /* the wiggle tiles at its natural scale (never stretched to the row width,
+     which upscaled it enough to crop the peaks top/bottom) */
   .gh-line {
     flex: 1 1 auto;
     height: calc(14px * var(--scale));
     min-width: calc(40px * var(--scale));
-    overflow: hidden;
+    background: url('/assets/underline550.png') left center repeat-x;
+    background-size: auto 100%;
+    image-rendering: pixelated;
   }
   .gh-line img {
-    width: 100%;
-    height: calc(14px * var(--scale));
-    object-fit: cover; /* crop to width rather than squish */
-    object-position: left center;
-    display: block;
+    display: none; /* kept in the DOM for the landing-parity markup */
   }
   /* the pick-note, centered on its own line under the header row */
   .gh-sub {
