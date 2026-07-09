@@ -510,6 +510,11 @@
           {/each}
         </ul>
       </section>
+
+      <p class="suggest-note">
+        don't see anything you like?
+        <a href="https://forms.hackclub.com/jame-gam-prize-suggestion" target="_blank" rel="noopener">suggest a prize!</a>
+      </p>
       {/if}
     {/if}
   {/if}
@@ -570,7 +575,8 @@
                 }}
               >
                 <span class="mark" aria-hidden="true">[{String(a.id) === String(addressId) && !noPhysical ? 'x' : ' '}]</span>
-                {a.line1}{a.line2 ? `, ${a.line2}` : ''}, {a.city}{a.region ? `, ${a.region}` : ''}, {a.country}
+                {a.line1}{a.line2 ? `, ${a.line2}` : ''}, {a.city}{a.region ? `, ${a.region}` : ''}, {a.country}{#if !a.phone}
+                  <span class="no-phone">(needs a phone number!)</span>{/if}
               </button>
             {/each}
             <button
@@ -968,6 +974,13 @@
 
   .fine {
     margin: 0;
+    color: rgba(80, 75, 73, 0.55);
+  }
+  /* the suggestion-form nudge under the games grid, for anyone who scrolled
+     the whole pool without clicking */
+  .suggest-note {
+    margin: calc(44px * var(--scale)) 0 0;
+    text-align: center;
     color: rgba(80, 75, 73, 0.55);
   }
   .err {
@@ -1548,6 +1561,11 @@
   .addr-row .mark {
     flex: none;
     white-space: pre; /* keep the [ ] box width stable when empty */
+  }
+  /* shipping needs a phone number on the label; flag addresses missing one */
+  .addr-row .no-phone {
+    color: var(--accent);
+    white-space: nowrap;
   }
   .m-games {
     display: flex;

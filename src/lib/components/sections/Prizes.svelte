@@ -283,8 +283,9 @@
          (kept in the layout but invisible) that reveals "that's a <prize>" on
          hover, so showing it never shifts the page. -->
     <div class="prizes-caption" style={capW ? `width:${capW}px` : ''}>
-      <p class="txt prizes-cap-main">every jam, you can choose any prize from the pool, + stickers &amp; a custom patch for this month&rsquo;s jam<br><span class="cap-faint">truly awesome games will get $100 steam publishing licenses</span></p>
+      <p class="txt prizes-cap-main">every jam, you can choose any prize from the pool, + stickers &amp; a custom patch for this month&rsquo;s jam</p>
       <p class="txt prizes-cap-hover" class:show={hoverName} aria-hidden="true">{#if hoverName}{#if hoverGame}<span class="cap-lead">that&rsquo;s an</span> <span class="cap-name" style="color:{hoverColor}">indie game</span><span class="cap-lead">, you can pick {GAME_PICK_COUNT}</span>{:else}<span class="cap-lead">{hoverLead}</span> <span class="cap-name" style="color:{hoverColor}">{hoverName}</span>{#if hoverNote}<span class="cap-lead">{hoverNote}</span>{/if}{/if}{:else}&nbsp;{/if}</p>
+      <p class="txt cap-suggest">got a prize idea? <a href="https://forms.hackclub.com/jame-gam-prize-suggestion" target="_blank" rel="noopener">suggest one!</a></p>
     </div>
   </div>
 </section>
@@ -420,7 +421,12 @@
   }
   .prizes-cap-hover.show { opacity: 1; }
   .cap-lead { color: #504b49; opacity: 0.45; }   /* "that's a" — deemphasized */
-  .cap-faint { color: #504b49; opacity: 0.4; }   /* the "$100 steam publishing licenses" footnote */
+  /* suggestion-form line: sits under the hover-reveal line with extra air.
+     faded via color (not opacity) so the accent link inside stays full red */
+  .cap-suggest {
+    margin-top: calc(26px * var(--scale));
+    color: rgba(80, 75, 73, 0.4);
+  }
   .cap-name { /* colour set inline per prize accent */ }
 
   /* deemphasized "…more to come" pinned to the bottom inside the border */

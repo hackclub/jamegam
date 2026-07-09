@@ -99,6 +99,16 @@ export async function POST({ request, cookies, getClientAddress }) {
       { status: 409 }
     );
   }
+  // carriers want a phone number on the label, so shipping requires one
+  if (body.noPhysical !== true && !addr.phone) {
+    return json(
+      {
+        ok: false,
+        error: 'your address needs a phone number for shipping! add it at auth.hackclub.com, then sign in again'
+      },
+      { status: 409 }
+    );
+  }
 
   const fields = {
     order_name: `${`${session.firstName ?? ''} ${session.lastName ?? ''}`.trim() || session.email} - ${SHOP.jam}`,
