@@ -4,14 +4,14 @@
 // note: jame gam does not run these jams, it enters them as a community, so the
 // schema built from this describes our participation, not the jam itself.
 export const JAM = {
-  name: 'the very serious juniper dev game jam',
-  startDate: '2026-06-19T14:00:00Z',
-  endDate: '2026-06-27T05:59:00Z',
-  itchUrl: 'https://itch.io/jam/theveryseriousjuniperdevgamejam',
+  name: 'GMTK Game Jam 2026',
+  startDate: '2026-07-22T17:00:00Z',
+  endDate: '2026-07-26T17:00:00Z',
+  itchUrl: 'https://itch.io/jam/gmtk-jam-2026',
   // record id of this jam's row in the "Jams" Airtable table; new signups get
   // linked to it via the Sign Ups `jam` field. create the new jam's row each
   // month and paste its rec... id here.
-  airtableRecordId: 'recsBvD5RZuwAvruo'
+  airtableRecordId: 'recvXkfAJABcCqSVt'
 };
 
 // true in the gap after a jam ends and before JAM above is updated for the next
