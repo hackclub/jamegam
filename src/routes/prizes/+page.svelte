@@ -533,6 +533,20 @@
   {/if}
 </main>
 
+<!-- order errors, shared by the modal's three spots. the API's "fix it on
+     auth.hackclub.com" errors end in "sign in again" - linkify that phrase to
+     the shop sign-in, which re-pulls their HCA data into a fresh session (the
+     usual fix: they added the phone/address after signing in here) -->
+{#snippet errline()}
+  {#if errorMsg}
+    <p class="err">
+      {#each errorMsg.split('sign in again') as part, i (i)}
+        {#if i}<a href="/api/auth/login?flow=shop">sign in again</a>{/if}{part}
+      {/each}
+    </p>
+  {/if}
+{/snippet}
+
 <!-- ===== the item modal (info + order/add) ===== -->
 {#if modal}
   <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
@@ -591,7 +605,7 @@
               don't ship me anything physical!
             </button>
           </div>
-          {#if errorMsg}<p class="err">{errorMsg}</p>{/if}
+          {@render errline()}
           <div class="addr-foot">
             <p class="m-note">
               wrong address? edit it on
@@ -612,7 +626,7 @@
             {/each}
           </div>
           <p class="m-info">{pickNames.join(', ')}</p>
-          {#if errorMsg}<p class="err">{errorMsg}</p>{/if}
+          {@render errline()}
           <div class="m-actions">
             <button class="cta" type="button" disabled={submitting} onclick={orderGames}>
               {submitting ? 'ordering...' : `order these ${GAME_PICK_COUNT}!`}
@@ -664,7 +678,7 @@
             <p class="m-note">this is a placeholder, <span class="u">this is not the shirt design</span>. us sizing!</p>
           {/if}
 
-          {#if errorMsg}<p class="err">{errorMsg}</p>{/if}
+          {@render errline()}
 
           {#if modal.kind === 'game'}
             {#if gamePicks.includes(modal.p.src)}
