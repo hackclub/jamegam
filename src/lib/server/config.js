@@ -12,7 +12,11 @@ export const config = {
   loops: {
     apiKey: env.LOOPS_API_KEY,
     txHasAccount: env.LOOPS_TX_WELCOME_HAS_ACCOUNT, // low-key "come hang out"
-    txNoAccount: env.LOOPS_TX_WELCOME_NO_ACCOUNT // "[action needed]" create account
+    txNoAccount: env.LOOPS_TX_WELCOME_NO_ACCOUNT, // "[action needed]" create account
+    // between-jams variants (jam ended, next one not announced yet). ids default
+    // in code so no Vercel provisioning is needed; env can still override.
+    txBetweenHasAccount: env.LOOPS_TX_BETWEEN_HAS_ACCOUNT || 'cmrdt6ljn00c20jzqrwzw3zlu',
+    txBetweenNoAccount: env.LOOPS_TX_BETWEEN_NO_ACCOUNT || 'cmrdtc0w100ga0j0gwjpei2ip'
   },
   hca: {
     issuer: (env.HCA_ISSUER || 'https://auth.hackclub.com').replace(/\/$/, ''),

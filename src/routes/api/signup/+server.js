@@ -8,7 +8,7 @@ import { sendTransactional } from '$lib/server/loops.js';
 import { lookupSlackIdByEmail, inviteToChannel } from '$lib/server/slack.js';
 import { rateLimit } from '$lib/server/ratelimit.js';
 import { config, F } from '$lib/server/config.js';
-import { JAM } from '$lib/jam.js';
+import { JAM, isBetweenJams } from '$lib/jam.js';
 
 export const prerender = false;
 
@@ -86,9 +86,14 @@ export async function POST({ request, getClientAddress }) {
 
   // 4. welcome email (transactional). Best-effort: the signup is already saved
   //    and on the list, so a send failure is logged but still reports success.
+  //    the normal emails assume an upcoming/running jam; between jams (ended,
+  //    next not announced) send the "we'll be back" variants instead.
+  const tx = isBetweenJams()
+    ? (hasAccount ? config.loops.txBetweenHasAccount : config.loops.txBetweenNoAccount)
+    : (hasAccount ? config.loops.txHasAccount : config.loops.txNoAccount);
   try {
     await sendTransactional({
-      transactionalId: hasAccount ? config.loops.txHasAccount : config.loops.txNoAccount,
+      transactionalId: tx,
       email,
       dataVariables: {
         name: 'chat', // first email: we only have their email, not their name

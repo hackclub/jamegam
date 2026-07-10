@@ -13,3 +13,10 @@ export const JAM = {
   // month and paste its rec... id here.
   airtableRecordId: 'recsBvD5RZuwAvruo'
 };
+
+// true in the gap after a jam ends and before JAM above is updated for the next
+// one (updating JAM pushes endDate back into the future, flipping this off).
+// same condition that drives the "it's over!" state in ThisMonth.svelte.
+export function isBetweenJams(now = Date.now()) {
+  return now > Date.parse(JAM.endDate);
+}
