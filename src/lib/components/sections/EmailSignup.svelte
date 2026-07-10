@@ -46,7 +46,7 @@
 
      Mapping reminder: inside .col, an element at original comp x sits at
      left:(x-264)px — used for the wide-only decorations below. -->
-<section class="sec sec-email">
+<section id="signup" class="sec sec-email">
   <div class="col email-inner">
     <div class="email-field">
       {#if status === 'done'}
@@ -167,7 +167,8 @@
     font-size: calc(31px * var(--scale));
     color: #7a7470;
   }
-  .email-error { font-family: 'CS Marylin Pixel', 'augiepixel', sans-serif; }
+  /* display text, not an input: augiepixel (marylin is only for typeable fields) */
+  .email-error { font-family: 'augiepixel', sans-serif; font-size: calc(26px * var(--scale)); }
   .email-error { color: #c2566e; margin-top: calc(8px * var(--scale)); }
 
   /* "i'm in" button — bare image button */

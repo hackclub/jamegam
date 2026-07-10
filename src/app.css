@@ -218,6 +218,8 @@ html.overscrolling #page {
   flex-direction: column;
   align-items: center;
   z-index: 1;
+  /* breathing room when jumped to via a /#anchor link */
+  scroll-margin-top: 32px;
 }
 .col {
   position: relative;

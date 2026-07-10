@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { prefillEmail } from '$lib/prefill.js';
+  import { signup, submitSignup } from '$lib/signup.js';
 
   let videoEl;
   let onScreen = false; // set by the IntersectionObserver; only play while visible
@@ -47,31 +48,27 @@
   async function submit(e) {
     e.preventDefault();
     const v = email.trim();
-    if (!v || status === 'loading') return;
+    if (!v || status === 'loading' || status === 'done') return;
     status = 'loading';
     message = '';
     try {
-      const res = await fetch('/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: v, company })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.ok) {
+      const r = await submitSignup({ email: v, company });
+      // success flips the shared `signup` store (see subscription below), which
+      // turns into status = 'done' here AND in the other boxes. Errors stay local.
+      if (!r.ok) {
         status = 'error';
-        message = data.error || 'hmm, that didn’t work - try again?';
-        return;
+        message = r.error || 'hmm, that didn’t work. try again?';
       }
-      status = 'done';
-      message = "you’re in! check your email :]";
     } catch {
       status = 'error';
-      message = 'network hiccup - try again?';
+      message = 'network hiccup, try again?';
     }
   }
 
   // prefill from a logged-in Hack Club session, but never clobber what they typed
   onMount(() => prefillEmail.subscribe((v) => { if (v && !email) email = v; }));
+  // if any box on the page already signed up, show "you're in" here too
+  onMount(() => signup.subscribe((s) => { if (s.done) { status = 'done'; message = s.message; } }));
 
   onMount(() => {
     // Ensure the muted *property* is set (not just the SSR'd attribute) — some
@@ -114,7 +111,7 @@
 
      Mapping reminder: inside .col, an element at original comp x sits at
      left:(x-264)px — used for the wide-only decoration below. -->
-<section class="sec sec-how">
+<section id="how-it-works" class="sec sec-how">
   <div class="col how-inner">
     <!-- title sitting on its sketch box, with the hand-underline trailing right -->
     <div class="how-title">
@@ -403,7 +400,8 @@
   }
   #how-email-input::placeholder { color: #d9d4d8; opacity: 1; }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-  .how-email-msg { font-family: 'CS Marylin Pixel', 'augiepixel', sans-serif; font-size: calc(24px * var(--scale)); color: #7a7470; }
+  /* display text, not an input: augiepixel (marylin is only for typeable fields) */
+  .how-email-msg { font-family: 'augiepixel', sans-serif; font-size: calc(26px * var(--scale)); color: #7a7470; }
   .how-email-err { color: #c2566e; }
   .how-email-im {
     flex: none;

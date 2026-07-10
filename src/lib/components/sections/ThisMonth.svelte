@@ -36,7 +36,7 @@
         const end = new Date(END), today = new Date(now);
         const sameMonth = end.getUTCFullYear() === today.getUTCFullYear() && end.getUTCMonth() === today.getUTCMonth();
         monthEl.textContent = sameMonth ? "this month we crashed" : "last month we crashed";
-        durEl.innerHTML = "this <span style=\"color:#ac534e;\">very serious</span> jam ran for a week!";
+        durEl.innerHTML = "this jam ran for <span style=\"color:#9a2982;\">4 days</span>!";
         nextEl.style.display = "";   // reveal the "join us next month" line
         clamp();
       }
@@ -48,42 +48,48 @@
 </script>
 
 <!-- ===== THIS MONTH =====
-     Centre column flows normally: headline -> juniper title block -> video (on
-     mid/mobile it sits in flow here, centred) -> countdown -> duration -> disclaimer.
-     On WIDE the video is pulled out of flow and anchored to the right of the column
-     (comp x843 -> left:(843-264)=579px inside .col), keeping its rotation.
-
-     Mapping reminder: inside .col, an element at original comp x sits at
-     left:(x-264)px. -->
-<section class="sec sec-month">
+     Centre column flows normally: headline -> title row -> countdown ->
+     duration -> disclaimer. The title row holds the bordered jam title box and
+     the video as two side-by-side columns on wide screens (>=960px); below
+     that they stack (box, then video) in the centred flow. -->
+<section id="this-month" class="sec sec-month">
   <div class="col month-inner">
     <h2 bind:this={monthEl} id="jam-month" class="txt month-head">this month we&rsquo;re crashing</h2>
 
-    <!-- juniper title: two stacked transparent layers (figma node 1:45) —
-         the gray border as one whole image (always connects its corners) with
-         the high-res coloured text card layered on top, so the lettering stays
-         crisp at any size. Both reflow as percentages of the box. -->
-    <a class="juniper" href="https://itch.io/jam/theveryseriousjuniperdevgamejam" target="_blank" rel="noopener" aria-label="the very serious juniper dev game jam on itch.io">
-      <img class="juniper-card" src="/assets/juniper_text.png" alt="the very serious juniper dev game jam" />
-      <img class="juniper-border" src="/assets/juniper_border.png" alt="" aria-hidden="true" />
-    </a>
+    <div class="titlerow">
+      <!-- jam title: two stacked transparent layers (same construction as the
+           june comp, figma node 1:45): the gray hand-drawn border as one whole
+           image (always connects its corners) with this month's title art
+           layered inside, over a faint tiling topo pattern. GMTK's official
+           lockup, recoloured to the site's ink gray for the light background
+           (purple 2026 block kept), contain-fit since it's a taller lockup
+           than a wide text card. -->
+      <a class="jamtitle" href={JAM.itchUrl} target="_blank" rel="noopener" aria-label="{JAM.name} on itch.io">
+        <span class="jamtitle-bg" aria-hidden="true"></span>
+        <img class="jamtitle-card" src="/assets/gmtk_text.png" alt={JAM.name} />
+        <span class="jamtitle-border" aria-hidden="true"></span>
+      </a>
 
-    <!-- video player: rotated photo + separately-rotated play icon on top (figma node 1:53).
-         In flow + centred on mid/mobile; absolutely anchored right on wide. -->
-    <a class="video-link" href="https://www.youtube.com/watch?v=UuSCzaqoZmM" target="_blank" rel="noopener" aria-label="watch the video">
-      <span class="el el-vidphoto"><img src="/assets/video_photo.png" alt="game jam :)" /></span>
-      <span class="el el-vidplay"><img src="/assets/video_play.png" alt="play" /></span>
-    </a>
+      <!-- video player: rotated photo + separately-rotated play icon on top
+           (figma node 1:53). Right column of the title row on wide screens; in
+           the stacked flow below 960px. Points at this month's jam video
+           (GMTK's 2026 announcement). The "watch the video" doodle is pinned
+           to the player's bottom-right corner (wide only). -->
+      <div class="vidcol">
+        <a class="video-link" href="https://www.youtube.com/watch?v=MAu3Yoi7KvE" target="_blank" rel="noopener" aria-label="watch the video">
+          <span class="el el-vidphoto"><img src="/assets/video_photo_gmtk.png" alt="the GMTK game jam returns for 2026" /></span>
+          <span class="el el-vidplay"><img src="/assets/video_play.png" alt="play" /></span>
+        </a>
+        <span class="deco month-watch"><img src="/assets/dec556.png" alt="watch the video" /></span>
+      </div>
+    </div>
 
     <!-- countdown -->
     <p bind:this={countdownEl} id="countdown" class="txt month-count">in 7:18:40:53</p>
-    <p bind:this={durEl} id="jam-duration" class="txt month-dur">this <span style="color:#ac534e;">very serious</span> jam will run for a week!</p>
+    <p bind:this={durEl} id="jam-duration" class="txt month-dur">this jam will run for <span style="color:#9a2982;">4 days</span>!</p>
     <!-- post-jam only: revealed by tick() once the jam has ended (hidden until then) -->
     <p bind:this={nextEl} id="jam-next" class="txt month-next" style="display:none;">join us next month for another jam!</p>
-    <p class="txt month-disclaimer">(not affiliated with juniper dev)</p>
-
-    <!-- wide-only "watch the video" doodle, pointing at the video -->
-    <span class="deco month-watch"><img src="/assets/dec556.png" alt="watch the video" /></span>
+    <p class="txt month-disclaimer">(not affiliated with game maker&rsquo;s toolkit)</p>
   </div>
 </section>
 
@@ -105,63 +111,95 @@
   .month-head {
     align-self: center;
     width: 100%;
-    max-width: var(--col);   /* match the juniper border box so it lines up */
+    max-width: var(--col);   /* roughly match the title row's width so it lines up */
     text-align: left;
     font-weight: normal;     /* it's an <h2>; keep the single-weight pixel look (no faux-bold) */
     font-size: var(--t-title);
     color: #504b49;
     line-height: 1.05;
   }
-  /* on wide, the juniper box reclaims the gutter — widen the headline to match
-     so its left edge stays flush with the border. */
+  /* on wide, the title row is a touch wider than the column, so widen the
+     headline to match and keep its left edge near the border's. */
   @media (min-width: 800px) {
     .month-head { max-width: calc(var(--col) + 2 * var(--col-pad)); }
   }
 
-  /* ===== juniper title block =====
-     Two stacked transparent layers in a box that keeps the 742×216 ratio:
-       • .juniper-border — the whole gray hand-drawn border as one image (so it
-         always meets its corners), stretched to fill.
-       • .juniper-card   — the high-res coloured text, placed at the comp's card
-         rect (percentages of the box) so it stays crisp when scaled.
-     Both inherit the global pixelated image-rendering (no per-image override). */
-  .juniper {
+  /* ===== title row (box + video) =====
+     Stacked and centred by default; from 960px up it becomes two side-by-side
+     columns (the bordered box, then the video), vertically centred on each
+     other and centred as a group. */
+  .titlerow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: calc(-18px * var(--scale));
+  }
+  @media (min-width: 960px) {
+    .titlerow {
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    /* neither column may squeeze when the row overflows the centre column a
+       little; the overflow spreads symmetrically into the gutters instead. */
+    .titlerow > * { flex-shrink: 0; }
+  }
+
+  /* ===== jam title block =====
+     Three stacked layers in a 2:1 box (taller and narrower than the june
+     comp's 742x216, sized for the GMTK lockup):
+       • .jamtitle-bg:     faint tiling topo pattern, clipped to the border's
+         inner area.
+       • .jamtitle-card:   this month's title art, contain-fit and centred.
+       • .jamtitle-border: the gray hand-drawn border, 9-sliced with
+         border-image so the stroke thickness is NEVER squished or stretched
+         non-uniformly (pixel art rule). Slice bands are in source px of
+         title_border.png (1483x431); border widths are in cqw so the whole
+         drawing scales proportionally with the box, like an image would. */
+  .jamtitle {
     display: block;
     position: relative;
-    width: 100%;
-    max-width: var(--col);     /* grow up to the column max-width (the magenta guide), no wider */
-    margin-top: calc(-18px * var(--scale));
-    aspect-ratio: 742 / 216;
+    container-type: inline-size;   /* gives the children cqw units */
+    width: min(100%, calc(580px * var(--scale)));
+    aspect-ratio: 2 / 1;
   }
-  /* on wider screens, reclaim the column's gutter so the (slightly tilted) box
-     reaches the full max-width for a bit more visual weight. Centred via the
-     flex parent, so the overflow spreads symmetrically into the gutter. */
-  @media (min-width: 800px) {
-    .juniper { width: calc(100% + 2 * var(--col-pad)); }
-  }
-  /* smaller screens: full-bleed the title block like the how-it-works video.
-     align-items:center on .month-inner centres the over-wide box on the viewport
-     (it overflows the column symmetrically), so no left/translate offset is
-     needed. Pushed slightly past 100vw on purpose: the box reads as tilted, so
-     letting the angled corner tips run off the edges keeps the lettering itself
-     filling the full width. #page clips overflow-x, so no scrollbar. */
-  @media (max-width: 800px) {
-    .juniper { width: 104vw; max-width: 104vw; }
-  }
-  .juniper-border {
+  .jamtitle-border {
     position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    z-index: 2;              /* border draws OVER the text layer */
+    z-index: 2;              /* border draws OVER the card layer */
+    pointer-events: none;
+    border-style: solid;
+    border-color: transparent;
+    border-width: 7.4cqw 2.9cqw 6.2cqw 3.4cqw;   /* = slice px * (43/95)ish, per side */
+    border-image: url('/assets/title_border.png') 95 38 81 45 stretch;
+    image-rendering: pixelated;
   }
-  .juniper-card {
+  /* faint tiling topographic pattern (from GMTK's itch page, posterized to
+     hard 1px lines and recoloured to a light gray on transparent) filling the
+     border's inner area, under the lockup. The drawn line tilts, so the
+     clip-path follows its inner edge instead of a straight rect; tiny
+     gaps/leaks don't read at this opacity. */
+  .jamtitle-bg {
     position: absolute;
-    left: 1.759%;            /* 13.05 / 742 */
-    top: 14.98%;             /* 32.35 / 216 */
-    width: 96.36%;           /* 715 / 742 */
-    height: 72.08%;          /* 155.693 / 216 */
+    inset: 0 3%;
+    z-index: 0;
+    background: url('/assets/gmtk_topo.png') repeat;
+    background-size: calc(380px * var(--scale)) auto;
+    image-rendering: pixelated;
+    clip-path: polygon(0% 9%, 100% 15%, 100% 90%, 0% 88%);
+    opacity: 0.22;
+  }
+  .jamtitle-card {
+    position: absolute;
+    left: 2%;
+    top: 15%;               /* the drawn line's inner area at the box's centre
+                               runs ~14% to ~85% (it tilts), so 15% + 64% keeps
+                               the lockup inside it with a little breathing room */
+    width: 96%;
+    height: 64%;
     z-index: 1;
-    object-fit: cover;
-    object-position: 50% 100%;
+    object-fit: contain;
+    object-position: 50% 50%;
   }
 
   /* ===== countdown / duration / disclaimer (centred flow) ===== */
@@ -193,21 +231,16 @@
     line-height: 1.2;
   }
 
-  /* "watch the video" doodle — its position is locked to the video's bottom-right
-     (see the side-video media query, where both share --vid-x/--vid-y) so its
-     arrow always points back at the player. It reaches further into the gutter
-     than the video, so it drops out a bit before the video does (rule below). */
-  .month-watch {
-    width: calc(126px * var(--scale)); height: calc(100px * var(--scale)); opacity: .43;
+  /* ===== video (right column of the title row) =====
+     Default (stacked): in-flow centred figure below the box, capped to natural
+     size. The wrapper (.vidcol) exists so the "watch the video" doodle can pin
+     to the player's corner without inheriting the hover tilt. */
+  .vidcol {
+    position: relative;
+    width: 100%;      /* the player inside sizes itself with width:100% +
+                         max-width, so this wrapper must not shrink-to-fit
+                         (its only child is out of flow and it would collapse) */
   }
-  /* the doodle's right edge would clip the viewport before the video's does, so
-     hide it once there isn't room for it (video stays in side-mode below this). */
-  @media (max-width: 1039px) {
-    .month-watch { display: none !important; }
-  }
-
-  /* ===== video — DUAL MODE =====
-     Default (mobile + mid): in-flow centred figure, capped to natural size. */
   .video-link {
     position: relative;
     display: block;
@@ -224,7 +257,7 @@
   }
   .el-vidphoto img { width: 100%; height: auto; display: block; }
   /* mobile: shrink the player and pull it up so its top tucks against the bottom
-     of the (now full-bleed) juniper title block instead of floating below it. */
+     of the title block instead of floating below it. */
   @media (max-width: 800px) {
     .video-link {
       max-width: calc(210px * var(--scale));
@@ -241,48 +274,31 @@
      play together), instantly (no anim) */
   .video-link:hover { transform: rotate(-8deg); transform-origin: center center; }
 
-  /* Side-video mode: pull the video out of flow, anchor it to the right of the
-     column (overlapping the juniper's corner, like the comp). Below this the
-     video drops back into the centred flow (default rules above). Threshold is
-     where the video's right edge still clears the viewport with margin to spare;
-     the "watch" doodle reaches further and is hidden earlier (rule up top).
-     Absolute element reserves no space, so the centre column closes the gap. */
+  /* two-column mode: the video takes its fixed size beside the box, tucks
+     over the box's right border a little, vertically centred on the box, and
+     keeps the comp's deeper tilt. */
   @media (min-width: 960px) {
-    /* shared anchor for the video + its "watch the video" doodle so they move
-       together and the doodle's arrow always points back at the player. */
-    .month-inner { --vid-x: calc(618px * var(--scale)); --vid-y: calc(186px * var(--scale)); }
-    .video-link {
-      position: absolute;
-      left: var(--vid-x);     /* into the right margin, overlapping the juniper's
-                                 bottom-right corner; nudged left from the comp */
-      top: var(--vid-y);
+    .vidcol {
       width: calc(276px * var(--scale));
-      height: calc(155px * var(--scale));   /* absolute children don't size the box;
-                                               give it the photo's height so hover's
-                                               center-center pivot is the real centre */
-      max-width: none;
-      margin: 0;
-      aspect-ratio: auto;
-      z-index: 4;
+      margin-left: calc(-36px * var(--scale));
+      z-index: 3;            /* above the box's border layer (z-index 2) */
     }
-    /* doodle pinned to the video's lower-right by the exact comp delta */
-    .month-watch {
-      left: calc(var(--vid-x) + 205px * var(--scale));
-      top: calc(var(--vid-y) + 106px * var(--scale));
-    }
-    .el-vidphoto {
-      width: calc(276px * var(--scale)); height: calc(155px * var(--scale));
-      transform: rotate(-6.24deg);
-    }
-    .el-vidphoto img { width: calc(276px * var(--scale)); height: calc(155px * var(--scale)); }
-    /* restore comp play-icon placement/size over the rotated photo */
-    .el-vidplay {
-      left: calc(120.75px * var(--scale));         /* 964.35 - 843.6 */
-      top: calc(57.9px * var(--scale));            /* 954.45 - 896.55 */
-      width: calc(45.633px * var(--scale)); height: calc(48.893px * var(--scale));
-      transform: rotate(-6.24deg);
-    }
-    .el-vidplay img { width: calc(45.633px * var(--scale)); height: calc(48.893px * var(--scale)); }
+    .video-link { width: 100%; margin: 0; }
+    .el-vidphoto { transform: rotate(-6.24deg); }
+    .el-vidplay  { transform: translate(-50%, -50%) rotate(-6.24deg); }
+  }
+
+  /* "watch the video" doodle, pinned to the player's bottom-right corner (its
+     arrow points back at the player). Wide-only: in the stacked layout there's
+     no corner for it to hang off, so it hides below the two-column breakpoint. */
+  .month-watch {
+    position: absolute;
+    left: calc(205px * var(--scale));
+    top: calc(106px * var(--scale));
+    width: calc(126px * var(--scale)); height: calc(100px * var(--scale)); opacity: .43;
+  }
+  @media (max-width: 959px) {
+    .month-watch { display: none !important; }
   }
 
 </style>

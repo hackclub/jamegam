@@ -44,7 +44,7 @@
      then another copy of the email box + "i'm in" button. The field is duplicated
      with `ready-`-prefixed ids (like the HowItWorks step-1 copy) so the form/button
      association and the centred field markup stay self-contained. -->
-<section class="sec sec-ready">
+<section id="ready" class="sec sec-ready">
   <div class="col ready-inner">
     <h2 class="txt ready-title" use:jiggle={{ prizeWord: 'ready', underlineNoHook: true, underlineExtendLeft: 9 }}>ready?</h2>
 
@@ -118,9 +118,10 @@
   .ready-email-im img { width: 100%; height: 100%; display: block; }
 
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  /* display text, not an input: augiepixel (marylin is only for typeable fields) */
   .ready-email-msg {
-    font-family: 'CS Marylin Pixel', 'augiepixel', sans-serif;
-    font-size: calc(24px * var(--scale));
+    font-family: 'augiepixel', sans-serif;
+    font-size: calc(31px * var(--scale));
     color: #7a7470;
     margin: 0;
   }

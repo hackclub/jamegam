@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   // FAQ data lives in $lib/faqs.js (shared with the FAQPage JSON-LD in
   // +page.svelte so the visible answers and the schema can't drift).
   import { FAQS } from '$lib/faqs.js';
@@ -20,12 +21,33 @@
     // close every collapsible item, then open this one if it wasn't already
     open = FAQS.map((_, idx) => idx === lastIndex || (idx === i && !wasOpen));
   };
+
+  // deep links: every item has a #faq-<id> anchor (the <li> ids below). Landing
+  // on one opens that item and scrolls it into view once the page has booted;
+  // hashchange covers in-page fragment jumps (which don't remount this component).
+  function openFromHash() {
+    const m = location.hash.match(/^#faq-(.+)$/);
+    if (!m) return;
+    const i = FAQS.findIndex((f) => f.id === m[1]);
+    if (i < 0) return;
+    if (i !== lastIndex) open = FAQS.map((_, idx) => idx === lastIndex || idx === i);
+    // the boot animation hides #content at load, so an immediate native anchor
+    // jump lands wrong; scroll after the reveal has had a beat to settle.
+    setTimeout(() => {
+      document.getElementById(`faq-${m[1]}`)?.scrollIntoView({ block: 'center' });
+    }, 400);
+  }
+  onMount(() => {
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
+    return () => window.removeEventListener('hashchange', openFromHash);
+  });
 </script>
 
 <!-- ===== QUESTIONS =====
      Header row (one hand-drawn divider filling the width INTO the "questions?"
      tag at the right), then an expandable FAQ list below it. -->
-<section class="sec sec-questions">
+<section id="faq" class="sec sec-questions">
   <div class="col questions-inner">
     <div class="q-row">
       <span class="q-divider" aria-hidden="true"><img src="/assets/underline550.png" alt="" /></span>
@@ -42,7 +64,7 @@
          is rainbow-tinted (cycling the palette) and spins to an "×" when open. -->
     <ul class="faq" use:deobfuscateEmail>
       {#each FAQS as item, i}
-        <li class="faq-item" class:open={open[i] && i !== lastIndex} class:fixed={i === lastIndex} style="--c: {COLORS[i % COLORS.length]}">
+        <li id={`faq-${item.id}`} class="faq-item" class:open={open[i] && i !== lastIndex} class:fixed={i === lastIndex} style="--c: {COLORS[i % COLORS.length]}">
           <button class="faq-q txt" onclick={() => toggle(i)} aria-expanded={open[i]} disabled={i === lastIndex} aria-controls={`faq-a-${i}`}>
             <span class="faq-mark" aria-hidden="true"></span>
             <span class="faq-qtext">{item.q}</span>

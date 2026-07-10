@@ -209,7 +209,7 @@
 
      Mapping reminder: inside .col, an element at original comp x sits at
      left:(x-264)px — used for the wide-only decorations below. -->
-<section class="sec sec-prizes">
+<section id="prizes" class="sec sec-prizes">
   <div class="col prizes-inner">
     <h2 class="txt prizes-title" style="--prizes-title-size:{titleSize}px" use:jiggle={{ underline: false }}>prizes</h2>
 

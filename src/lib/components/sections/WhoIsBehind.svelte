@@ -12,7 +12,7 @@
      left:(x-264)px — used for the wide-only qmark decorations below.
 
      Mobile (<640px): each card stacks vertically (image above text), centred. -->
-<section class="sec sec-who">
+<section id="who" class="sec sec-who">
   <div class="col who-inner">
     <h2 class="txt who-title">who&rsquo;s behind this?</h2>
 
