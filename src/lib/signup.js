@@ -1,5 +1,6 @@
-// Shared signup state for every "i'm in" box on the page (there are two: the
-// hero one and the closing "ready?" one). The first box to succeed flips `done`
+// Shared signup state for every "i'm in" box on the page (there are three: the
+// hero one, the how-it-works one, and the closing "ready?" one). The first box
+// to succeed flips `done`
 // for all of them, so the same visitor can't re-submit from a box further down -
 // the multiple boxes act as one signup. Errors stay local to each box (returned
 // to the caller), so a network hiccup on one doesn't paint the others red.

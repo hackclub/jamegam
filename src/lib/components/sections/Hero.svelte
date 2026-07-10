@@ -1,5 +1,19 @@
 <script>
+  import { onMount } from 'svelte';
   import { jiggle } from '$lib/actions/jiggle.js';
+
+  // live signup total for the "[n] and counting" note by the tagline.
+  // null = not loaded (note stays hidden), so a fetch hiccup costs nothing.
+  let count = $state(null);
+  onMount(async () => {
+    try {
+      const res = await fetch('/api/signup/count');
+      const data = await res.json();
+      if (res.ok && data.ok && Number.isFinite(data.count)) count = data.count;
+    } catch {
+      /* leave the note hidden */
+    }
+  });
 </script>
 
 <!-- ===== HERO =====
@@ -19,7 +33,20 @@
     <div id="logo-slot" aria-hidden="true"></div>
     <h1 class="sr-logo">jame gam — by hack club</h1>
 
-    <p class="txt tagline" use:jiggle>we&rsquo;re a community of teenagers who pick a game jam every month to all enter together.</p>
+    <!-- tagline + the "[n] and counting" note pinned to its top right (a little
+         hand-drawn arrow pointing back down-left into the line, live count from
+         /api/signup/count; hidden until the count loads). The wrapper exists so
+         the note can anchor to the tagline box without living inside the
+         jiggle-managed text node. -->
+    <div class="tagline-wrap">
+      <p class="txt tagline" use:jiggle>we&rsquo;re a community of teenagers who pick a game jam every month to all enter together.</p>
+      {#if count !== null}
+        <span class="count-note">
+          <img class="count-arrow" src="/assets/count_arrow.png" alt="" aria-hidden="true" />
+          <span class="count-text">{count} and counting</span>
+        </span>
+      {/if}
+    </div>
 
     <!-- CTA with the little scribble rainbow underline under the word "prizes".
          jiggle tags the "prizes" word span with .jw-prizes and the underline is
@@ -110,12 +137,49 @@
   /* gap between crowd and logo, and logo and tagline, kept generous like the comp */
   #logo-slot { margin-top: calc(14px * var(--scale)); }
 
-  .tagline {
+  .tagline-wrap {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
     margin-top: calc(30px * var(--scale));
+  }
+  .tagline {
     max-width: calc(557px * var(--scale));
     font-size: var(--t-title);
     color: #524d4a;
     line-height: 1.05;
+  }
+  /* "[n] and counting": arrow (art points down-left, back into the tagline) with
+     the handwritten count riding its upper right. Anchored up and off the
+     tagline box's top-right corner so the arrow tip keeps clear air from the
+     text; same dusty pink at 43% as the other handwritten accent notes. */
+  .count-note {
+    position: absolute;
+    left: calc(50% + calc(290px * var(--scale)));
+    top: calc(-42px * var(--scale));
+    display: flex;
+    align-items: flex-start;
+    gap: calc(6px * var(--scale));
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0.43;
+  }
+  .count-arrow {
+    width: calc(37px * var(--scale));
+    height: auto;
+    margin-top: calc(14px * var(--scale));
+  }
+  .count-text {
+    font-family: 'augiepixel', sans-serif;
+    font-size: calc(27px * var(--scale));
+    color: #d7928e;
+    line-height: 1;
+    transform: rotate(-3deg);
+  }
+  /* not enough room right of the tagline on narrow screens */
+  @media (max-width: 819px) {
+    .count-note { display: none; }
   }
   .cta {
     margin-top: calc(34px * var(--scale));

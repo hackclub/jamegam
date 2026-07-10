@@ -38,6 +38,25 @@ export async function upsertSignup(fields) {
   return res.json();
 }
 
+// total number of signup rows (the hero's "[n] and counting"). Airtable has no
+// count endpoint, so page through with only the email field requested to keep
+// the payloads tiny. ~5 requests per 500 signups; callers should cache.
+export async function countSignups() {
+  let count = 0;
+  let offset;
+  do {
+    const params = new URLSearchParams({ pageSize: '100' });
+    params.append('fields[]', F.email);
+    if (offset) params.set('offset', offset);
+    const res = await fetch(`${tableUrl()}?${params}`, { headers: headers() });
+    if (!res.ok) throw new Error(`Airtable count failed: ${res.status} ${await res.text()}`);
+    const data = await res.json();
+    count += data.records?.length ?? 0;
+    offset = data.offset;
+  } while (offset);
+  return count;
+}
+
 export async function markById(id, fields) {
   const res = await fetch(`${tableUrl()}/${id}`, {
     method: 'PATCH',
