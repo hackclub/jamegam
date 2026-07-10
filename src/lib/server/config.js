@@ -19,11 +19,14 @@ export const config = {
     clientId: env.HCA_CLIENT_ID,
     clientSecret: env.HCA_CLIENT_SECRET,
     scope: env.HCA_SCOPE || 'openid email name slack_id verification_status',
-    // The submit flow steps up to address + birthdate (prize shipping + age).
-    // Signups stay on the minimal scope above; only submitters get the bigger consent.
+    // The submit flow steps up to address + birthdate + phone (prize shipping
+    // + age; phone because shipping labels need one and HCA addresses often
+    // lack their own - the account-level number is the fallback). Signups stay
+    // on the minimal scope above; only submitters get the bigger consent.
+    // NOTE: every scope here must also be ticked on the HCA app registration.
     submitScope:
       env.HCA_SCOPE_SUBMIT ||
-      `${env.HCA_SCOPE || 'openid email name slack_id verification_status'} address birthdate`
+      `${env.HCA_SCOPE || 'openid email name slack_id verification_status'} address birthdate phone`
   },
   slack: {
     botToken: env.SLACK_BOT_TOKEN,

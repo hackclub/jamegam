@@ -71,10 +71,13 @@ export async function GET({ url, cookies }) {
     // id_token's OIDC `birthdate` claim.
     const birthday = id.birthday || claims.birthdate || '';
 
+    // Account-level phone (`phone` scope) backfills addresses missing their own.
+    const accountPhone = id.phone_number || '';
+
     if (shop) {
       // Shop flow: no signup side effects - just mint the session /prizes reads.
       // Addresses capped so the cookie stays comfortably under the 4KB limit.
-      const addresses = normalizeAddresses(id.addresses, claims.address).slice(0, 5);
+      const addresses = normalizeAddresses(id.addresses, claims.address, accountPhone).slice(0, 5);
       cookies.set(
         SESSION_COOKIE,
         createSession({
@@ -131,7 +134,7 @@ export async function GET({ url, cookies }) {
         }
         // Multiple mailing addresses possible; default to the primary, the form's
         // picker can switch among the rest.
-        const addresses = normalizeAddresses(id.addresses, claims.address);
+        const addresses = normalizeAddresses(id.addresses, claims.address, accountPhone);
         const active = addresses.find((a) => a.primary) || addresses[0] || null;
 
         const d = buildSubmitRedirect(ret, {

@@ -109,7 +109,11 @@ export function parseAddress(addr) {
 // `addresses` array (address scope), each with a `primary` flag. Normalize to the
 // parts the form + picker use. Falls back to the single OIDC `address` claim if
 // the array isn't present.
-export function normalizeAddresses(meAddresses, claimAddress) {
+//
+// `accountPhone` is the identity-level phone_number (`phone` scope). Addresses
+// often lack their own phone (users set it on "My info", not the address), so
+// it backfills any address without one - shipping requires a phone on the label.
+export function normalizeAddresses(meAddresses, claimAddress, accountPhone = '') {
   const out = [];
   if (Array.isArray(meAddresses)) {
     for (const a of meAddresses) {
@@ -121,7 +125,7 @@ export function normalizeAddresses(meAddresses, claimAddress) {
         region: a.state || '',
         postal: a.postal_code || '',
         country: a.country || '',
-        phone: a.phone_number || '',
+        phone: a.phone_number || accountPhone || '',
         primary: !!a.primary
       });
     }
@@ -137,7 +141,7 @@ export function normalizeAddresses(meAddresses, claimAddress) {
         region: p.region,
         postal: p.postal,
         country: p.country,
-        phone: '',
+        phone: accountPhone || '',
         primary: true
       });
     }

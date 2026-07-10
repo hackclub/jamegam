@@ -87,6 +87,7 @@ export async function load({ cookies, url }) {
         region: s.fields.state_province || '',
         postal: s.fields.zip_postal_code || '',
         country: s.fields.country || '',
+        phone: s.fields.phone_number || '',
         primary: true
       });
     }
