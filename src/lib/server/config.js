@@ -34,7 +34,10 @@ export const config = {
   },
   slack: {
     botToken: env.SLACK_BOT_TOKEN,
-    channelId: env.SLACK_JAMEGAM_CHANNEL_ID // for conversations.invite; the channel URL lives in the Loops template
+    channelId: env.SLACK_JAMEGAM_CHANNEL_ID, // for conversations.invite; the channel URL lives in the Loops template
+    // #jame-gam-announcements; signups get auto-added here too. id defaults in
+    // code so no Vercel provisioning is needed; env can still override.
+    announceChannelId: env.SLACK_JAMEGAM_ANNOUNCE_CHANNEL_ID || 'C0BBDUFF7K8'
   },
   shop: {
     sessionSecret: env.SESSION_SECRET, // HMAC key for the shop session cookie
