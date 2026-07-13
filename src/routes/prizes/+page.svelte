@@ -3,6 +3,10 @@
   // live server-side (+page.server.js decides the state, /api/shop/order
   // re-validates everything); this page is just the picker.
   //
+  // Signed out, the same grids render as a browse-only prize list: modals
+  // still open (info + store links, no order action), with a small sign-in
+  // nudge in the header.
+  //
   // Pick flow: clicking any card opens a modal with a bit more info + the
   // order button (plus size for the tshirt; every order shows its shipping
   // address, since stickers + the patch ship physically with every prize).
@@ -174,8 +178,11 @@
   }
 
   // panel-only states hold a paragraph or two; centre those vertically. The
-  // pick UI is a normal top-to-bottom document scroll.
-  const slim = $derived(data.state !== 'shop' || !!data.locked);
+  // pick UI (and the signed-out browse list) is a normal top-to-bottom
+  // document scroll.
+  const slim = $derived(
+    data.state === 'shop' ? !!data.locked : data.state !== 'signedout'
+  );
 
   // "june", from the shop's jam label ('2026-06') - for copy, instead of the raw label
   const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
@@ -186,8 +193,10 @@
   // top is % of the viewport, edge/w are px (scaled by --scale in the CSS).
   const DOODLES = {
     signedout: [
-      { src: 'dino', side: 'left', top: '14%', edge: -70, w: 300 },
-      { src: 'duck', side: 'right', top: '64%', edge: -60, w: 240 }
+      { src: 'dino', side: 'left', top: '12%', edge: -70, w: 300 },
+      { src: 'duck', side: 'right', top: '40%', edge: -60, w: 240 },
+      { src: 'star', side: 'left', top: '64%', edge: -60, w: 260 },
+      { src: 'fries', side: 'right', top: '86%', edge: -50, w: 200 }
     ],
     nosubmission: [
       { src: 'fish', side: 'right', top: '24%', edge: -40, w: 220 },
@@ -273,21 +282,34 @@
   <div class="shop-dust" aria-hidden="true"><Dust /></div>
 
   {#if data.state === 'signedout'}
-    <!-- signed out: just the title + the sign-in button, centered together -->
-    <section class="panel">
+    <!-- signed out: the full prize list, browse-only, with a small sign-in
+         nudge in the header (the modals swap their order button for it too) -->
+    <header class="head sunk">
       <!-- underlineBrush: the landing line is 4 art-px under 40px type; keep the
            thickness proportional to this 64px title (4 * 64/40) -->
       <h1 class="txt title big" use:jiggle={{ underlineBrush: 6.4 }}>prizes</h1>
+      <p class="lede center intro2">
+        along with every prize, you'll be shipped stickers and a custom patch.
+      </p>
+      {#if data.closed}
+        <p class="lede center intro2 countdown">
+          heads up: the shop for the {jamMonth} jam has closed!
+        </p>
+      {:else}
+        <!-- the deadline line (it lives at the page bottom for noaddress) -->
+        <p class="deadline deadline-top">
+          if you participated in <span class="jam-name">{data.jamName}</span>, you have until
+          {data.closesText} to select your prize!
+        </p>
+      {/if}
       {#if data.authError}
         <p class="err">that sign-in didn't go through, give it another try!</p>
       {/if}
-      <a class="signin" href="/api/auth/login?flow=shop">
+      <a class="signin signin-top" href="/api/auth/login?flow=shop">
         <img src="/assets/signin.png" alt="sign in with hack club" />
       </a>
-      {#if data.closed}
-        <p class="fine">heads up: the shop for the {jamMonth} jam has closed!</p>
-      {/if}
-    </section>
+    </header>
+    {@render prizeGrids()}
   {:else if data.state === 'nosubmission'}
     <section class="panel">
       <p class="lede">
@@ -453,76 +475,15 @@
       {/if}
 
       {#if !data.order || browsing}
-
-      <section class="group">
-        <!-- "how it works"-style header: tag at the left, line trailing right -->
-        <div class="gh">
-          <span class="gh-tag"><h2 class="txt gh-title">the stuff</h2></span>
-          <span class="gh-line" aria-hidden="true"></span>
-        </div>
-        <p class="gh-sub"><span class="gh-sub-t">pick any one</span></p>
-        <ul class="grid">
-          {#each PRIZE_STUFF as p (p.src)}
-            <li>
-              <button
-                class="tile"
-                class:sel={currentPrizeSrc === p.src}
-                type="button"
-                style="--h9:url('/assets/hover9_{hoverVar[p.src] ?? 'a'}@8x.png')"
-                onclick={() => openModal(p)}
-              >
-                <span class="thumb"><img src="/assets/prize_{p.src}.png" alt={p.alt} loading="lazy" /></span>
-                <span class="name">{p.name}</span>
-              </button>
-            </li>
-          {/each}
-        </ul>
-      </section>
-
-      <p class="or">or, instead of one thing:</p>
-
-      <section class="group">
-        <!-- "questions?"-style header: line filling left, tag at the right -->
-        <div class="gh">
-          <span class="gh-line" aria-hidden="true"></span>
-          <span class="gh-tag"><h2 class="txt gh-title">indie games</h2></span>
-        </div>
-        <p class="gh-sub">
-          <span class="gh-sub-t">
-            pick any {GAME_PICK_COUNT}{gamePicks.length ? ` (${gamePicks.length}/${GAME_PICK_COUNT})` : ''}
-          </span>
-        </p>
-        <ul class="grid">
-          {#each PRIZE_GAMES as p (p.src)}
-            <li>
-              <button
-                class="tile"
-                class:sel={gamePicks.includes(p.src)}
-                class:dim={gamePicks.length >= GAME_PICK_COUNT && !gamePicks.includes(p.src)}
-                type="button"
-                style="--h9:url('/assets/hover9_{hoverVar[p.src] ?? 'a'}@8x.png')"
-                onclick={() => openModal(p)}
-              >
-                <span class="thumb"><img src="/assets/prize_{p.src}.png" alt={p.alt} loading="lazy" /></span>
-                <span class="name">{p.name}</span>
-              </button>
-            </li>
-          {/each}
-        </ul>
-      </section>
-
-      <p class="suggest-note">
-        don't see anything you like?
-        <a href="https://forms.hackclub.com/jame-gam-prize-suggestion" target="_blank" rel="noopener">suggest a prize!</a>
-      </p>
+        {@render prizeGrids()}
       {/if}
     {/if}
   {/if}
 
-  {#if !data.closed && (data.state === 'signedout' || data.state === 'noaddress')}
+  {#if !data.closed && data.state === 'noaddress'}
     <p class="deadline">
       if you participated in <span class="jam-name">{data.jamName}</span>, you have until
-      {data.closesText} to purchase your prize!
+      {data.closesText} to select your prize!
     </p>
   {/if}
   {#if data.me}
@@ -532,6 +493,85 @@
     </p>
   {/if}
 </main>
+
+<!-- the two prize grids, shared by the pick UI and the signed-out browse list.
+     The selection classes (sel/dim, the pick counter) all key off state that's
+     simply empty when signed out, so the same markup serves both. -->
+{#snippet prizeGrids()}
+  <p class="suggest-note suggest-top">
+    you can suggest prizes using
+    <a href="https://forms.hackclub.com/jame-gam-prize-suggestion" target="_blank" rel="noopener">this form</a>!
+  </p>
+  {#if data.state === 'signedout'}
+    <!-- TEMP (2026-07): remove once the july prize list is up -->
+    <p class="lede center intro2 temp-note">
+      this prize list is from the june 2026 jam. the prize list for the july 2026 jam might
+      change slightly! the updated prize list will be released shortly
+    </p>
+  {/if}
+
+  <section class="group">
+    <!-- "how it works"-style header: tag at the left, line trailing right -->
+    <div class="gh">
+      <span class="gh-tag"><h2 class="txt gh-title">the stuff</h2></span>
+      <span class="gh-line" aria-hidden="true"></span>
+    </div>
+    <p class="gh-sub"><span class="gh-sub-t">pick any one</span></p>
+    <ul class="grid">
+      {#each PRIZE_STUFF as p (p.src)}
+        <li>
+          <button
+            class="tile"
+            class:sel={currentPrizeSrc === p.src}
+            type="button"
+            style="--h9:url('/assets/hover9_{hoverVar[p.src] ?? 'a'}@8x.png')"
+            onclick={() => openModal(p)}
+          >
+            <span class="thumb"><img src="/assets/prize_{p.src}.png" alt={p.alt} loading="lazy" /></span>
+            <span class="name">{p.name}</span>
+          </button>
+        </li>
+      {/each}
+    </ul>
+  </section>
+
+  <p class="or">or, instead of one thing:</p>
+
+  <section class="group">
+    <!-- "questions?"-style header: line filling left, tag at the right -->
+    <div class="gh">
+      <span class="gh-line" aria-hidden="true"></span>
+      <span class="gh-tag"><h2 class="txt gh-title">indie games</h2></span>
+    </div>
+    <p class="gh-sub">
+      <span class="gh-sub-t">
+        pick any {GAME_PICK_COUNT}{gamePicks.length ? ` (${gamePicks.length}/${GAME_PICK_COUNT})` : ''}
+      </span>
+    </p>
+    <ul class="grid">
+      {#each PRIZE_GAMES as p (p.src)}
+        <li>
+          <button
+            class="tile"
+            class:sel={gamePicks.includes(p.src)}
+            class:dim={gamePicks.length >= GAME_PICK_COUNT && !gamePicks.includes(p.src)}
+            type="button"
+            style="--h9:url('/assets/hover9_{hoverVar[p.src] ?? 'a'}@8x.png')"
+            onclick={() => openModal(p)}
+          >
+            <span class="thumb"><img src="/assets/prize_{p.src}.png" alt={p.alt} loading="lazy" /></span>
+            <span class="name">{p.name}</span>
+          </button>
+        </li>
+      {/each}
+    </ul>
+  </section>
+
+  <p class="suggest-note">
+    don't see anything you like?
+    <a href="https://forms.hackclub.com/jame-gam-prize-suggestion" target="_blank" rel="noopener">suggest a prize!</a>
+  </p>
+{/snippet}
 
 <!-- order errors, shared by the modal's three spots. the API's "fix it on
      auth.hackclub.com" errors end in "sign in again" - linkify that phrase to
@@ -662,7 +702,7 @@
             <p class="m-note">instead of one prize, you can grab {GAME_PICK_COUNT} indie games.</p>
           {/if}
 
-          {#if modal.kind === 'item' && modal.p.src === 'tshirt'}
+          {#if modal.kind === 'item' && modal.p.src === 'tshirt' && data.state !== 'signedout'}
             <div class="sizes">
               {#each TSHIRT_SIZES as s, i (s)}
                 <button
@@ -680,7 +720,9 @@
 
           {@render errline()}
 
-          {#if modal.kind === 'game'}
+          {#if data.state === 'signedout'}
+            <!-- browse-only: no order action; the header's sign-in covers it -->
+          {:else if modal.kind === 'game'}
             {#if gamePicks.includes(modal.p.src)}
               <!-- with all 3 picked, this modal is also the way back to ordering
                    (the section header has no order button) -->
@@ -840,6 +882,10 @@
     margin-top: calc(12px * var(--scale));
     color: rgba(80, 75, 73, 0.55);
   }
+  /* TEMP (2026-07): the june-list disclaimer, full ink so it actually reads */
+  .lede.center.intro2.temp-note {
+    margin-top: calc(20px * var(--scale));
+  }
   .cd-time {
     color: var(--ink);
   }
@@ -959,6 +1005,16 @@
     width: auto;
     max-width: 100%;
   }
+  /* the header version (signed-out browse): inline-block so the centered
+     header actually centres it, and a touch smaller - it's a nudge, not the
+     whole page like the old signed-out panel */
+  .signin.signin-top {
+    display: inline-block;
+    margin-top: calc(28px * var(--scale));
+  }
+  .signin.signin-top img {
+    height: calc(34px * var(--scale));
+  }
 
   /* the order deadline, pinned to the bottom of the slim states */
   .deadline {
@@ -970,6 +1026,12 @@
   }
   .deadline .jam-name {
     color: #af5550; /* the red from juniper_text.png ("the" / "game jam") */
+  }
+  /* the signed-out header version: tucked under the intro, fainter (element
+     opacity so the red jam name fades with the rest) */
+  .deadline.deadline-top {
+    margin-top: calc(14px * var(--scale));
+    opacity: 0.6;
   }
 
   /* "signed in as ..." - pinned to the very bottom, same size as everything else */
@@ -996,6 +1058,11 @@
     margin: calc(44px * var(--scale)) 0 0;
     text-align: center;
     color: rgba(80, 75, 73, 0.55);
+  }
+  /* the top copy, between the header and "the stuff" (the .group below brings
+     its own 36px, so keep this one tighter) */
+  .suggest-note.suggest-top {
+    margin-top: calc(8px * var(--scale));
   }
   .err {
     margin: 0;
