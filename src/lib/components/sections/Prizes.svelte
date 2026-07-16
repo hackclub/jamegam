@@ -275,7 +275,7 @@
 
         <!-- deemphasized note pinned to the bottom of the cluster (its space is
              reserved by `moreBand` in layout() so it sits below the prizes). -->
-        <p class="prizes-more" aria-hidden="true">&hellip;and more!</p>
+        <p class="prizes-more"><span aria-hidden="true">&hellip;and more!</span> <a class="prizes-more-link" href="/prizes">see full list</a></p>
       </div>
     </div>
 
@@ -283,7 +283,8 @@
          (kept in the layout but invisible) that reveals "that's a <prize>" on
          hover, so showing it never shifts the page. -->
     <div class="prizes-caption" style={capW ? `width:${capW}px` : ''}>
-      <p class="txt prizes-cap-main">every jam, you can choose any prize from the pool, + stickers &amp; a custom patch for this month&rsquo;s jam</p>
+      <!-- TEMP (2026-07): patch paused; restore "&amp; a custom patch for this month's jam" when it's back -->
+      <p class="txt prizes-cap-main">every jam, you can choose any prize from the pool, + stickers!</p>
       <p class="txt prizes-cap-hover" class:show={hoverName} aria-hidden="true">{#if hoverName}{#if hoverGame}<span class="cap-lead">that&rsquo;s an</span> <span class="cap-name" style="color:{hoverColor}">indie game</span><span class="cap-lead">, you can pick {GAME_PICK_COUNT}</span>{:else}<span class="cap-lead">{hoverLead}</span> <span class="cap-name" style="color:{hoverColor}">{hoverName}</span>{#if hoverNote}<span class="cap-lead">{hoverNote}</span>{/if}{/if}{:else}&nbsp;{/if}</p>
       <p class="txt cap-suggest">got a prize idea? <a href="https://forms.hackclub.com/jame-gam-prize-suggestion" target="_blank" rel="noopener">suggest one!</a></p>
     </div>
@@ -440,7 +441,19 @@
     font-family: 'augiepixel', sans-serif;
     font-size: calc(var(--t-list) * 0.82);   /* match the caption / how-it-works sub text */
     color: #504b49;
+  }
+  /* opacity sits on the children (not the p) so the link can wake up on hover */
+  .prizes-more > * {
     opacity: 0.34;
+  }
+  .prizes-more-link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: calc(2px * var(--scale));
+  }
+  .prizes-more-link:hover,
+  .prizes-more-link:focus-visible {
+    opacity: 0.75;
   }
 
   /* hovered-prize tooltip — a paper sticker tag in the site's pixel font, tilted

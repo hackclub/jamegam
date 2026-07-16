@@ -8,7 +8,7 @@
   // nudge in the header.
   //
   // Pick flow: clicking any card opens a modal with a bit more info + the
-  // order button (plus size for the tshirt; every order shows its shipping
+  // order button (plus size for sized apparel; every order shows its shipping
   // address, since stickers + the patch ship physically with every prize).
   // Indie games accumulate instead: add up to GAME_PICK_COUNT in their modals,
   // and the modal flips to an order-confirm step when the last one is added.
@@ -289,13 +289,9 @@
            thickness proportional to this 64px title (4 * 64/40) -->
       <h1 class="txt title big" use:jiggle={{ underlineBrush: 6.4 }}>prizes</h1>
       <p class="lede center intro2">
-        along with every prize, you'll be shipped stickers and a custom patch.
+        along with every prize, you'll be shipped stickers.
       </p>
-      {#if data.closed}
-        <p class="lede center intro2 countdown">
-          heads up: the shop for the {jamMonth} jam has closed!
-        </p>
-      {:else}
+      {#if !data.closed}
         <!-- the deadline line (it lives at the page bottom for noaddress) -->
         <p class="deadline deadline-top">
           if you participated in <span class="jam-name">{data.jamName}</span>, you have until
@@ -411,7 +407,7 @@
       <header class="head sunk">
         <h1 class="txt title big" use:jiggle={{ underlineBrush: 6.4 }}>prizes</h1>
         <p class="lede center intro2">
-          along with every prize, you'll be shipped stickers and a custom patch.
+          along with every prize, you'll be shipped stickers.
         </p>
         <p class="lede center intro2 countdown">
           you have <span class="cd-time">{countdown}</span> to pick your prize!
@@ -502,14 +498,6 @@
     you can suggest prizes using
     <a href="https://forms.hackclub.com/jame-gam-prize-suggestion" target="_blank" rel="noopener">this form</a>!
   </p>
-  {#if data.state === 'signedout'}
-    <!-- TEMP (2026-07): remove once the july prize list is up -->
-    <p class="lede center intro2 temp-note">
-      this prize list is from the june 2026 jam. the prize list for the july 2026 jam might
-      change slightly! the updated prize list will be released shortly
-    </p>
-  {/if}
-
   <section class="group">
     <!-- "how it works"-style header: tag at the left, line trailing right -->
     <div class="gh">
@@ -527,6 +515,7 @@
             style="--h9:url('/assets/hover9_{hoverVar[p.src] ?? 'a'}@8x.png')"
             onclick={() => openModal(p)}
           >
+            {#if p.fresh}<span class="fresh">new!</span>{/if}
             <span class="thumb"><img src="/assets/prize_{p.src}.png" alt={p.alt} loading="lazy" /></span>
             <span class="name">{p.name}</span>
           </button>
@@ -559,6 +548,7 @@
             style="--h9:url('/assets/hover9_{hoverVar[p.src] ?? 'a'}@8x.png')"
             onclick={() => openModal(p)}
           >
+            {#if p.fresh}<span class="fresh">new!</span>{/if}
             <span class="thumb"><img src="/assets/prize_{p.src}.png" alt={p.alt} loading="lazy" /></span>
             <span class="name">{p.name}</span>
           </button>
@@ -702,7 +692,7 @@
             <p class="m-note">instead of one prize, you can grab {GAME_PICK_COUNT} indie games.</p>
           {/if}
 
-          {#if modal.kind === 'item' && modal.p.src === 'tshirt' && data.state !== 'signedout'}
+          {#if modal.kind === 'item' && modal.p.sized && data.state !== 'signedout'}
             <div class="sizes">
               {#each TSHIRT_SIZES as s, i (s)}
                 <button
@@ -715,7 +705,11 @@
                 >
               {/each}
             </div>
-            <p class="m-note">this is a placeholder, <span class="u">this is not the shirt design</span>. us sizing!</p>
+            {#if modal.p.src === 'tshirt'}
+              <p class="m-note">this is a placeholder, <span class="u">this is not the shirt design</span>. us sizing!</p>
+            {:else}
+              <p class="m-note">us sizing!</p>
+            {/if}
           {/if}
 
           {@render errline()}
@@ -743,13 +737,13 @@
             {:else}
               <p class="fine">you've already picked {GAME_PICK_COUNT}, remove one first</p>
             {/if}
-          {:else if currentPrizeSrc === modal.p.src && (modal.p.src !== 'tshirt' || shirtSize === data.order?.shirtSize)}
+          {:else if currentPrizeSrc === modal.p.src && (!modal.p.sized || shirtSize === data.order?.shirtSize)}
             <p class="fine">this is your current pick!</p>
           {:else}
             <button
               class="cta"
               type="button"
-              disabled={submitting || (modal.p.src === 'tshirt' && !shirtSize)}
+              disabled={submitting || (modal.p.sized && !shirtSize)}
               onclick={() => orderPrize(modal.p)}
             >
               {submitting
@@ -881,10 +875,6 @@
   .lede.center.countdown {
     margin-top: calc(12px * var(--scale));
     color: rgba(80, 75, 73, 0.55);
-  }
-  /* TEMP (2026-07): the june-list disclaimer, full ink so it actually reads */
-  .lede.center.intro2.temp-note {
-    margin-top: calc(20px * var(--scale));
   }
   .cd-time {
     color: var(--ink);
@@ -1320,6 +1310,16 @@
   }
   .tile.dim {
     opacity: 0.4;
+  }
+  /* the little "new!" sticker on freshly-added prizes */
+  .fresh {
+    position: absolute;
+    top: calc(8px * var(--scale));
+    right: calc(8px * var(--scale));
+    transform: rotate(9deg);
+    color: #dbd991;
+    font-size: calc(var(--t-card) * 0.85);
+    pointer-events: none;
   }
   .thumb {
     flex: none;

@@ -52,9 +52,9 @@ export async function POST({ request, cookies, getClientAddress }) {
     const p = PRIZE_STUFF.find((x) => x.src === String(body.prize));
     if (!p) return json({ ok: false, error: 'pick a prize from the pool' }, { status: 422 });
     let shirt = null;
-    if (p.src === 'tshirt') {
+    if (p.sized) {
       shirt = String(body.shirtSize ?? '');
-      if (!TSHIRT_SIZES.includes(shirt)) return json({ ok: false, error: 'pick a shirt size' }, { status: 422 });
+      if (!TSHIRT_SIZES.includes(shirt)) return json({ ok: false, error: 'pick a size' }, { status: 422 });
     }
     pick = { prize_type: 'prize', prize: p.name, shirt_size: shirt, games: '' };
   } else {
