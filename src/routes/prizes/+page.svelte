@@ -3,9 +3,11 @@
   // live server-side (+page.server.js decides the state, /api/shop/order
   // re-validates everything); this page is just the picker.
   //
-  // Signed out, the same grids render as a browse-only prize list: modals
-  // still open (info + store links, no order action), with a small sign-in
-  // nudge in the header.
+  // Signed out (or signed in with nothing to pick: no submission, review
+  // pending, shop closed) the same grids render as a browse-only prize list:
+  // modals still open (info + store links, no order action), and the header
+  // carries a one-line note saying why there's no picking - sign-in nudge,
+  // "no submission under this email", "in review", or "shop closed".
   //
   // Pick flow: clicking any card opens a modal with a bit more info + the
   // order button (plus size for sized apparel; every order shows its shipping
@@ -177,12 +179,16 @@
     );
   }
 
-  // panel-only states hold a paragraph or two; centre those vertically. The
-  // pick UI (and the signed-out browse list) is a normal top-to-bottom
-  // document scroll.
-  const slim = $derived(
-    data.state === 'shop' ? !!data.locked : data.state !== 'signedout'
+  // the browse-only states: everyone who can't (or can't yet) pick still gets
+  // the full prize list, with a context line up top instead of a dead-end
+  // panel. Only rejected / noaddress / error stay panel-only.
+  const browseOnly = $derived(
+    ['signedout', 'nosubmission', 'pending', 'closed'].includes(data.state)
   );
+
+  // panel-only states hold a paragraph or two; centre those vertically. The
+  // pick UI and the browse list are a normal top-to-bottom document scroll.
+  const slim = $derived(data.state === 'shop' ? !!data.locked : !browseOnly);
 
   // "june", from the shop's jam label ('2026-06') - for copy, instead of the raw label
   const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
@@ -192,19 +198,12 @@
   // landing EdgeDoodles: ink-recolored, faint, pinned near the viewport edges).
   // top is % of the viewport, edge/w are px (scaled by --scale in the CSS).
   const DOODLES = {
-    signedout: [
+    // the tall browse pages (signed out or signed in with nothing to pick)
+    browse: [
       { src: 'dino', side: 'left', top: '12%', edge: -70, w: 300 },
       { src: 'duck', side: 'right', top: '40%', edge: -60, w: 240 },
       { src: 'star', side: 'left', top: '64%', edge: -60, w: 260 },
       { src: 'fries', side: 'right', top: '86%', edge: -50, w: 200 }
-    ],
-    nosubmission: [
-      { src: 'fish', side: 'right', top: '24%', edge: -40, w: 220 },
-      { src: 'cat', side: 'left', top: '68%', edge: -90, w: 360 }
-    ],
-    pending: [
-      { src: 'duck', side: 'left', top: '18%', edge: -60, w: 240 },
-      { src: 'fries', side: 'right', top: '70%', edge: -50, w: 200 }
     ],
     rejected: [
       { src: 'jester', side: 'right', top: '30%', edge: -70, w: 260 },
@@ -213,10 +212,6 @@
     noaddress: [
       { src: 'antenna', side: 'left', top: '10%', edge: -100, w: 340 },
       { src: 'duck', side: 'right', top: '70%', edge: -60, w: 240 }
-    ],
-    closed: [
-      { src: 'bird', side: 'right', top: '14%', edge: -60, w: 240 },
-      { src: 'stove', side: 'left', top: '66%', edge: -110, w: 340 }
     ],
     error: [
       { src: 'face', side: 'right', top: '30%', edge: -180, w: 420 },
@@ -234,7 +229,9 @@
     ]
   };
   const doodles = $derived(
-    DOODLES[data.state === 'shop' ? (data.locked ? 'summary' : 'shop') : data.state] ?? []
+    DOODLES[
+      data.state === 'shop' ? (data.locked ? 'summary' : 'shop') : browseOnly ? 'browse' : data.state
+    ] ?? []
   );
 
   // each card gets one of the 3 lumpy hover skins, re-rolled every page load.
@@ -281,46 +278,58 @@
   <!-- ambient dust motes, same full-bleed breakout as the doodle layer -->
   <div class="shop-dust" aria-hidden="true"><Dust /></div>
 
-  {#if data.state === 'signedout'}
-    <!-- signed out: the full prize list, browse-only, with a small sign-in
-         nudge in the header (the modals swap their order button for it too) -->
+  {#if browseOnly}
+    <!-- the browse list: full grids for everyone without a pick to make, with
+         a one-line note in the header saying where they stand (the modals
+         drop their order buttons too) -->
     <header class="head sunk">
       <!-- underlineBrush: the landing line is 4 art-px under 40px type; keep the
            thickness proportional to this 64px title (4 * 64/40) -->
       <h1 class="txt title big" use:jiggle={{ underlineBrush: 6.4 }}>prizes</h1>
       <p class="lede center intro2">
-        along with every prize, you'll be shipped stickers.
+        along with every prize, you'll be shipped stickers!
       </p>
-      {#if !data.closed}
-        <!-- the deadline line (it lives at the page bottom for noaddress) -->
-        <p class="deadline deadline-top">
-          if you participated in <span class="jam-name">{data.jamName}</span>, you have until
-          {data.closesText} to select your prize!
+      <!-- the context line. Once the shop's closed the list is just a list -
+           the only person who still gets a note is an approved submitter who
+           never picked (the 'closed' state). While it's open: the signed-out
+           deadline, or the signed-in where-you-stand notes. -->
+      {#if data.state === 'signedout'}
+        {#if !data.closed}
+          <!-- (it lives at the page bottom for noaddress) -->
+          <p class="deadline deadline-top">
+            if you participated in <span class="jam-name">{data.jamName}</span>, you have until
+            {data.closesText} to select your prize!
+          </p>
+        {/if}
+      {:else if data.state === 'closed'}
+        <p class="deadline deadline-top loud">
+          the {jamMonth} prize shop has closed and you never picked your prize! dm @augie on
+          slack and i'll sort you out.
+        </p>
+      {:else if data.closed}
+        <!-- no submission / unreviewed after close: nothing to say, just browse -->
+      {:else if data.state === 'nosubmission'}
+        <p class="deadline deadline-top loud">
+          hm, i don't see a {jamMonth} jam submission under {data.me.email}. if you submitted with
+          a different email, <a href="/api/auth/logout">sign out</a> and use that one, or dm
+          @augie on slack and i'll sort it out!
+        </p>
+      {:else if data.state === 'pending'}
+        <p class="deadline deadline-top loud">
+          your {jamMonth} submission is in, but hasn't been reviewed yet! you'll get a DM once
+          it's approved, then you can come back and pick :)
         </p>
       {/if}
-      {#if data.authError}
-        <p class="err">that sign-in didn't go through, give it another try!</p>
+      {#if data.state === 'signedout'}
+        {#if data.authError}
+          <p class="err">that sign-in didn't go through, give it another try!</p>
+        {/if}
+        <a class="signin signin-top" href="/api/auth/login?flow=shop">
+          <img src="/assets/signin.png" alt="sign in with hack club" />
+        </a>
       {/if}
-      <a class="signin signin-top" href="/api/auth/login?flow=shop">
-        <img src="/assets/signin.png" alt="sign in with hack club" />
-      </a>
     </header>
     {@render prizeGrids()}
-  {:else if data.state === 'nosubmission'}
-    <section class="panel">
-      <p class="lede">
-        hm, no {jamMonth} jam submission under {data.me.email}. if you submitted with a different
-        email, <a href="/api/auth/logout">sign out</a> and use that one. otherwise, dm @augie on
-        slack and i'll sort it out.
-      </p>
-    </section>
-  {:else if data.state === 'pending'}
-    <section class="panel">
-      <p class="lede">
-        your submission for {jamMonth} was received, but hasn't been reviewed yet! you'll get a DM
-        once it's approved :)
-      </p>
-    </section>
   {:else if data.state === 'rejected'}
     <section class="panel">
       <p class="lede">
@@ -337,13 +346,6 @@
       </p>
       <p class="lede">once it's set, come back and sign in again so i can grab it fresh.</p>
       <a class="go" href="/api/auth/login?flow=shop">i added it, check again</a>
-    </section>
-  {:else if data.state === 'closed'}
-    <section class="panel">
-      <p class="lede">
-        the shop for the {jamMonth} jam closed {data.closesText}! dm @augie on slack if you forgot
-        to pick a prize or if you have questions
-      </p>
     </section>
   {:else if data.state === 'error'}
     <section class="panel">
@@ -407,7 +409,7 @@
       <header class="head sunk">
         <h1 class="txt title big" use:jiggle={{ underlineBrush: 6.4 }}>prizes</h1>
         <p class="lede center intro2">
-          along with every prize, you'll be shipped stickers.
+          along with every prize, you'll be shipped stickers!
         </p>
         <p class="lede center intro2 countdown">
           you have <span class="cd-time">{countdown}</span> to pick your prize!
@@ -490,9 +492,9 @@
   {/if}
 </main>
 
-<!-- the two prize grids, shared by the pick UI and the signed-out browse list.
+<!-- the two prize grids, shared by the pick UI and the browse-only states.
      The selection classes (sel/dim, the pick counter) all key off state that's
-     simply empty when signed out, so the same markup serves both. -->
+     simply empty when there's nothing to pick, so the same markup serves both. -->
 {#snippet prizeGrids()}
   <p class="suggest-note suggest-top">
     you can suggest prizes using
@@ -692,7 +694,7 @@
             <p class="m-note">instead of one prize, you can grab {GAME_PICK_COUNT} indie games.</p>
           {/if}
 
-          {#if modal.kind === 'item' && modal.p.sized && data.state !== 'signedout'}
+          {#if modal.kind === 'item' && modal.p.sized && !browseOnly}
             <div class="sizes">
               {#each TSHIRT_SIZES as s, i (s)}
                 <button
@@ -714,8 +716,8 @@
 
           {@render errline()}
 
-          {#if data.state === 'signedout'}
-            <!-- browse-only: no order action; the header's sign-in covers it -->
+          {#if browseOnly}
+            <!-- browse-only: no order action; the header's note/sign-in covers it -->
           {:else if modal.kind === 'game'}
             {#if gamePicks.includes(modal.p.src)}
               <!-- with all 3 picked, this modal is also the way back to ordering
@@ -1022,6 +1024,11 @@
   .deadline.deadline-top {
     margin-top: calc(14px * var(--scale));
     opacity: 0.6;
+  }
+  /* the signed-in context lines (no submission / in review / shop closed):
+     full strength, they're the answer to "where's my pick", not ambience */
+  .deadline.deadline-top.loud {
+    opacity: 1;
   }
 
   /* "signed in as ..." - pinned to the very bottom, same size as everything else */
