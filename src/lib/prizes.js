@@ -42,7 +42,6 @@ export const PRIZES = [
   { src: 'outerwilds',      alt: 'Outer Wilds',            name: 'outer wilds',            c: '#91a4db', s: 94,  r: 11,  game: true, href: 'https://store.steampowered.com/app/753640/Outer_Wilds/' },
   { src: 'papersplease',    alt: 'Papers, Please',         name: 'papers, please',         c: '#b991db', s: 88,  r: -12, game: true, href: 'https://store.steampowered.com/app/239030/Papers_Please/' },
   { src: 'pizzatower',      alt: 'Pizza Tower',            name: 'pizza tower',            c: '#97db91', s: 90,  r: 9,   game: true, href: 'https://store.steampowered.com/app/2231450/Pizza_Tower/' },
-  { src: 'tunic',           alt: 'TUNIC',                  name: 'tunic',                  c: '#db9591', s: 92,  r: -6,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/553420/TUNIC/' },
   { src: 'omori',           alt: 'OMORI',                  name: 'omori',                  c: '#db9591', s: 90,  r: -6,  fresh: true, game: true, shopOnly: true, href: 'https://store.steampowered.com/app/1150690/OMORI/' },
   { src: 'pixelcomposer',   alt: 'Pixel Composer',         name: 'pixel composer',         c: '#dbaf91', s: 88,  r: -8,  lead: 'that’s', href: 'https://pixel-composer.com/', blurb: 'a node-based tool for pixel art effects and animation' },
   { src: 'otamatone',       alt: 'Otamatone',              name: 'otamatone',              c: '#b991db', s: 96,  r: -12, fresh: true, lead: 'that’s an', href: 'https://hamee.com/collections/otamatone', blurb: 'the famous singing synth' },
@@ -72,7 +71,7 @@ export const PRIZES = [
 // more like ~$100 landed with a psu + sd card)
 
 // how many indie games you can take instead of one item from the pool
-export const GAME_PICK_COUNT = 3;
+export const GAME_PICK_COUNT = 2;
 
 // the indie games (you can pick GAME_PICK_COUNT of these instead of one physical
 // prize) and everything else, split for the list page + shop. Order preserved.
@@ -86,7 +85,7 @@ export const PRIZE_STUFF = PRIZES.filter((p) => !p.game);
 export const PRIZE_HD = new Set([
   'artofgamedesign', 'babaisyou', 'camera', 'celeste', 'controller', 'duck',
   'hollowknight', 'mascot', 'shark', 'steam', 'thumby',
-  'balatro', 'stardew', 'pizzatower', 'vampiresurvivors', 'tunic',
+  'balatro', 'stardew', 'pizzatower', 'vampiresurvivors',
   'outerwilds', 'papersplease', 'lethalcompany', 'undertale',
   'ashorthike', 'downwell', 'inscryption', 'animalwell', 'obradinn',
   'thomaswasalone', 'superhexagon', 'hotlinemiami', 'supermeatboy', 'crueltysquad',

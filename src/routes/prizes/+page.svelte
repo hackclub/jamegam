@@ -1087,7 +1087,7 @@
     gap: calc(40px * var(--scale));
     padding: calc(38px * var(--scale)) calc(46px * var(--scale));
   }
-  /* 3 games: the covers make a row up top, the details sit centered below */
+  /* picked games: the covers make a row up top, the details sit centered below */
   .picked-card.stack {
     flex-direction: column;
     gap: calc(24px * var(--scale));
