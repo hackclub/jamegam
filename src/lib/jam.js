@@ -8,6 +8,9 @@ export const JAM = {
   startDate: '2026-07-22T17:00:00Z',
   endDate: '2026-07-26T17:00:00Z',
   itchUrl: 'https://itch.io/jam/gmtk-jam-2026',
+  // this month's submission form (Fillout). a new form each cycle; its hidden
+  // `jam` label must match what shop.js flips to once review starts.
+  submitUrl: 'https://forms.hackclub.com/jame-gam-submit-2',
   // record id of this jam's row in the "Jams" Airtable table; new signups get
   // linked to it via the Sign Ups `jam` field. create the new jam's row each
   // month and paste its rec... id here.

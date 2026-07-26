@@ -6,6 +6,7 @@
 import { readSession, SESSION_COOKIE } from '$lib/server/session.js';
 import { findSubmissions, findOrder } from '$lib/server/shopdb.js';
 import { SHOP } from '$lib/shop.js';
+import { JAM } from '$lib/jam.js';
 
 export const prerender = false;
 
@@ -17,6 +18,9 @@ export async function load({ cookies, url }) {
     closesAt: SHOP.closesAt,
     closesText: SHOP.closesText,
     closed,
+    // the submission form for this shop's cycle - only offered while jam.js is
+    // still on the same cycle (after JAM rolls over, its form is next month's)
+    submitUrl: JAM.startDate.slice(0, 7) === SHOP.jam ? JAM.submitUrl : null,
     authError: url.searchParams.get('auth') === 'error'
   };
 

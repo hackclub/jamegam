@@ -310,9 +310,11 @@
         <!-- no submission / unreviewed after close: nothing to say, just browse -->
       {:else if data.state === 'nosubmission'}
         <p class="deadline deadline-top loud">
-          hm, i don't see a {jamMonth} jam submission under {data.me.email}. if you submitted with
-          a different email, <a href="/api/auth/logout">sign out</a> and use that one, or dm
-          @augie on slack and i'll sort it out!
+          hm, i don't see a {jamMonth} jam submission under {data.me.email}.
+          {#if data.submitUrl}haven't submitted your game yet?
+            <a href={data.submitUrl}>submit it here</a>!{/if}
+          if you submitted with a different email, <a href="/api/auth/logout">sign out</a> and
+          use that one, or dm @augie on slack and i'll sort it out!
         </p>
       {:else if data.state === 'pending'}
         <p class="deadline deadline-top loud">
