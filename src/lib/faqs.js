@@ -16,8 +16,8 @@ export const FAQS = [
   },
   {
     id: 'start',
-    q: 'where do i even start?',
-    a: 'grab an engine and follow one tutorial all the way through. <a href="https://godotengine.org" target="_blank" rel="noopener">godot</a> is a great first pick (free and beginner friendly), and <a href="https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html" target="_blank" rel="noopener">the official first-game tutorial</a> holds your hand the whole way. draw pixel art in <a href="https://www.piskelapp.com" target="_blank" rel="noopener">piskel</a>, make sound effects with <a href="https://sfxr.me" target="_blank" rel="noopener">jsfxr</a>, and write music in <a href="https://beepbox.co" target="_blank" rel="noopener">beepbox</a> (all free, all in your browser). that\'s genuinely enough to ship something :)'
+    q: 'how do i start learning to make a games?',
+    a: 'pick a game engine, and follow one tutorial all the way through. <a href="https://godotengine.org" target="_blank" rel="noopener">godot</a> is a great first pick (free and beginner friendly), and <a href="https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html" target="_blank" rel="noopener">here</a> is a link to their official 2d game tutorial. definitely ask around in hack club for other suggestions or advice :)'
   },
   {
     id: 'busy',
@@ -57,7 +57,7 @@ export const FAQS = [
   {
     id: 'account',
     q: 'do i need a hack club account?',
-    a: 'yep! you\'ll get one when you sign up (it\'s free, and it\'s also your key to the hack club slack). to get prizes, your account needs to be <span class="faq-em">verified</span> (a quick check that you\'re actually a teenager). you can sort that out at <a href="https://auth.hackclub.com" target="_blank" rel="noopener">auth.hackclub.com</a>!'
+    a: 'yep! you\'ll get one automatically when you sign up. to get prizes, your account needs to be <span class="faq-em">verified</span> (it\'s how we check that you\'re actually a teenager). you can do that at <a href="https://auth.hackclub.com" target="_blank" rel="noopener">auth.hackclub.com</a>!'
   },
   {
     id: 'hackatime',
