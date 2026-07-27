@@ -3,6 +3,7 @@
   import { initFit } from '$lib/viewport.js';
 
   import Logo from '$lib/components/Logo.svelte';
+  import Trophy from '$lib/components/Trophy.svelte';
   import Dust from '$lib/components/Dust.svelte';
   import BottomGlow from '$lib/components/BottomGlow.svelte';
   import TopGlow from '$lib/components/TopGlow.svelte';
@@ -163,6 +164,9 @@
     <div id="noise"></div>
   </div>
 </div>
+
+<!-- the ceiling trophy, fixed above everything; plays once on signup success -->
+<Trophy />
 
 <!-- dev-only column guides (?debug). Fixed + pointer-events:none, so they
      overlay the page without affecting layout: solid lines = column max-width

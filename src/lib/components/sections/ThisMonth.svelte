@@ -89,7 +89,7 @@
     <p bind:this={durEl} id="jam-duration" class="txt month-dur">this jam will run for <span style="color:#9a2982;">4 days</span>!</p>
     <!-- post-jam only: revealed by tick() once the jam has ended (hidden until then) -->
     <div bind:this={nextEl} id="jam-next" style="display:none;">
-      <p class="txt month-next">made a game? <a href={JAM.submitUrl}>submit it here</a> to claim your prizes!</p>
+      <p class="txt month-next">made a game? <a href={JAM.submitUrl}>submit it here</a>!</p>
       <p class="txt month-next">and join us next month for another jam!</p>
     </div>
     <p class="txt month-disclaimer">(not affiliated with game maker&rsquo;s toolkit)</p>

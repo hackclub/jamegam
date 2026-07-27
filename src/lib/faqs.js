@@ -67,7 +67,7 @@ export const FAQS = [
   {
     id: 'font',
     q: "what is this glorious font?",
-    a: 'i drew it just for this, you can download it <a href="/fonts/augiepixel.ttf" download>here</a>'
+    a: 'i drew it just for this, you can download it <a href="/fonts/augiepixel.ttf" download>here</a><br>you are free to use it for anything without credit or permission :] <span class="faq-dim">(but i think it\'s cool if you tell me)</span>'
   },
   {
     id: 'site',
