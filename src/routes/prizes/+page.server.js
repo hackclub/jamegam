@@ -40,10 +40,10 @@ export async function load({ cookies, url }) {
   // the gate: pushed to the YSWS component table (= reviewed + approved) and
   // not rejected
   const approved = submissions.filter(
-    (r) => r.fields.ysws_project_submission_record?.length && !r.fields.rejected
+    (r) => r.fields.ysws_project_submission_record?.length && r.fields.review_status !== 'Rejected'
   );
   if (!approved.length) {
-    const allRejected = submissions.every((r) => r.fields.rejected);
+    const allRejected = submissions.every((r) => r.fields.review_status === 'Rejected');
     return { ...base, state: allRejected ? 'rejected' : 'pending', me };
   }
   const gameTitles = approved.map((r) => r.fields.game_title).filter(Boolean);

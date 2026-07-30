@@ -64,7 +64,7 @@ export async function POST({ request, cookies, getClientAddress }) {
   // ---- re-check the approval gate server-side ----
   const submissions = await findSubmissions(session.email, SHOP.jam);
   const approved = submissions.filter(
-    (r) => r.fields.ysws_project_submission_record?.length && !r.fields.rejected
+    (r) => r.fields.ysws_project_submission_record?.length && r.fields.review_status !== 'Rejected'
   );
   if (!approved.length) {
     return json({ ok: false, error: 'no approved submission for this jam yet' }, { status: 403 });
