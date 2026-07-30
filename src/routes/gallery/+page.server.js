@@ -35,6 +35,15 @@ async function listAll(table, fields) {
   return records;
 }
 
+// shippers type the url by hand, so a scheme-less "foo.itch.io/bar" shows up
+// now and then - left alone it links relative to jamegam.hackclub.com (and
+// breaks the dedupe key and the thumbnail fetch too)
+function withScheme(raw) {
+  const s = String(raw ?? '').trim();
+  if (!s) return null;
+  return /^https?:\/\//i.test(s) ? s : `https://${s.replace(/^\/+/, '')}`;
+}
+
 // dedupe key: host + path, no www/query/trailing slash, lowercased - the same
 // game submitted by two teammates (or with ?query cruft) collapses to one card
 function normUrl(raw) {
@@ -123,7 +132,7 @@ export async function load() {
 
     const byUrl = new Map();
     for (const r of ysws) {
-      const url = r.fields['Playable URL'];
+      const url = withScheme(r.fields['Playable URL']);
       const key = (url && normUrl(url)) ?? `rec:${r.id}`;
       const sub = subById.get(r.fields.Submission?.[0]);
       // title: the submission form row's game_title; failing that the first
