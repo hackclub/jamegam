@@ -16,6 +16,7 @@ const mockSubmission = (email, jam) => ({
     email,
     jam,
     game_title: 'mock game (dev)',
+    review_status: 'Approved',
     ysws_project_submission_record: ['recMOCKYSWS'],
     address_line_1: '15 Falls Rd',
     address_line_2: '',

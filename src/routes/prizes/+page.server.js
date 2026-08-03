@@ -5,12 +5,14 @@
 //   shop (pick UI / order summary) | error
 import { readSession, SESSION_COOKIE } from '$lib/server/session.js';
 import { findSubmissions, findOrder } from '$lib/server/shopdb.js';
-import { SHOP } from '$lib/shop.js';
+import { SHOP, SHOP_STATUSES, closesAtFor, closesTextFor } from '$lib/shop.js';
 import { JAM } from '$lib/jam.js';
 
 export const prerender = false;
 
 export async function load({ cookies, url }) {
+  // Global values, used until we know who's asking. Anyone who's been DMed gets
+  // their own (earlier) deadline swapped in below.
   const closed = Date.now() > Date.parse(SHOP.closesAt);
   const base = {
     jam: SHOP.jam,
@@ -37,16 +39,28 @@ export async function load({ cookies, url }) {
   }
   if (!submissions.length) return { ...base, state: 'nosubmission', me };
 
-  // the gate: pushed to the YSWS component table (= reviewed + approved) and
-  // not rejected
-  const approved = submissions.filter(
-    (r) => r.fields.ysws_project_submission_record?.length && r.fields.review_status !== 'Rejected'
-  );
+  // the gate: a reviewer approved it (or Augie marked it Prize Only). Deliberately
+  // NOT "has a staged YSWS row" - staging waits on Augie's spotcheck, and the shop
+  // opens on the reviewer's call so nobody waits on the second pass to pick.
+  const approved = submissions.filter((r) => SHOP_STATUSES.includes(r.fields.review_status));
   if (!approved.length) {
     const allRejected = submissions.every((r) => r.fields.review_status === 'Rejected');
     return { ...base, state: allRejected ? 'rejected' : 'pending', me };
   }
   const gameTitles = approved.map((r) => r.fields.game_title).filter(Boolean);
+
+  // their personal deadline, from the earliest prize DM across their rows (a
+  // repeat submitter has several rows but only ever got one DM)
+  const dmSentAt = approved
+    .map((r) => r.fields.approved_dm_sent_at)
+    .filter(Boolean)
+    .sort()[0];
+  Object.assign(base, {
+    closesAt: new Date(closesAtFor(dmSentAt)).toISOString(),
+    closesText: closesTextFor(dmSentAt),
+    closed: Date.now() > closesAtFor(dmSentAt)
+  });
+  const closedForThem = base.closed;
 
   let orderRec = null;
   try {
@@ -105,10 +119,10 @@ export async function load({ cookies, url }) {
       gameTitles,
       addresses,
       order,
-      locked: closed || ['fulfilled', 'processing', 'canceled'].includes(order.status)
+      locked: closedForThem || ['fulfilled', 'processing', 'canceled'].includes(order.status)
     };
   }
-  if (closed) return { ...base, state: 'closed', me, gameTitles };
+  if (closedForThem) return { ...base, state: 'closed', me, gameTitles };
   if (!addresses.length) return { ...base, state: 'noaddress', me, gameTitles };
   return { ...base, state: 'shop', me, gameTitles, addresses, order: null, locked: false };
 }
