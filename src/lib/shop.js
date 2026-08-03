@@ -5,8 +5,8 @@
 export const SHOP = {
   jam: '2026-07', // must match submission_form.jam
   jamName: 'the GMTK game jam', // display name (lags jam.js by a cycle, so it can't read JAM.name)
-  closesAt: '2026-08-03T03:59:00Z', // sunday 2026-08-02, 11:59pm ET
-  closesText: 'sunday, august 2 at 11:59pm ET'
+  closesAt: '2026-08-10T03:59:00Z', // sunday 2026-08-09, 11:59pm ET
+  closesText: 'sunday, august 9 at 11:59pm ET'
 };
 
 export const TSHIRT_SIZES = ['S', 'M', 'L', 'XL'];
