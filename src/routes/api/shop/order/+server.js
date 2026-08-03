@@ -13,7 +13,7 @@ import { readSession, SESSION_COOKIE } from '$lib/server/session.js';
 import { findSubmissions, findOrder, createRecord, patchRecord } from '$lib/server/shopdb.js';
 import { rateLimit } from '$lib/server/ratelimit.js';
 import { config } from '$lib/server/config.js';
-import { SHOP, TSHIRT_SIZES } from '$lib/shop.js';
+import { SHOP, SHOP_STATUSES, TSHIRT_SIZES, closesAtFor, closesTextFor } from '$lib/shop.js';
 import { PRIZE_GAMES, PRIZE_STUFF, GAME_PICK_COUNT } from '$lib/prizes.js';
 
 export const prerender = false;
@@ -24,10 +24,6 @@ export async function POST({ request, cookies, getClientAddress }) {
 
   if (!rateLimit(getClientAddress())) {
     return json({ ok: false, error: 'slow down a sec! try again in a moment' }, { status: 429 });
-  }
-
-  if (Date.now() > Date.parse(SHOP.closesAt)) {
-    return json({ ok: false, error: `the shop closed ${SHOP.closesText}` }, { status: 403 });
   }
 
   let body;
@@ -62,12 +58,23 @@ export async function POST({ request, cookies, getClientAddress }) {
   }
 
   // ---- re-check the approval gate server-side ----
+  // Same gate as the page: reviewer-approved (or Prize Only), not "has a staged
+  // YSWS row".
   const submissions = await findSubmissions(session.email, SHOP.jam);
-  const approved = submissions.filter(
-    (r) => r.fields.ysws_project_submission_record?.length && r.fields.review_status !== 'Rejected'
-  );
+  const approved = submissions.filter((r) => SHOP_STATUSES.includes(r.fields.review_status));
   if (!approved.length) {
     return json({ ok: false, error: 'no approved submission for this jam yet' }, { status: 403 });
+  }
+
+  // ---- their personal deadline ----
+  // Checked here rather than up top because it depends on when their prize DM
+  // went out, which we only know once we have their submission rows.
+  const dmSentAt = approved
+    .map((r) => r.fields.approved_dm_sent_at)
+    .filter(Boolean)
+    .sort()[0];
+  if (Date.now() > closesAtFor(dmSentAt)) {
+    return json({ ok: false, error: `the shop closed ${closesTextFor(dmSentAt)}` }, { status: 403 });
   }
 
   // ---- resolve the shipping address ----
@@ -170,8 +177,10 @@ export async function POST({ request, cookies, getClientAddress }) {
       if (missingBday) patch.birthday = session.birthday;
       await patchRecord(config.shop.submissionsTable, rec.id, patch);
 
-      // mirror into the already-pushed YSWS component row, whose copy is just
-      // as incomplete as the source row was
+      // mirror into the staged YSWS component row, whose copy is just as
+      // incomplete as the source row was. Often there isn't one yet - staging
+      // waits on the spotcheck - and that's fine: the sync copies the address
+      // across from the row we just patched when it does stage.
       const yswsId = f.ysws_project_submission_record?.[0];
       if (yswsId) {
         const ypatch = {};

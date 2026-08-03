@@ -10,3 +10,59 @@ export const SHOP = {
 };
 
 export const TSHIRT_SIZES = ['S', 'M', 'L', 'XL'];
+
+// review_status values that open the prize shop. "Prize Only" is Augie's escape
+// hatch for a project he wants to reward but not send to the unified YSWS DB -
+// the sync automation stages on exactly "Approved", so these never stage.
+export const SHOP_STATUSES = ['Approved', 'Prize Only'];
+
+// ---- per-person deadlines ----
+// Everyone gets PICK_WINDOW_DAYS from the moment their "you can pick a prize" DM
+// goes out (`approved_dm_sent_at` on their submission row), expiring at 11:59pm
+// ET that day. SHOP.closesAt is the hard backstop: nobody runs past it, so
+// fulfillment still has one clean batch end. Someone who hasn't been DMed yet
+// has no clock running and just sees the global date.
+export const PICK_WINDOW_DAYS = 4;
+
+const ET = 'America/New_York';
+
+// How far ET is behind UTC at a given instant, in ms (+4h during EDT).
+function etOffsetMs(ms) {
+  const d = new Date(ms);
+  return (
+    Date.parse(d.toLocaleString('sv-SE', { timeZone: 'UTC' })) -
+    Date.parse(d.toLocaleString('sv-SE', { timeZone: ET }))
+  );
+}
+
+// 11:59pm ET on whatever ET calendar day `ms` falls in.
+function endOfEtDay(ms) {
+  const day = new Intl.DateTimeFormat('en-CA', {
+    timeZone: ET,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date(ms));
+  return Date.parse(`${day}T23:59:00Z`) + etOffsetMs(ms);
+}
+
+/** When this person's shop closes, in ms. `dmSentAt` is an ISO string or null. */
+export function closesAtFor(dmSentAt) {
+  const hardClose = Date.parse(SHOP.closesAt);
+  const sent = dmSentAt ? Date.parse(dmSentAt) : NaN;
+  if (!Number.isFinite(sent)) return hardClose;
+  return Math.min(hardClose, endOfEtDay(sent + PICK_WINDOW_DAYS * 86400000));
+}
+
+/** The same deadline as display copy: "sunday, august 9 at 11:59pm ET". */
+export function closesTextFor(dmSentAt) {
+  const at = closesAtFor(dmSentAt);
+  if (at === Date.parse(SHOP.closesAt)) return SHOP.closesText;
+  const when = new Intl.DateTimeFormat('en-US', {
+    timeZone: ET,
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric'
+  }).format(new Date(at));
+  return `${when.toLowerCase()} at 11:59pm ET`;
+}
