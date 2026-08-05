@@ -35,7 +35,7 @@
   // come in it.
   let optionPicks = $state({});
   let addressId = $state(null);
-  let noPhysical = $state(false); // "don't ship me anything physical!"
+  let noStickers = $state(false); // "don't ship me any stickers!" - mail me nothing
   let modal = $state(null); // null | {kind:'item'|'game', p} | {kind:'games-confirm'|'address'}
   let modalEl = $state(null);
   let submitting = $state(false);
@@ -53,6 +53,7 @@
     const ordered = PRIZE_STUFF.find((p) => p.name === data.order.prize);
     if (ordered) optionPicks[ordered.src] = { ...data.order.options };
   }
+  if (data.order?.noStickers) noStickers = true;
   if (data.addresses?.length) {
     addressId = (data.addresses.find((a) => a.primary) || data.addresses[0]).id;
   }
@@ -193,8 +194,8 @@
     submitting = false;
   }
   const orderPrize = (p) =>
-    placeOrder({ type: 'prize', prize: p.src, options: picksFor(p), addressId, noPhysical });
-  const orderGames = () => placeOrder({ type: 'games', games: gamePicks, addressId, noPhysical });
+    placeOrder({ type: 'prize', prize: p.src, options: picksFor(p), addressId, noStickers });
+  const orderGames = () => placeOrder({ type: 'games', games: gamePicks, addressId, noStickers });
 
   // closing the shipping modal: with an order already placed, re-save it so
   // the new address/no-physical choice actually lands on the order
@@ -205,13 +206,13 @@
     }
     await placeOrder(
       data.order.type === 'games'
-        ? { type: 'games', games: orderedSrcs, addressId, noPhysical }
+        ? { type: 'games', games: orderedSrcs, addressId, noStickers }
         : {
             type: 'prize',
             prize: currentPrizeSrc,
             options: data.order.options,
             addressId,
-            noPhysical
+            noStickers
           }
     );
   }
@@ -456,10 +457,10 @@
         <!-- shipping note lives in the your-pick card once an order exists -->
         {#if address && !data.order}
           <p class="ship-note">
-            {#if !noPhysical}shipping to{/if}
+            {#if !noStickers}shipping to{/if}
             <button class="addr-edit" type="button" onclick={() => (modal = { kind: 'address' })}>
-              {noPhysical
-                ? 'not shipping you anything physical'
+              {noStickers
+                ? 'not shipping you any stickers'
                 : `${address.line1}, ${address.city}`}<img class="pencil" src="/assets/pencil.png" alt="" />
             </button>
           </p>
@@ -491,10 +492,10 @@
                   : data.order.prize + (orderedVariant ? ` (${orderedVariant})` : '')}
               </p>
               <p class="fine">
-                {#if !noPhysical}ships to:{/if}
+                {#if !noStickers}ships to:{/if}
                 <button class="addr-edit" type="button" onclick={() => (modal = { kind: 'address' })}>
-                  {noPhysical
-                    ? 'not shipping you anything physical'
+                  {noStickers
+                    ? 'not shipping you any stickers'
                     : `${data.order.address.line1}, ${data.order.address.city}, ${data.order.address.country}`}<img class="pencil" src="/assets/pencil.png" alt="" />
                 </button>
               </p>
@@ -650,30 +651,30 @@
             {#each data.addresses as a (a.id)}
               <button
                 class="addr-row"
-                class:on={String(a.id) === String(addressId) && !noPhysical}
+                class:on={String(a.id) === String(addressId) && !noStickers}
                 type="button"
                 role="radio"
-                aria-checked={String(a.id) === String(addressId) && !noPhysical}
+                aria-checked={String(a.id) === String(addressId) && !noStickers}
                 onclick={() => {
                   addressId = a.id;
-                  noPhysical = false;
+                  noStickers = false;
                 }}
               >
-                <span class="mark" aria-hidden="true">[{String(a.id) === String(addressId) && !noPhysical ? 'x' : ' '}]</span>
+                <span class="mark" aria-hidden="true">[{String(a.id) === String(addressId) && !noStickers ? 'x' : ' '}]</span>
                 {a.line1}{a.line2 ? `, ${a.line2}` : ''}, {a.city}{a.region ? `, ${a.region}` : ''}, {a.country}{#if !a.phone}
                   <span class="no-phone">(needs a phone number!)</span>{/if}
               </button>
             {/each}
             <button
               class="addr-row"
-              class:on={noPhysical}
+              class:on={noStickers}
               type="button"
               role="radio"
-              aria-checked={noPhysical}
-              onclick={() => (noPhysical = !noPhysical)}
+              aria-checked={noStickers}
+              onclick={() => (noStickers = !noStickers)}
             >
-              <span class="mark" aria-hidden="true">[{noPhysical ? 'x' : ' '}]</span>
-              don't ship me anything physical!
+              <span class="mark" aria-hidden="true">[{noStickers ? 'x' : ' '}]</span>
+              don't ship me any stickers!
             </button>
           </div>
           {@render errline()}
