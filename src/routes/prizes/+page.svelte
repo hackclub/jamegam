@@ -147,10 +147,22 @@
       : parts[0];
   });
 
-  // "steampowered.com" from a store href, for the check-it-out line
+  // "steampowered.com" from a store href, for the check-it-out line. The label
+  // can't wrap (the out-arrow has to stay glued to the last letter), so an
+  // overlong host would scroll the modal sideways - game-makers-toolkit
+  // .creator-spring.com is 38 characters. Past MAX_DOMAIN we drop leading
+  // subdomain labels until it fits, never below the last two: informative ones
+  // like kenney.itch.io and magazine.hackclub.com are short enough to survive.
+  const MAX_DOMAIN = 26;
   function domainOf(href) {
     try {
-      return new URL(href).hostname.replace(/^www\./, '').replace(/^store\./, '');
+      let host = new URL(href).hostname.replace(/^www\./, '').replace(/^store\./, '');
+      let parts = host.split('.');
+      while (host.length > MAX_DOMAIN && parts.length > 2) {
+        parts = parts.slice(1);
+        host = parts.join('.');
+      }
+      return host;
     } catch {
       return href;
     }
