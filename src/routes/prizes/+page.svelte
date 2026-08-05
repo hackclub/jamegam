@@ -10,8 +10,10 @@
   // "no submission under this email", "in review", or "shop closed".
   //
   // Pick flow: clicking any card opens a modal with a bit more info + the
-  // order button (plus size for sized apparel; every order shows its shipping
-  // address, since stickers + the patch ship physically with every prize).
+  // order button (plus a button row per option group the item declares - size,
+  // colour - which all have to be picked before it can be ordered; every order
+  // shows its shipping address, since stickers + the patch ship physically
+  // with every prize).
   // Indie games accumulate instead: add up to GAME_PICK_COUNT in their modals,
   // and the modal flips to an order-confirm step when the last one is added.
   // An existing (unlocked) order shows as a "your pick" block at the top with
@@ -21,14 +23,17 @@
   import { jiggle } from '$lib/actions/jiggle.js';
   import { rainbowBorder } from '$lib/actions/rainbowBorder.js';
   import { PRIZE_GAMES, PRIZE_STUFF, PRIZE_HD, GAME_PICK_COUNT } from '$lib/prizes.js';
-  import { TSHIRT_SIZES } from '$lib/shop.js';
+  import { variantValues } from '$lib/shop.js';
   import Dust from '$lib/components/Dust.svelte';
 
   let { data } = $props();
 
   // ---- selection state (games accumulate; prizes order straight from the modal) ----
   let gamePicks = $state([]); // srcs, up to GAME_PICK_COUNT
-  let shirtSize = $state('');
+  // per-item option picks (size, colour, ...): { [prize src]: { [group key]: choice } }.
+  // Keyed by item so a hoodie colour can't leak onto a controller that doesn't
+  // come in it.
+  let optionPicks = $state({});
   let addressId = $state(null);
   let noPhysical = $state(false); // "don't ship me anything physical!"
   let modal = $state(null); // null | {kind:'item'|'game', p} | {kind:'games-confirm'|'address'}
@@ -44,7 +49,10 @@
       .map((name) => PRIZE_GAMES.find((g) => g.name === name)?.src)
       .filter(Boolean);
   }
-  if (data.order?.shirtSize) shirtSize = data.order.shirtSize;
+  if (data.order?.type === 'prize') {
+    const ordered = PRIZE_STUFF.find((p) => p.name === data.order.prize);
+    if (ordered) optionPicks[ordered.src] = { ...data.order.options };
+  }
   if (data.addresses?.length) {
     addressId = (data.addresses.find((a) => a.primary) || data.addresses[0]).id;
   }
@@ -70,6 +78,23 @@
       : currentPrizeSrc
         ? [currentPrizeSrc]
         : []
+  );
+
+  // ---- per-item options ----
+  const picksFor = (p) => optionPicks[p.src] ?? {};
+  const setOption = (p, g, choice) => {
+    optionPicks = { ...optionPicks, [p.src]: { ...picksFor(p), [g.key]: choice } };
+  };
+  // every group answered with a real choice? the order button waits on this
+  const optionsReady = (p) => (p.opts ?? []).every((g) => g.choices.includes(picksFor(p)[g.key]));
+  // picks identical to what's already ordered, i.e. nothing left to update
+  const optionsMatchOrder = (p) =>
+    (p.opts ?? []).every((g) => picksFor(p)[g.key] === data.order?.options?.[g.key]);
+  // "L, navy" for the your-pick card
+  const orderedVariant = $derived(
+    data.order?.type === 'prize'
+      ? variantValues(PRIZE_STUFF.find((p) => p.name === data.order.prize), data.order.options)
+      : ''
   );
 
   function openModal(p) {
@@ -156,7 +181,7 @@
     submitting = false;
   }
   const orderPrize = (p) =>
-    placeOrder({ type: 'prize', prize: p.src, shirtSize: shirtSize || undefined, addressId, noPhysical });
+    placeOrder({ type: 'prize', prize: p.src, options: picksFor(p), addressId, noPhysical });
   const orderGames = () => placeOrder({ type: 'games', games: gamePicks, addressId, noPhysical });
 
   // closing the shipping modal: with an order already placed, re-save it so
@@ -172,7 +197,7 @@
         : {
             type: 'prize',
             prize: currentPrizeSrc,
-            shirtSize: data.order.shirtSize || undefined,
+            options: data.order.options,
             addressId,
             noPhysical
           }
@@ -383,7 +408,7 @@
               <p class="picked-name">
                 {data.order.type === 'games'
                   ? data.order.games.join(', ')
-                  : data.order.prize + (data.order.shirtSize ? ` (${data.order.shirtSize})` : '')}
+                  : data.order.prize + (orderedVariant ? ` (${orderedVariant})` : '')}
               </p>
               <p class="fine">
                 ships to: {data.order.address.line1}{data.order.address.line2
@@ -451,7 +476,7 @@
               <p class="picked-name">
                 {data.order.type === 'games'
                   ? data.order.games.join(', ')
-                  : data.order.prize + (data.order.shirtSize ? ` (${data.order.shirtSize})` : '')}
+                  : data.order.prize + (orderedVariant ? ` (${orderedVariant})` : '')}
               </p>
               <p class="fine">
                 {#if !noPhysical}ships to:{/if}
@@ -696,23 +721,32 @@
             <p class="m-note">instead of one prize, you can grab {GAME_PICK_COUNT} indie games.</p>
           {/if}
 
-          {#if modal.kind === 'item' && modal.p.sized && !browseOnly}
-            <div class="sizes">
-              {#each TSHIRT_SIZES as s, i (s)}
-                <button
-                  class="size"
-                  class:sel={shirtSize === s}
-                  type="button"
-                  aria-pressed={shirtSize === s}
-                  style="--h9:url('/assets/hover9_{'abc'[i % 3]}@8x.png')"
-                  onclick={() => (shirtSize = s)}>{s}</button
-                >
-              {/each}
-            </div>
+          {#if modal.kind === 'item' && modal.p.opts && !browseOnly}
+            <!-- one button row per option group (size, colour, ...). The label
+                 only earns its line when there's more than one group to tell
+                 apart. -->
+            {#each modal.p.opts as g (g.key)}
+              {#if modal.p.opts.length > 1}
+                <p class="opt-label">{g.label}</p>
+              {/if}
+              <div class="sizes">
+                {#each g.choices as choice, i (choice)}
+                  <button
+                    class="size"
+                    class:sel={picksFor(modal.p)[g.key] === choice}
+                    type="button"
+                    aria-pressed={picksFor(modal.p)[g.key] === choice}
+                    style="--h9:url('/assets/hover9_{'abc'[i % 3]}@8x.png')"
+                    onclick={() => setOption(modal.p, g, choice)}>{choice}</button
+                  >
+                {/each}
+              </div>
+              {#if g.note}
+                <p class="m-note">{g.note}</p>
+              {/if}
+            {/each}
             {#if modal.p.src === 'tshirt'}
-              <p class="m-note">this is a placeholder, <span class="u">this is not the shirt design</span>. us sizing!</p>
-            {:else}
-              <p class="m-note">us sizing!</p>
+              <p class="m-note">this is a placeholder, <span class="u">this is not the shirt design</span>.</p>
             {/if}
           {/if}
 
@@ -741,19 +775,19 @@
             {:else}
               <p class="fine">you've already picked {GAME_PICK_COUNT}, remove one first</p>
             {/if}
-          {:else if currentPrizeSrc === modal.p.src && (!modal.p.sized || shirtSize === data.order?.shirtSize)}
+          {:else if currentPrizeSrc === modal.p.src && optionsMatchOrder(modal.p)}
             <p class="fine">this is your current pick!</p>
           {:else}
             <button
               class="cta"
               type="button"
-              disabled={submitting || (modal.p.sized && !shirtSize)}
+              disabled={submitting || !optionsReady(modal.p)}
               onclick={() => orderPrize(modal.p)}
             >
               {submitting
                 ? 'ordering...'
                 : currentPrizeSrc === modal.p.src
-                  ? 'update the size!'
+                  ? `update the ${modal.p.opts.map((g) => g.label).join(' + ')}!`
                   : data.order
                     ? 'switch my pick to this!'
                     : 'get this one!'}
@@ -1349,16 +1383,27 @@
     line-height: 1.05;
   }
 
+  /* option rows (size, colour, ...). Colour names are words, so the row wraps
+     rather than running off the panel on the 5-colour hoodie. */
   .sizes {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: calc(8px * var(--scale));
   }
-  /* square size buttons with the same lumpy hover/selected skins as the cards */
+  /* "color" over its button row - only rendered when an item has more than one
+     group, so the m-body gap is pulled back in to keep the pair together */
+  .opt-label {
+    margin: 0 0 calc(-16px * var(--scale));
+    line-height: 1.3;
+    opacity: 0.75;
+  }
+  /* square-ish option buttons with the same lumpy hover/selected skins as the
+     cards; single letters stay square, words just widen the box */
   .size {
     position: relative;
     z-index: 0;
-    width: calc(56px * var(--scale));
+    min-width: calc(56px * var(--scale));
     height: calc(56px * var(--scale));
     display: flex;
     align-items: center;
@@ -1368,7 +1413,7 @@
     color: var(--ink);
     background: none;
     border: none;
-    padding: 0;
+    padding: 0 calc(14px * var(--scale));
     opacity: 0.6;
     cursor: pointer;
   }

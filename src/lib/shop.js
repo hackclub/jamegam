@@ -11,6 +11,44 @@ export const SHOP = {
 
 export const TSHIRT_SIZES = ['S', 'M', 'L', 'XL'];
 
+// ---- per-item options (size, colour, whatever the next one is) ----
+// Some prizes need a choice before they can be ordered: apparel needs a size,
+// the 8bitdo comes in three colours, the hoodie needs both. Each item in
+// prizes.js declares an `opts` array of groups (see SIZE_OPTION there); the
+// picked values are stored on the order row as one human-readable `variant`
+// string, in the order the item declares its groups:
+//     size: L, color: navy
+// Airtable is the fulfillment UI, so this is deliberately a sentence Augie can
+// read in a grid rather than JSON. It round-trips back through parseVariant so
+// the shop can re-show (and let people change) what they picked.
+
+/** { size: 'L', color: 'navy' } -> "size: L, color: navy", in the item's group order. */
+export function variantText(item, picks) {
+  return (item?.opts ?? [])
+    .filter((g) => picks?.[g.key])
+    .map((g) => `${g.key}: ${picks[g.key]}`)
+    .join(', ');
+}
+
+/** "size: L, color: navy" -> { size: 'L', color: 'navy' }. Junk parts are dropped. */
+export function parseVariant(text) {
+  const picks = {};
+  for (const part of String(text || '').split(',')) {
+    const [key, ...rest] = part.split(':');
+    const value = rest.join(':').trim();
+    if (key.trim() && value) picks[key.trim()] = value;
+  }
+  return picks;
+}
+
+/** Just the values, for display: "L, navy". */
+export function variantValues(item, picks) {
+  return (item?.opts ?? [])
+    .map((g) => picks?.[g.key])
+    .filter(Boolean)
+    .join(', ');
+}
+
 // review_status values that open the prize shop. "Prize Only" is Augie's escape
 // hatch for a project he wants to reward but not send to the unified YSWS DB, so
 // it never stages. "No Prize" is the mirror image - it stages to the unified DB
