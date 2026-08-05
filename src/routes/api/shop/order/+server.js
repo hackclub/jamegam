@@ -112,7 +112,7 @@ export async function POST({ request, cookies, getClientAddress }) {
     );
   }
   // carriers want a phone number on the label, so shipping requires one
-  if (body.noPhysical !== true && !addr.phone) {
+  if (body.noStickers !== true && !addr.phone) {
     return json(
       {
         ok: false,
@@ -138,12 +138,11 @@ export async function POST({ request, cookies, getClientAddress }) {
     zip_postal_code: addr.postal,
     country: addr.country,
     phone_number: addr.phone || '',
-    status: 'pending'
+    status: 'pending',
+    // "don't ship me any stickers!" - written either way so changing an order
+    // can un-tick it
+    no_stickers: body.noStickers === true
   };
-  // "don't ship me anything physical!" - only written when set. NOTE: the
-  // Shop Orders table needs a `no_physical` checkbox field before this can be
-  // sent to real Airtable (unknown fields make the create/patch 422).
-  if (body.noPhysical === true) fields.no_physical = true;
 
   // 'processing' = fulfillment started but waiting on something (Steam verifying
   // the purchase, the user confirming a detail) - locked like fulfilled, not done yet.

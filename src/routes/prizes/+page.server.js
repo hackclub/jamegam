@@ -87,6 +87,7 @@ export async function load({ cookies, url }) {
           .split('\n')
           .filter(Boolean),
         status: orderRec.fields.status || 'pending',
+        noStickers: orderRec.fields.no_stickers === true,
         address: {
           line1: orderRec.fields.address_line_1 || '',
           line2: orderRec.fields.address_line_2 || '',
