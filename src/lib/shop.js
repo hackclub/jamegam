@@ -12,9 +12,16 @@ export const SHOP = {
 export const TSHIRT_SIZES = ['S', 'M', 'L', 'XL'];
 
 // review_status values that open the prize shop. "Prize Only" is Augie's escape
-// hatch for a project he wants to reward but not send to the unified YSWS DB -
-// the sync automation stages on exactly "Approved", so these never stage.
+// hatch for a project he wants to reward but not send to the unified YSWS DB, so
+// it never stages. "No Prize" is the mirror image - it stages to the unified DB
+// but earns no prize (hours too small to reward) - so it is deliberately absent
+// here. The staging side of the pair is STAGE_STATUSES in the sync automation.
 export const SHOP_STATUSES = ['Approved', 'Prize Only'];
+
+// review_status values the site presents as a rejection. "No Prize" quietly still
+// goes to the unified YSWS DB, but that is an internal distinction: to the
+// submitter there is no prize and no more waiting, which is what "Rejected" says.
+export const REJECTED_STATUSES = ['Rejected', 'No Prize'];
 
 // ---- per-person deadlines ----
 // Everyone gets PICK_WINDOW_DAYS from the moment their "you can pick a prize" DM

@@ -5,7 +5,7 @@
 //   shop (pick UI / order summary) | error
 import { readSession, SESSION_COOKIE } from '$lib/server/session.js';
 import { findSubmissions, findOrder } from '$lib/server/shopdb.js';
-import { SHOP, SHOP_STATUSES, closesAtFor, closesTextFor } from '$lib/shop.js';
+import { SHOP, SHOP_STATUSES, REJECTED_STATUSES, closesAtFor, closesTextFor } from '$lib/shop.js';
 import { JAM } from '$lib/jam.js';
 
 export const prerender = false;
@@ -44,7 +44,9 @@ export async function load({ cookies, url }) {
   // opens on the reviewer's call so nobody waits on the second pass to pick.
   const approved = submissions.filter((r) => SHOP_STATUSES.includes(r.fields.review_status));
   if (!approved.length) {
-    const allRejected = submissions.every((r) => r.fields.review_status === 'Rejected');
+    // A "No Prize" row is a rejection from here: no pick, no DM coming. That it
+    // still goes to the unified DB is internal and never surfaces to them.
+    const allRejected = submissions.every((r) => REJECTED_STATUSES.includes(r.fields.review_status));
     return { ...base, state: allRejected ? 'rejected' : 'pending', me };
   }
   const gameTitles = approved.map((r) => r.fields.game_title).filter(Boolean);
