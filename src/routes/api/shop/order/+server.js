@@ -13,7 +13,7 @@ import { readSession, SESSION_COOKIE } from '$lib/server/session.js';
 import { findSubmissions, findOrder, createRecord, patchRecord } from '$lib/server/shopdb.js';
 import { rateLimit } from '$lib/server/ratelimit.js';
 import { config } from '$lib/server/config.js';
-import { SHOP, SHOP_STATUSES, TSHIRT_SIZES, closesAtFor, closesTextFor } from '$lib/shop.js';
+import { SHOP, SHOP_STATUSES, variantText, closesAtFor, closesTextFor } from '$lib/shop.js';
 import { PRIZE_GAMES, PRIZE_STUFF, GAME_PICK_COUNT } from '$lib/prizes.js';
 
 export const prerender = false;
@@ -34,8 +34,8 @@ export async function POST({ request, cookies, getClientAddress }) {
   }
 
   // ---- validate the pick against the catalog ----
-  // shirt_size/prize/games are always written (null/empty when not applicable)
-  // so changing an order fully overwrites the previous pick.
+  // variant/prize/games are always written (empty when not applicable) so
+  // changing an order fully overwrites the previous pick.
   let pick;
   if (body?.type === 'games') {
     const srcs = [...new Set((Array.isArray(body.games) ? body.games : []).map(String))];
@@ -43,16 +43,21 @@ export async function POST({ request, cookies, getClientAddress }) {
     if (chosen.length !== GAME_PICK_COUNT) {
       return json({ ok: false, error: `pick exactly ${GAME_PICK_COUNT} games` }, { status: 422 });
     }
-    pick = { prize_type: 'indie games', prize: '', shirt_size: null, games: chosen.map((g) => g.name).join('\n') };
+    pick = { prize_type: 'indie games', prize: '', variant: '', games: chosen.map((g) => g.name).join('\n') };
   } else if (body?.type === 'prize') {
     const p = PRIZE_STUFF.find((x) => x.src === String(body.prize));
     if (!p) return json({ ok: false, error: 'pick a prize from the pool' }, { status: 422 });
-    let shirt = null;
-    if (p.sized) {
-      shirt = String(body.shirtSize ?? '');
-      if (!TSHIRT_SIZES.includes(shirt)) return json({ ok: false, error: 'pick a size' }, { status: 422 });
+    // every option group the item declares (size, colour, ...) has to be a real
+    // choice from that group - the UI disables the button until they all are
+    const picks = {};
+    for (const g of p.opts ?? []) {
+      const value = String(body.options?.[g.key] ?? '');
+      if (!g.choices.includes(value)) {
+        return json({ ok: false, error: `pick a ${g.label}` }, { status: 422 });
+      }
+      picks[g.key] = value;
     }
-    pick = { prize_type: 'prize', prize: p.name, shirt_size: shirt, games: '' };
+    pick = { prize_type: 'prize', prize: p.name, variant: variantText(p, picks), games: '' };
   } else {
     return json({ ok: false, error: 'bad request' }, { status: 400 });
   }

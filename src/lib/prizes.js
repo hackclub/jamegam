@@ -10,15 +10,25 @@
 //   lead  overrides the "that's a"/"that's an" caption lead for names with an article
 //   note  optional deemphasized trailing note (e.g. a condition)
 //   shopOnly  in the /shop pool but kept out of the landing page scatter
-//   sized  apparel: ordering it requires picking a size (TSHIRT_SIZES)
+//   opts  choices that must be made before this one can be ordered: an array of
+//         { key, label, choices[, note] } groups rendered as button rows in the
+//         /prizes modal. Picks land on the order row as one `variant` string
+//         ("size: L, color: navy"); see variantText in shop.js. SIZE_OPTION
+//         below is the shared apparel size group.
 //   fresh  added this cycle: /prizes shows a little "new!" tag (clear these when the next batch lands)
 //   blurb one-sentence description shown in the /shop item modal
+import { TSHIRT_SIZES } from './shop.js';
+
+// the shared apparel size group - reuse it on anything that ships in sizes so
+// the wording (and the us-sizing note) stays identical across items
+export const SIZE_OPTION = { key: 'size', label: 'size', choices: TSHIRT_SIZES, note: 'us sizing!' };
+
 export const PRIZES = [
   { src: 'shark',           alt: 'blahaj shark plush',    name: 'blahaj plushie',         c: '#db9591', s: 118, r: -9,  href: 'https://www.ikea.com/us/en/p/blahaj-soft-toy-shark-90373590/', blurb: 'a full meter of friend (the large version)' },
   { src: 'hollowknight',    alt: 'Hollow Knight',         name: 'hollow knight',          c: '#dbaf91', s: 94,  r: 7,   game: true, href: 'https://store.steampowered.com/app/367520/Hollow_Knight/' },
   { src: 'silksong',        alt: 'Hollow Knight: Silksong', name: 'hollow knight: silksong', c: '#b991db', s: 92, r: -8,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/1030300/Hollow_Knight_Silksong/' },
   { src: 'ceiling',         alt: 'Chubby blob seal plush', name: 'ceiling',                c: '#97db91', s: 104, r: 6,   fresh: true, href: 'https://www.amazon.com/MerryXD-Chubby-Pillow-Stuffed-Cotton/dp/B08241CJN9', blurb: 'its name is ceiling!! see more at ceiling.hackclub.com' },
-  { src: 'controller',      alt: '8BitDo controller',      name: '8bitdo controller',      c: '#97db91', s: 102, r: 12,  lead: 'that’s an', href: 'https://www.8bitdo.com/ultimate-2c-bluetooth-controller/', blurb: 'a nice bluetooth controller for pc, switch, and android' },
+  { src: 'controller',      alt: '8BitDo controller',      name: '8bitdo controller',      c: '#97db91', s: 102, r: 12,  lead: 'that’s an', opts: [{ key: 'color', label: 'color', choices: ['blue', 'orange', 'pink'] }], href: 'https://www.8bitdo.com/ultimate-2c-bluetooth-controller/', blurb: 'a nice bluetooth controller for pc, switch, and android' },
   { src: 'steam',           alt: 'Steam gift card',        name: 'steam gift card',        c: '#91a4db', s: 74,  r: -15, href: 'https://store.steampowered.com/digitalgiftcards/', blurb: '$25 of steam wallet money to spend on whatever you like' },
   { src: 'fangamer',        alt: 'Fangamer gift card',     name: 'fangamer gift card',     c: '#db9591', s: 90,  r: -7,  fresh: true, shopOnly: true, href: 'https://www.fangamer.com/', blurb: '$25 for merch from your favorite games' },
   { src: 'babaisyou',       alt: 'Baba Is You',            name: 'baba is you',            c: '#97db91', s: 92,  r: -8,  game: true, href: 'https://store.steampowered.com/app/736260/Baba_Is_You/', blurb: '(one of my favorite games)' },
@@ -63,8 +73,8 @@ export const PRIZES = [
   { src: 'hotlinemiami',    alt: 'Hotline Miami',          name: 'hotline miami',          c: '#b991db', s: 92,  r: 8,   game: true, shopOnly: true, href: 'https://store.steampowered.com/app/219150/Hotline_Miami/' },
   { src: 'supermeatboy',    alt: 'Super Meat Boy',         name: 'super meat boy',         c: '#db9591', s: 90,  r: -7,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/40800/Super_Meat_Boy/' },
   { src: 'crueltysquad',    alt: 'Cruelty Squad',          name: 'cruelty squad',          c: '#97db91', s: 92,  r: 11,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/1388770/Cruelty_Squad/' },
-  { src: 'gmtkhoodie',      alt: 'GMTK 200th hoodie',      name: 'gmtk hoodie',            c: '#91a4db', s: 108, r: -8,  fresh: true, sized: true, href: 'https://game-makers-toolkit.creator-spring.com/listing/gmtk-200th?product=212', blurb: 'the official gmtk hoodie! this one will only be here for a month' },
-  { src: 'tshirt',          alt: 'Jame Gam t-shirt',        name: 'jame gam t-shirt',       c: '#97db91', s: 96,  r: 8,   sized: true, note: ' (preorder, ships early aug)', blurb: 'official jame gam shirt! preorder - ships early august. the design shown is a placeholder, not the real one' }
+  { src: 'gmtkhoodie',      alt: 'GMTK 200th hoodie',      name: 'gmtk hoodie',            c: '#91a4db', s: 108, r: -8,  fresh: true, opts: [SIZE_OPTION, { key: 'color', label: 'color', choices: ['black', 'blue', 'red', 'orange', 'navy'] }], href: 'https://game-makers-toolkit.creator-spring.com/listing/gmtk-200th?product=212', blurb: 'the official gmtk hoodie! this one will only be here for a month' },
+  { src: 'tshirt',          alt: 'Jame Gam t-shirt',        name: 'jame gam t-shirt',       c: '#97db91', s: 96,  r: 8,   opts: [SIZE_OPTION], note: ' (preorder, ships early aug)', blurb: 'official jame gam shirt! preorder - ships early august. the design shown is a placeholder, not the real one' }
 ];
 
 // bench (want, but too pricey for now): raspberry pi 5 (~$80 for the 8gb board,

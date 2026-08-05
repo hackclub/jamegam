@@ -5,7 +5,14 @@
 //   shop (pick UI / order summary) | error
 import { readSession, SESSION_COOKIE } from '$lib/server/session.js';
 import { findSubmissions, findOrder } from '$lib/server/shopdb.js';
-import { SHOP, SHOP_STATUSES, REJECTED_STATUSES, closesAtFor, closesTextFor } from '$lib/shop.js';
+import {
+  SHOP,
+  SHOP_STATUSES,
+  REJECTED_STATUSES,
+  parseVariant,
+  closesAtFor,
+  closesTextFor
+} from '$lib/shop.js';
 import { JAM } from '$lib/jam.js';
 
 export const prerender = false;
@@ -74,7 +81,8 @@ export async function load({ cookies, url }) {
     ? {
         type: orderRec.fields.prize_type === 'indie games' ? 'games' : 'prize',
         prize: orderRec.fields.prize || null,
-        shirtSize: orderRec.fields.shirt_size || null,
+        // the picked options ({ size: 'L', color: 'navy' })
+        options: parseVariant(orderRec.fields.variant),
         games: String(orderRec.fields.games || '')
           .split('\n')
           .filter(Boolean),
