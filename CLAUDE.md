@@ -23,7 +23,8 @@ submission automation, so counts lag and don't match this base.
 Notes:
 - `submission_form.jam` is a plain string month key: `2026-06`, `2026-07`. `sign_ups.jam` is a link to `jams`.
 - Jam months so far: `2026-06` = The Very Serious Juniper Dev Game Jam (Jun 19-27), `2026-07` = GMTK Game Jam 2026 (Jul 22-26).
-- Reviewer/eligibility fields on `submission_form`: `review_status`, `reviewed_by`, `augie_spotchecked`,
+- Reviewer/eligibility fields on `submission_form`: `review_status`, `reviewed_by`, `reviewed_at`
+  (a "Last modified time" field watching only `review_status`), `augie_spotchecked`,
   `hide_perma_reject`, `verification_status`, `override_hours`, the three `justification_*` fields,
   `extra_cool`, plus `action_send_approved_dm` / `approved_dm_sent_at` for the prize DM.
   (`zzz_archive_override_hours_justification` is a superseded v1 field, kept for June's history. It is
@@ -50,8 +51,14 @@ reviewer's `review_status` and Augie's `augie_spotchecked`. Staging waits on bot
      mechanism exists; it is an untracked waiting queue you have to sweep by hand.
    - `Prize Only` - Augie's call, not a reviewer's: reward the project with a prize but never send it to
      the unified DB (e.g. the hours are real but not eligible). Opens the shop, retracts any staged row,
-     and can never stage because the sync gates on exactly `Approved`. Costs prize money with no $85/WP
+     and can never stage because it is not in `STAGE_STATUSES`. Costs prize money with no $85/WP
      against it, so it is worth keeping countable rather than faking it by never spotchecking.
+   - `No Prize` (added 2026-08-05) - the mirror of `Prize Only`, also Augie's call: send it to the unified
+     DB but do not reward it, for hours too small to be worth a prize. Stages exactly like `Approved`
+     (same `override_hours` + `justification_technical_features` requirement, same spotcheck gate, same
+     spotcheck queue) but is absent from `SHOP_STATUSES`, so no shop and no prize DM.
+     **To the submitter it is indistinguishable from `Rejected`**: `REJECTED_STATUSES` in `src/lib/shop.js`
+     puts it on the same `/prizes` panel, so nobody learns their project went to the unified DB anyway.
    `hide_perma_reject` is untouched and orthogonal. (The v1 `rejected` checkbox is gone.)
    The reviewer-facing justification fields (each carries an in-Airtable description explaining what
    belongs in it):
@@ -71,18 +78,20 @@ reviewer's `review_status` and Augie's `augie_spotchecked`. Staging waits on bot
    `claude-workspace/jamegam-sync-automation.js` (the copy in Airtable is the live one; keep this in sync;
    `jamegam-sync-automation.v1.js` is the pre-migration version). It fires on edits to `review_status` /
    `augie_spotchecked` / `override_hours` / the three `justification_*` fields, and:
-   - gates on `review_status == "Approved" && augie_spotchecked && override_hours != null && justification_technical_features != ""`,
-     refusing to stage (with a loud log line) if it is past both gates but something required is missing;
+   - gates on `STAGE_STATUSES.includes(review_status) && augie_spotchecked && override_hours != null && justification_technical_features != ""`
+     (`STAGE_STATUSES` = `Approved`, `No Prize`), refusing to stage (with a loud log line) if it is past
+     both gates but something required is missing;
    - writes the split `Justification - *` fields, generating the ones that can be generated: the Hackatime
      date range (from the jam's start/end dates), the Alternate Tracking Method paragraph, and the
-     Additional Justification block (claimed/approved hours, commits, team size, sibling count, jam);
+     Additional Justification block (claimed/approved hours, commits, team size, sibling count, jam, and
+     who reviewed it when - `reviewed_at` is read defensively, so the sync survives the field's absence);
    - **auto-fills `Optional - Override Duplicate Justification`** for team repos by scanning
      `Submission Form` for other non-rejected rows with the same normalized `code_url`;
    - **explicitly clears `Optional - Override Hours Spent Justification` on every write** (see footgun below);
    - maps identity + address + URLs + screenshot + NPS text across;
    - upserts via the `Submission` link field (reverse link `ysws_project_submission_record` on the form
      row is the dedup key), and **retracts** the staged row (delete, only if never submitted) whenever the
-     row falls back out of Approved-and-spotchecked, including unticking the spotcheck;
+     row falls back out of staging-status-and-spotchecked, including unticking the spotcheck;
    - deliberately leaves `Automation - Submit to Unified YSWS` unticked;
    - warns in the log on: deflation with no reason given, a submitter who looks 18+, or v1-field usage.
 6. **Augie ticks `Automation - Submit to Unified YSWS`** on the staged row, which is the stock component
@@ -93,6 +102,12 @@ reviewer's `review_status` and Augie's `augie_spotchecked`. Staging waits on bot
 
 The `YSWS Project Submission` table + step-6 automation are the shared Hack Club **component** (library
 template), not jame gam code. Everything in steps 1-5 is jame gam's own.
+
+**Two lists, one field.** `SHOP_STATUSES` in `src/lib/shop.js` (`Approved`, `Prize Only`) decides the
+prize shop; `STAGE_STATUSES` in the sync automation (`Approved`, `No Prize`) decides the unified DB. Only
+`Approved` is in both. `approved-dm-automation.js` duplicates `SHOP_STATUSES` and the spotcheck skill's
+`gather-evidence.mjs` duplicates `STAGE_STATUSES`, because neither can import from the repo - change a
+list and change its copy.
 
 **The prize shop gates on `review_status` directly** - `SHOP_STATUSES` in `src/lib/shop.js`, currently
 `Approved` and `Prize Only` - in `src/routes/prizes/+page.server.js` and
