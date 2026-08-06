@@ -13,7 +13,7 @@ export const TSHIRT_SIZES = ['S', 'M', 'L', 'XL'];
 
 // ---- per-item options (size, colour, whatever the next one is) ----
 // Some prizes need a choice before they can be ordered: apparel needs a size,
-// the 8bitdo comes in three colours, the hoodie needs both. Each item in
+// the 8bitdo comes in five colours, the hoodie needs both. Each item in
 // prizes.js declares an `opts` array of groups (see SIZE_OPTION there); the
 // picked values are stored on the order row as one human-readable `variant`
 // string, in the order the item declares its groups:
