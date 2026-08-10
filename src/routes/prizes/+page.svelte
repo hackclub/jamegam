@@ -23,7 +23,7 @@
   import { jiggle } from '$lib/actions/jiggle.js';
   import { rainbowBorder } from '$lib/actions/rainbowBorder.js';
   import { PRIZE_GAMES, PRIZE_STUFF, PRIZE_HD, GAME_PICK_COUNT } from '$lib/prizes.js';
-  import { variantValues } from '$lib/shop.js';
+  import { variantValues, PICK_WINDOW_DAYS } from '$lib/shop.js';
   import Dust from '$lib/components/Dust.svelte';
 
   let { data } = $props();
@@ -223,7 +223,7 @@
   // the full prize list, with a context line up top instead of a dead-end
   // panel. Only rejected / noaddress / error stay panel-only.
   const browseOnly = $derived(
-    ['signedout', 'nosubmission', 'pending', 'closed'].includes(data.state)
+    ['signedout', 'nosubmission', 'pending', 'awaitingdm', 'closed'].includes(data.state)
   );
 
   // panel-only states hold a paragraph or two; centre those vertically. The
@@ -356,6 +356,11 @@
         <p class="deadline deadline-top loud">
           your {jamMonth} submission is in, but hasn't been reviewed yet! you'll get a DM once
           it's approved, then you can come back and pick :)
+        </p>
+      {:else if data.state === 'awaitingdm'}
+        <p class="deadline deadline-top loud">
+          your {jamMonth} submission was approved! you'll get a slack DM when it's your turn to
+          pick, and you'll have {PICK_WINDOW_DAYS} days from then to choose :)
         </p>
       {/if}
       {#if data.state === 'signedout'}

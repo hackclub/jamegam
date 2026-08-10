@@ -71,13 +71,17 @@ export async function POST({ request, cookies, getClientAddress }) {
     return json({ ok: false, error: 'no approved submission for this jam yet' }, { status: 403 });
   }
 
-  // ---- their personal deadline ----
+  // ---- their personal pick window ----
   // Checked here rather than up top because it depends on when their prize DM
-  // went out, which we only know once we have their submission rows.
+  // went out, which we only know once we have their submission rows. The DM both
+  // opens the window and starts its clock: no DM, no picking.
   const dmSentAt = approved
     .map((r) => r.fields.approved_dm_sent_at)
     .filter(Boolean)
     .sort()[0];
+  if (!dmSentAt) {
+    return json({ ok: false, error: 'your prize DM has not gone out yet' }, { status: 403 });
+  }
   if (Date.now() > closesAtFor(dmSentAt)) {
     return json({ ok: false, error: `the shop closed ${closesTextFor(dmSentAt)}` }, { status: 403 });
   }

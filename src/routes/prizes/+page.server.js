@@ -1,8 +1,8 @@
 // /shop - rendered per request (overrides the layout's prerender): read the
 // session, pull their submissions + any existing order, and reduce it all to
 // one `state` string the page renders. States:
-//   signedout | nosubmission | pending | rejected | noaddress | closed |
-//   shop (pick UI / order summary) | error
+//   signedout | nosubmission | pending | rejected | awaitingdm | noaddress |
+//   closed | shop (pick UI / order summary) | error
 import { readSession, SESSION_COOKIE } from '$lib/server/session.js';
 import { findSubmissions, findOrder } from '$lib/server/shopdb.js';
 import {
@@ -58,19 +58,23 @@ export async function load({ cookies, url }) {
   }
   const gameTitles = approved.map((r) => r.fields.game_title).filter(Boolean);
 
-  // their personal deadline, from the earliest prize DM across their rows (a
-  // repeat submitter has several rows but only ever got one DM). No DM yet means
-  // no clock: closesAt stays null and the shop stays open for them.
+  // their personal pick window, from the earliest prize DM across their rows (a
+  // repeat submitter has several rows but only ever got one DM). The DM both
+  // opens the window and starts its clock, so approved-but-not-yet-DMed can look
+  // but not pick: they wait in 'awaitingdm' until Augie fires the DM, and only
+  // then does their 4 days start. Nobody picks before their own clock exists.
   const dmSentAt = approved
     .map((r) => r.fields.approved_dm_sent_at)
     .filter(Boolean)
     .sort()[0];
   const closesAt = closesAtFor(dmSentAt);
-  Object.assign(base, {
-    closesAt: Number.isFinite(closesAt) ? new Date(closesAt).toISOString() : null,
-    closesText: closesTextFor(dmSentAt),
-    closed: Date.now() > closesAt
-  });
+  if (dmSentAt) {
+    Object.assign(base, {
+      closesAt: new Date(closesAt).toISOString(),
+      closesText: closesTextFor(dmSentAt),
+      closed: Date.now() > closesAt
+    });
+  }
   const closedForThem = base.closed;
 
   let orderRec = null;
@@ -136,6 +140,9 @@ export async function load({ cookies, url }) {
     };
   }
   if (closedForThem) return { ...base, state: 'closed', me, gameTitles };
+  // checked after the order lookup so anyone who already picked still sees their
+  // order, rather than being told to wait for a DM they've effectively had
+  if (!dmSentAt) return { ...base, state: 'awaitingdm', me, gameTitles };
   if (!addresses.length) return { ...base, state: 'noaddress', me, gameTitles };
   return { ...base, state: 'shop', me, gameTitles, addresses, order: null, locked: false };
 }
