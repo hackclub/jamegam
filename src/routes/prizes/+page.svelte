@@ -135,7 +135,9 @@
   }
 
   // "you have [3 days, 2 hours, 5 minutes, and 12 seconds] to pick your prize!"
+  // (null closesAt = they haven't been DMed, so there's no clock to render)
   const countdown = $derived.by(() => {
+    if (!data.closesAt) return '';
     const s = Math.max(0, Math.floor((Date.parse(data.closesAt) - now) / 1000));
     const unit = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
     const parts = [];
@@ -327,25 +329,21 @@
       <p class="lede center intro2">
         along with every prize, you'll be shipped stickers!
       </p>
-      <!-- the context line. Once the shop's closed the list is just a list -
-           the only person who still gets a note is an approved submitter who
-           never picked (the 'closed' state). While it's open: the signed-out
-           deadline, or the signed-in where-you-stand notes. -->
+      <!-- the context line. The only deadline is a personal one, so a signed-out
+           visitor gets no date - just the invitation to sign in. Signed in, it's
+           the where-you-stand notes, or the 'closed' state for someone whose own
+           pick window ran out. -->
       {#if data.state === 'signedout'}
-        {#if !data.closed}
-          <!-- (it lives at the page bottom for noaddress) -->
-          <p class="deadline deadline-top">
-            if you participated in <span class="jam-name">{data.jamName}</span>, you have until
-            {data.closesText} to select your prize!
-          </p>
-        {/if}
+        <!-- (the deadline lives at the page bottom for noaddress) -->
+        <p class="deadline deadline-top">
+          if you participated in <span class="jam-name">{data.jamName}</span>, sign in to select
+          your prize!
+        </p>
       {:else if data.state === 'closed'}
         <p class="deadline deadline-top loud">
           the {jamMonth} prize shop has closed and you never picked your prize! dm @augie on
           slack and i'll sort you out.
         </p>
-      {:else if data.closed}
-        <!-- no submission / unreviewed after close: nothing to say, just browse -->
       {:else if data.state === 'nosubmission'}
         <p class="deadline deadline-top loud">
           hm, i don't see a {jamMonth} jam submission under {data.me.email}.
@@ -451,9 +449,12 @@
         <p class="lede center intro2">
           along with every prize, you'll be shipped stickers!
         </p>
-        <p class="lede center intro2 countdown">
-          you have <span class="cd-time">{countdown}</span> to pick your prize!
-        </p>
+        <!-- only someone whose prize DM has gone out has a clock to count down -->
+        {#if data.closesAt}
+          <p class="lede center intro2 countdown">
+            you have <span class="cd-time">{countdown}</span> to pick your prize!
+          </p>
+        {/if}
         <!-- shipping note lives in the your-pick card once an order exists -->
         {#if address && !data.order}
           <p class="ship-note">
@@ -518,7 +519,7 @@
     {/if}
   {/if}
 
-  {#if !data.closed && data.state === 'noaddress'}
+  {#if data.state === 'noaddress' && data.closesText}
     <p class="deadline">
       if you participated in <span class="jam-name">{data.jamName}</span>, you have until
       {data.closesText} to select your prize!

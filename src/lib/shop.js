@@ -1,12 +1,10 @@
 // The prize shop for the jam that just wrapped. Like jam.js, UPDATE THIS each
-// month once review starts: point `jam` at the label the submission form used
-// and set a fresh close date. The shop serves LAST month's submitters, so it
-// intentionally lags jam.js by one cycle.
+// month once review starts: point `jam` at the label the submission form used.
+// The shop serves LAST month's submitters, so it intentionally lags jam.js by
+// one cycle. There is no shop-wide close date - see PICK_WINDOW_DAYS below.
 export const SHOP = {
   jam: '2026-07', // must match submission_form.jam
-  jamName: 'the GMTK game jam', // display name (lags jam.js by a cycle, so it can't read JAM.name)
-  closesAt: '2026-08-10T03:59:00Z', // sunday 2026-08-09, 11:59pm ET
-  closesText: 'sunday, august 9 at 11:59pm ET'
+  jamName: 'the GMTK game jam' // display name (lags jam.js by a cycle, so it can't read JAM.name)
 };
 
 export const TSHIRT_SIZES = ['S', 'M', 'L', 'XL'];
@@ -62,11 +60,13 @@ export const SHOP_STATUSES = ['Approved', 'Prize Only'];
 export const REJECTED_STATUSES = ['Rejected', 'No Prize'];
 
 // ---- per-person deadlines ----
-// Everyone gets PICK_WINDOW_DAYS from the moment their "you can pick a prize" DM
-// goes out (`approved_dm_sent_at` on their submission row), expiring at 11:59pm
-// ET that day. SHOP.closesAt is the hard backstop: nobody runs past it, so
-// fulfillment still has one clean batch end. Someone who hasn't been DMed yet
-// has no clock running and just sees the global date.
+// The DM is the only clock. Everyone gets PICK_WINDOW_DAYS from the moment their
+// "you can pick a prize" DM goes out (`approved_dm_sent_at` on their submission
+// row), expiring at 11:59pm ET that day. There is deliberately no shop-wide
+// backstop: it used to exist as a fulfillment batch end, but it expired for the
+// 72 July submitters who hadn't been DMed yet and told them they'd missed a
+// deadline that had never started. Nobody is ever locked out by a date they were
+// not told about - un-DMed means no clock, and the shop stays open for them.
 export const PICK_WINDOW_DAYS = 4;
 
 const ET = 'America/New_York';
@@ -91,18 +91,20 @@ function endOfEtDay(ms) {
   return Date.parse(`${day}T23:59:00Z`) + etOffsetMs(ms);
 }
 
-/** When this person's shop closes, in ms. `dmSentAt` is an ISO string or null. */
+/**
+ * When this person's shop closes, in ms. `dmSentAt` is an ISO string or null;
+ * with no DM there is no clock, so this is Infinity (never closes).
+ */
 export function closesAtFor(dmSentAt) {
-  const hardClose = Date.parse(SHOP.closesAt);
   const sent = dmSentAt ? Date.parse(dmSentAt) : NaN;
-  if (!Number.isFinite(sent)) return hardClose;
-  return Math.min(hardClose, endOfEtDay(sent + PICK_WINDOW_DAYS * 86400000));
+  if (!Number.isFinite(sent)) return Infinity;
+  return endOfEtDay(sent + PICK_WINDOW_DAYS * 86400000);
 }
 
-/** The same deadline as display copy: "sunday, august 9 at 11:59pm ET". */
+/** The same deadline as display copy ("sunday, august 9 at 11:59pm ET"), or null if no clock. */
 export function closesTextFor(dmSentAt) {
   const at = closesAtFor(dmSentAt);
-  if (at === Date.parse(SHOP.closesAt)) return SHOP.closesText;
+  if (!Number.isFinite(at)) return null;
   const when = new Intl.DateTimeFormat('en-US', {
     timeZone: ET,
     weekday: 'long',

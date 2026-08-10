@@ -18,15 +18,15 @@ import { JAM } from '$lib/jam.js';
 export const prerender = false;
 
 export async function load({ cookies, url }) {
-  // Global values, used until we know who's asking. Anyone who's been DMed gets
-  // their own (earlier) deadline swapped in below.
-  const closed = Date.now() > Date.parse(SHOP.closesAt);
+  // Defaults, used until we know who's asking. The only deadline there is comes
+  // from a person's prize DM, so a signed-out visitor has no date to show and
+  // nothing is closed; anyone DMed gets their own deadline swapped in below.
   const base = {
     jam: SHOP.jam,
     jamName: SHOP.jamName,
-    closesAt: SHOP.closesAt,
-    closesText: SHOP.closesText,
-    closed,
+    closesAt: null,
+    closesText: null,
+    closed: false,
     // the submission form for this shop's cycle - only offered while jam.js is
     // still on the same cycle (after JAM rolls over, its form is next month's)
     submitUrl: JAM.startDate.slice(0, 7) === SHOP.jam ? JAM.submitUrl : null,
@@ -59,15 +59,17 @@ export async function load({ cookies, url }) {
   const gameTitles = approved.map((r) => r.fields.game_title).filter(Boolean);
 
   // their personal deadline, from the earliest prize DM across their rows (a
-  // repeat submitter has several rows but only ever got one DM)
+  // repeat submitter has several rows but only ever got one DM). No DM yet means
+  // no clock: closesAt stays null and the shop stays open for them.
   const dmSentAt = approved
     .map((r) => r.fields.approved_dm_sent_at)
     .filter(Boolean)
     .sort()[0];
+  const closesAt = closesAtFor(dmSentAt);
   Object.assign(base, {
-    closesAt: new Date(closesAtFor(dmSentAt)).toISOString(),
+    closesAt: Number.isFinite(closesAt) ? new Date(closesAt).toISOString() : null,
     closesText: closesTextFor(dmSentAt),
-    closed: Date.now() > closesAtFor(dmSentAt)
+    closed: Date.now() > closesAt
   });
   const closedForThem = base.closed;
 
