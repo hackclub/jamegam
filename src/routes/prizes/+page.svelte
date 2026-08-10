@@ -358,9 +358,12 @@
           it's approved, then you can come back and pick :)
         </p>
       {:else if data.state === 'awaitingdm'}
+        <!-- deliberately does NOT say they were approved: a reviewer's yes still
+             has to clear the spotcheck, and a first-pass approval we later walk
+             back is worse than saying nothing. reads as in-review, which is true. -->
         <p class="deadline deadline-top loud">
-          your {jamMonth} submission was approved! you'll get a slack DM when it's your turn to
-          pick, and you'll have {PICK_WINDOW_DAYS} days from then to choose :)
+          your {jamMonth} submission is in and being reviewed! you'll get a slack DM once it's
+          approved, then you'll have {PICK_WINDOW_DAYS} days to pick your prize :)
         </p>
       {/if}
       {#if data.state === 'signedout'}
