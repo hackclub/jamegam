@@ -10,3 +10,4 @@ node_modules
 .vercel
 /.claude
 /workspace
+/CLAUDE.md
