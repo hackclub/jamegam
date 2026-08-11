@@ -36,7 +36,7 @@
         const end = new Date(END), today = new Date(now);
         const sameMonth = end.getUTCFullYear() === today.getUTCFullYear() && end.getUTCMonth() === today.getUTCMonth();
         monthEl.textContent = sameMonth ? "this month we crashed" : "last month we crashed";
-        durEl.innerHTML = "this jam ran for <span style=\"color:#9a2982;\">4 days</span>!";
+        durEl.innerHTML = `this jam ran for <span style="color:${JAM.color};">7 days</span>!`;
         nextEl.style.display = "";   // reveal the "join us next month" line
         clamp();
       }
@@ -60,15 +60,17 @@
       <!-- jam title: two stacked transparent layers (same construction as the
            june comp, figma node 1:45): the gray hand-drawn border as one whole
            image (always connects its corners) with this month's title art
-           layered inside, over a faint tiling topo pattern. GMTK's official
-           lockup, recoloured to the site's ink gray for the light background
-           (purple 2026 block kept), contain-fit since it's a taller lockup
-           than a wide text card. -->
-      <a class="jamtitle" href={JAM.itchUrl} target="_blank" rel="noopener" aria-label="{JAM.name} on itch.io">
-        <span class="jamtitle-bg" aria-hidden="true"></span>
-        <img class="jamtitle-card" src="/assets/gmtk_text.png" alt={JAM.name} />
-        <span class="jamtitle-border" aria-hidden="true"></span>
-      </a>
+           layered inside. Brackeys' official lockup, contain-fit since it's a
+           taller lockup than a wide text card. -->
+      <div class="jamcol">
+        <a class="jamtitle" href={JAM.itchUrl} target="_blank" rel="noopener" aria-label="{JAM.name} on itch.io">
+          <img class="jamtitle-card" src="/assets/brackeys_text.png" alt={JAM.name} />
+          <span class="jamtitle-border" aria-hidden="true"></span>
+        </a>
+        <!-- which jam the box above is, in the headline's voice and style
+             (JAM.displayName, so this rolls over with the rest of jam.js). -->
+        <p class="txt jamtitle-cap">{JAM.displayName}</p>
+      </div>
 
       <!-- video player: rotated photo + separately-rotated play icon on top
            (figma node 1:53). Right column of the title row on wide screens; in
@@ -76,8 +78,8 @@
            (GMTK's 2026 announcement). The "watch the video" doodle is pinned
            to the player's bottom-right corner (wide only). -->
       <div class="vidcol">
-        <a class="video-link" href="https://www.youtube.com/watch?v=MAu3Yoi7KvE" target="_blank" rel="noopener" aria-label="watch the video">
-          <span class="el el-vidphoto"><img src="/assets/video_photo_gmtk.png" alt="the GMTK game jam returns for 2026" /></span>
+        <a class="video-link" href="https://www.youtube.com/watch?v=d_NA_yTXOOQ" target="_blank" rel="noopener" aria-label="watch the video">
+          <span class="el el-vidphoto"><img src="/assets/video_photo_brackeys.png" alt="how to game jam" /></span>
           <span class="el el-vidplay"><img src="/assets/video_play.png" alt="play" /></span>
         </a>
         <span class="deco month-watch"><img src="/assets/dec556.png" alt="watch the video" /></span>
@@ -86,13 +88,13 @@
 
     <!-- countdown -->
     <p bind:this={countdownEl} id="countdown" class="txt month-count">in 7:18:40:53</p>
-    <p bind:this={durEl} id="jam-duration" class="txt month-dur">this jam will run for <span style="color:#9a2982;">4 days</span>!</p>
+    <p bind:this={durEl} id="jam-duration" class="txt month-dur">this jam will run for <span style="color:{JAM.color};">7 days</span>!</p>
     <!-- post-jam only: revealed by tick() once the jam has ended (hidden until then) -->
     <div bind:this={nextEl} id="jam-next" style="display:none;">
       <p class="txt month-next">made a game? <a href={JAM.submitUrl}>submit it here</a>!</p>
       <p class="txt month-next">and join us next month for another jam!</p>
     </div>
-    <p class="txt month-disclaimer">(not affiliated with game maker&rsquo;s toolkit)</p>
+    <p class="txt month-disclaimer">(not affiliated with brackeys)</p>
   </div>
 </section>
 
@@ -150,22 +152,48 @@
   }
 
   /* ===== jam title block =====
-     Three stacked layers in a 2:1 box (taller and narrower than the june
-     comp's 742x216, sized for the GMTK lockup):
-       • .jamtitle-bg:     faint tiling topo pattern, clipped to the border's
-         inner area.
+     Two stacked layers in a 2:1 box (taller and narrower than the june
+     comp's 742x216, sized for a squarer lockup):
        • .jamtitle-card:   this month's title art, contain-fit and centred.
        • .jamtitle-border: the gray hand-drawn border, 9-sliced with
          border-image so the stroke thickness is NEVER squished or stretched
          non-uniformly (pixel art rule). Slice bands are in source px of
          title_border.png (1483x431); border widths are in cqw so the whole
          drawing scales proportionally with the box, like an image would. */
+  /* explicit width (box + its left nudge): otherwise the column sizes to the
+     caption's text, and .jamtitle's min(100%, ...) collapses onto that. */
+  .jamcol {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, calc(559px * var(--scale)));
+  }
+  /* same face as the .month-head line above the box, smaller and set flush with
+     the box's right edge. */
+  .jamtitle-cap {
+    margin-top: calc(-8px * var(--scale));
+    margin-bottom: calc(26px * var(--scale));   /* air before the countdown */
+    font-size: calc(30px * var(--scale));
+    color: #504b49;
+    line-height: 1.05;
+    /* flush with the box's right edge (.jamcol is the box + its left nudge, so
+       the column's right edge IS the box's right edge). */
+    text-align: right;
+    /* the drawn border isn't square on the page, so tilt to match it and read as
+       part of the same hand-drawn object. */
+    transform: rotate(1.3deg);
+    transform-origin: right center;
+  }
   .jamtitle {
     display: block;
     position: relative;
     container-type: inline-size;   /* gives the children cqw units */
-    width: min(100%, calc(580px * var(--scale)));
-    aspect-ratio: 2 / 1;
+    width: min(100%, calc(545px * var(--scale)));
+    /* nudged off the column's left edge; the caption below stays put, so the
+       box sits a touch right of the headline above it. */
+    margin-left: calc(14px * var(--scale));
+    /* explicit height rather than an aspect ratio: narrowing the box should not
+       shorten it (the lockup is squarer than the old 2:1 GMTK one). */
+    height: calc(290px * var(--scale));
   }
   .jamtitle-border {
     position: absolute; inset: 0;
@@ -177,32 +205,20 @@
     border-image: url('/assets/title_border.png') 95 38 81 45 stretch;
     image-rendering: pixelated;
   }
-  /* faint tiling topographic pattern (from GMTK's itch page, posterized to
-     hard 1px lines and recoloured to a light gray on transparent) filling the
-     border's inner area, under the lockup. The drawn line tilts, so the
-     clip-path follows its inner edge instead of a straight rect; tiny
-     gaps/leaks don't read at this opacity. */
-  .jamtitle-bg {
-    position: absolute;
-    inset: 0 3%;
-    z-index: 0;
-    background: url('/assets/gmtk_topo.png') repeat;
-    background-size: calc(380px * var(--scale)) auto;
-    image-rendering: pixelated;
-    clip-path: polygon(0% 9%, 100% 15%, 100% 90%, 0% 88%);
-    opacity: 0.22;
-  }
   .jamtitle-card {
     position: absolute;
     left: 2%;
-    top: 15%;               /* the drawn line's inner area at the box's centre
-                               runs ~14% to ~85% (it tilts), so 15% + 64% keeps
+    top: 13%;               /* the drawn line's inner area at the box's centre
+                               runs ~14% to ~85% (it tilts), so 13% + 74% keeps
                                the lockup inside it with a little breathing room */
     width: 96%;
-    height: 64%;
+    height: 74%;
     z-index: 1;
     object-fit: contain;
     object-position: 50% 50%;
+    /* colour-quantized and downsampled to 260px so it upscales into chunky
+       blocks like the prize art, just a gentler grid (source ~= display size). */
+    image-rendering: pixelated;
   }
 
   /* ===== countdown / duration / disclaimer (centred flow) ===== */
@@ -284,6 +300,9 @@
     .vidcol {
       width: calc(276px * var(--scale));
       margin-left: calc(-36px * var(--scale));
+      /* the row centres on .jamcol, which is box + caption, so the player rides
+         low against the box itself; lift it by about half the caption. */
+      margin-top: calc(-40px * var(--scale));
       z-index: 3;            /* above the box's border layer (z-index 2) */
     }
     .video-link { width: 100%; margin: 0; }

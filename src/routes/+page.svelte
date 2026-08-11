@@ -57,9 +57,9 @@
       {
         '@type': 'Event',
         '@id': `${SITE_URL}/#current-jam`,
-        name: 'Jame Gam - July 2026 game jam',
+        name: 'Jame Gam - August 2026 game jam',
         description:
-          "Jame Gam's monthly community jam. This July, teenage game devs build games together while taking part in the GMTK Game Jam 2026. Free and online, open to ages 13 to 18, run by Hack Club.",
+          "Jame Gam's monthly community jam. This August, teenage game devs build games together while taking part in the Brackeys Game Jam 2026.2. Free and online, open to ages 13 to 18, run by Hack Club.",
         startDate: JAM.startDate,
         endDate: JAM.endDate,
         eventStatus: 'https://schema.org/EventScheduled',

@@ -4,17 +4,21 @@
 // note: jame gam does not run these jams, it enters them as a community, so the
 // schema built from this describes our participation, not the jam itself.
 export const JAM = {
-  name: 'GMTK Game Jam 2026',
-  startDate: '2026-07-22T17:00:00Z',
-  endDate: '2026-07-26T17:00:00Z',
-  itchUrl: 'https://itch.io/jam/gmtk-jam-2026',
+  name: 'Brackeys Game Jam 2026.2',
+  // lowercase caption printed under the jam title box, in the site's voice.
+  displayName: 'the brackeys 2026.2 game jam',
+  // this jam's brand accent, used for the highlighted bit of the duration line.
+  color: '#ed8e9d',
+  startDate: '2026-08-23T10:00:00Z',
+  endDate: '2026-08-30T10:00:00Z',
+  itchUrl: 'https://itch.io/jam/brackeys-16',
   // this month's submission form (Fillout). a new form each cycle; its hidden
   // `jam` label must match what shop.js flips to once review starts.
-  submitUrl: 'https://forms.hackclub.com/jame-gam-submit-2',
+  submitUrl: 'https://forms.hackclub.com/jame-gam-submit-3',
   // record id of this jam's row in the "Jams" Airtable table; new signups get
   // linked to it via the Sign Ups `jam` field. create the new jam's row each
   // month and paste its rec... id here.
-  airtableRecordId: 'recvXkfAJABcCqSVt'
+  airtableRecordId: 'recquiBGbnUbEVYOx'
 };
 
 // true in the gap after a jam ends and before JAM above is updated for the next
