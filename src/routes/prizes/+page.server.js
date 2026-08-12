@@ -92,7 +92,7 @@ export async function load({ cookies, url }) {
         games: String(orderRec.fields.games || '')
           .split('\n')
           .filter(Boolean),
-        status: orderRec.fields.status || 'pending',
+        status: orderRec.fields.status || 'not fulfilled',
         noStickers: orderRec.fields.no_stickers === true,
         address: {
           line1: orderRec.fields.address_line_1 || '',

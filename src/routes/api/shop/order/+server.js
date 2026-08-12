@@ -142,7 +142,6 @@ export async function POST({ request, cookies, getClientAddress }) {
     zip_postal_code: addr.postal,
     country: addr.country,
     phone_number: addr.phone || '',
-    status: 'pending',
     // "don't ship me any stickers!" - written either way so changing an order
     // can un-tick it
     no_stickers: body.noStickers === true
@@ -160,8 +159,17 @@ export async function POST({ request, cookies, getClientAddress }) {
   if (lockedError) {
     return json({ ok: false, error: lockedError }, { status: 409 });
   }
-  if (existing) await patchRecord(config.shop.ordersTable, existing.id, fields);
-  else await createRecord(config.shop.ordersTable, fields);
+  // `status` is fulfillment state, owned by Airtable - it's set once on create
+  // and never written again, so changing a pick can't stomp on where Augie has
+  // moved the order to. It's a single select: only the options that actually
+  // exist on the field are writable (no typecast), so anything else 422s.
+  try {
+    if (existing) await patchRecord(config.shop.ordersTable, existing.id, fields);
+    else await createRecord(config.shop.ordersTable, { ...fields, status: 'not fulfilled' });
+  } catch (err) {
+    console.error('[shop] order write failed:', err);
+    return json({ ok: false, error: 'could not save your pick! try again in a minute' }, { status: 502 });
+  }
 
   // ---- backfill missing unified-DB fields (best-effort; order already saved) ----
   for (const rec of submissions) {
