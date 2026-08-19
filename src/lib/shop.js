@@ -59,6 +59,14 @@ export const SHOP_STATUSES = ['Approved', 'Prize Only'];
 // submitter there is no prize and no more waiting, which is what "Rejected" says.
 export const REJECTED_STATUSES = ['Rejected', 'No Prize'];
 
+// review_status values that put a game on the /gallery wall. The gallery is
+// about the games, not the money or the unified DB, so it is the union of the
+// two lists above minus the rejections: everything a reviewer said yes to.
+// "Prize Only" games never stage, which is why the gallery cannot read the
+// staged table and get this right. The spotcheck is required on top of this -
+// see the gallery loader.
+export const GALLERY_STATUSES = ['Approved', 'Prize Only', 'No Prize'];
+
 // ---- per-person deadlines ----
 // The DM is the only clock. Everyone gets PICK_WINDOW_DAYS from the moment their
 // "you can pick a prize" DM goes out (`approved_dm_sent_at` on their submission

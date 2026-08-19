@@ -1,12 +1,21 @@
-// /gallery - every approved game on one wall. The source of truth is the
-// "YSWS Project Submission" table (a row there = reviewed + approved); the
-// game title joins in from the linked Submission Form row. Teammates each
-// submit the same game, so rows collapse by playable url, keeping everyone's
-// first name. Thumbnails come from each itch page's og:image tag (those urls
-// don't expire the way Airtable attachment urls do), with the submission
-// screenshot as the fallback.
+// /gallery - every approved game on one wall, newest jam first. The source of
+// truth is "Submission Form": a game is on the wall when a reviewer said yes
+// (GALLERY_STATUSES) *and* Augie spotchecked it.
+//
+// It deliberately does NOT read "YSWS Project Submission" (which it used to).
+// That table is the staging queue for the unified YSWS DB, and the two sets
+// disagree in both directions: "Prize Only" games are approved but never stage,
+// so they were missing from the wall, and a row that stages and is later
+// rejected keeps its staged row if it was already submitted, so a rejected game
+// could sit on the wall. Reading the reviewer's actual verdict fixes both.
+//
+// Teammates each submit the same game, so rows collapse by playable url,
+// keeping everyone's first name. Thumbnails come from each itch page's og:image
+// tag (those urls don't expire the way Airtable attachment urls do), with the
+// submission screenshot as the fallback.
 import { config as cfg } from '$lib/server/config.js';
 import { lookupSlackProfile } from '$lib/server/cachet.js';
+import { GALLERY_STATUSES } from '$lib/shop.js';
 
 export const prerender = false;
 // ISR: the airtable sweep + one itch fetch per game run once per window;
@@ -118,43 +127,74 @@ async function mapLimit(items, limit, fn) {
   );
 }
 
+// submission_form.jam is a month key ("2026-07"); the Jams table has the real
+// name. Match them on the jam's start month so the section headings read
+// "gmtk game jam 2026" instead of a date.
+const monthKey = (d) => String(d ?? '').slice(0, 7);
+
 // the last good result, served if Airtable is having a moment
 let stale = null;
 
 export async function load() {
   let games;
+  let jamNames = {};
+  let jamLinks = {};
   try {
-    const [ysws, subs] = await Promise.all([
-      listAll(cfg.shop.yswsTable, ['First Name', 'Playable URL', 'Screenshot', 'Submission', 'Description']),
-      listAll(cfg.shop.submissionsTable, ['game_title', 'slack_id'])
+    const [subs, jams] = await Promise.all([
+      listAll(cfg.shop.submissionsTable, [
+        'game_title',
+        'slack_id',
+        'first_name',
+        'playable_url',
+        'screenshot',
+        'description',
+        'jam',
+        'review_status',
+        'augie_spotchecked'
+      ]),
+      // best-effort: a missing/renamed Jams table just costs the pretty heading
+      listAll(cfg.shop.jamsTable, ['name', 'start_date', 'itch_url']).catch(() => [])
     ]);
-    const subById = new Map(subs.map((r) => [r.id, r.fields]));
+
+    for (const j of jams) {
+      const key = monthKey(j.fields.start_date);
+      if (!key) continue;
+      if (j.fields.name) jamNames[key] = String(j.fields.name).toLowerCase();
+      const itch = withScheme(j.fields.itch_url);
+      if (itch) jamLinks[key] = itch;
+    }
 
     const byUrl = new Map();
-    for (const r of ysws) {
-      const url = withScheme(r.fields['Playable URL']);
+    for (const r of subs) {
+      // both gates: a reviewer's yes, and Augie's spotcheck on top of it
+      if (!GALLERY_STATUSES.includes(r.fields.review_status)) continue;
+      if (!r.fields.augie_spotchecked) continue;
+
+      const url = withScheme(r.fields.playable_url);
       const key = (url && normUrl(url)) ?? `rec:${r.id}`;
-      const sub = subById.get(r.fields.Submission?.[0]);
-      // title: the submission form row's game_title; failing that the first
-      // line of the description (the automation writes "title\ndescription"),
-      // failing that the itch slug
+      // title: what they typed on the form; failing that the first line of the
+      // description, failing that the itch slug
       const title =
-        sub?.game_title ||
-        (r.fields.Description || '').split('\n')[0].trim().slice(0, 80) ||
+        r.fields.game_title ||
+        (r.fields.description || '').split('\n')[0].trim().slice(0, 80) ||
         key.split('/').at(-1)?.replaceAll('-', ' ') ||
         'mystery game';
-      const shot = r.fields.Screenshot?.[0];
+      const shot = r.fields.screenshot?.[0];
       const entry = byUrl.get(key) ?? {
         key,
         url,
         title,
+        jam: r.fields.jam ?? '',
         people: [],
         screenshot: shot?.thumbnails?.large?.url ?? shot?.url ?? null
       };
-      // one person per ysws row (teammates each submit their own); the slack
-      // display name resolves later, first name is the fallback
-      const first = (r.fields['First Name'] || '').trim();
-      const slackId = sub?.slack_id || null;
+      // teammates submit separately; if they somehow disagree on the jam, the
+      // earliest one wins so a game can't jump forward into the new section
+      if (r.fields.jam && (!entry.jam || r.fields.jam < entry.jam)) entry.jam = r.fields.jam;
+      // one person per row; the slack display name resolves later, first name
+      // is the fallback
+      const first = (r.fields.first_name || '').trim();
+      const slackId = r.fields.slack_id || null;
       const pid = (slackId || first).toLowerCase();
       if (pid && !entry.people.some((p) => p.pid === pid)) entry.people.push({ pid, slackId, first });
       byUrl.set(key, entry);
@@ -181,11 +221,33 @@ export async function load() {
       const j = Math.floor(Math.random() * (i + 1));
       [games[i], games[j]] = [games[j], games[i]];
     }
-    stale = games;
+    stale = { games, jamNames, jamLinks };
   } catch (err) {
     console.error('[gallery] load failed:', err);
-    games = stale; // null on a cold instance -> the page shows its error state
+    // null on a cold instance -> the page shows its error state
+    ({ games, jamNames, jamLinks } = stale ?? { games: null, jamNames: {}, jamLinks: {} });
   }
 
-  return { games };
+  // one section per jam, newest first. The jam keys are month strings, so they
+  // sort as dates for free, and a new jam appears on its own as soon as its
+  // games are spotchecked - the current jam has nothing approved yet and simply
+  // isn't here. Anything with no jam on the row falls to the bottom.
+  let sections = null;
+  if (games) {
+    const byJam = new Map();
+    for (const g of games) {
+      if (!byJam.has(g.jam)) byJam.set(g.jam, []);
+      byJam.get(g.jam).push(g);
+    }
+    sections = [...byJam.entries()]
+      .sort((a, b) => b[0].localeCompare(a[0]))
+      .map(([jam, list]) => ({
+        key: jam || 'unsorted',
+        title: jamNames[jam] ?? (jam || 'the rest'),
+        href: jamLinks[jam] ?? null, // the jam's itch page, when the Jams row has one
+        games: list
+      }));
+  }
+
+  return { games, sections };
 }

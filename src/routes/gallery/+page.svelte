@@ -10,14 +10,43 @@
   let { data } = $props();
 
   // same recipe as the shop's edge doodles: ink-recolored, faint, pinned near
-  // the viewport edges, distributed down the whole document by --top %
-  const DOODLES = [
-    { src: 'dino', side: 'left', top: '10%', edge: -70, w: 300 },
-    { src: 'star', side: 'right', top: '26%', edge: -60, w: 240 },
-    { src: 'duck', side: 'left', top: '48%', edge: -60, w: 240 },
-    { src: 'fish', side: 'right', top: '66%', edge: -40, w: 220 },
-    { src: 'dog', side: 'left', top: '86%', edge: -80, w: 320 }
-  ];
+  // the viewport edges, distributed down the whole document by --top %.
+  // The shop's list is a hand-written five, which is fine for a page of known
+  // length - the gallery grows a row per ~3 games, so the count comes from the
+  // page instead: one doodle per SPACING px of document, alternating sides.
+  const ART = ['dino', 'star', 'duck', 'fish', 'dog', 'cat', 'bird', 'present', 'fries', 'jester'];
+  const SPACING = 900; // css px of document per doodle
+
+  // deterministic per-index so SSR and hydration agree (no Math.random here)
+  function doodleAt(i) {
+    let h = Math.imul(i + 1, 2654435761) >>> 0;
+    const pick = (n) => {
+      h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0;
+      return h % n;
+    };
+    return {
+      i,
+      src: ART[(i + pick(ART.length)) % ART.length],
+      side: i % 2 ? 'right' : 'left',
+      edge: -(40 + pick(50)),
+      w: 220 + pick(5) * 25
+    };
+  }
+
+  // count follows the document height, remeasured on resize (the grid reflows
+  // from 3-up to 1-up, which changes the page length a lot)
+  let doodleCount = $state(5);
+  function recount() {
+    const h = document.documentElement.scrollHeight;
+    doodleCount = Math.max(4, Math.min(60, Math.round(h / SPACING)));
+  }
+  const DOODLES = $derived(
+    Array.from({ length: doodleCount }, (_, i) => {
+      const d = doodleAt(i);
+      // spread evenly down the document, nudged off the exact edges
+      return { ...d, top: `${(((i + 0.5) / doodleCount) * 96 + 2).toFixed(2)}%` };
+    })
+  );
 
   // a stable "random" tilt per game (hash of its key, so the wall doesn't
   // reshuffle its crookedness on hydration or reload)
@@ -43,7 +72,24 @@
     const v = {};
     for (const g of data.games ?? []) v[g.key] = 'abc'[Math.floor(Math.random() * 3)];
     hoverVar = v;
+
+    // the covers are lazy and mostly unsized, so the page keeps growing as they
+    // land - recount on load and on resize rather than just once
+    recount();
+    const ro = new ResizeObserver(recount);
+    ro.observe(document.body);
+    addEventListener('resize', recount);
+    return () => {
+      ro.disconnect();
+      removeEventListener('resize', recount);
+    };
   });
+
+  // the loader splits the wall by jam; fall back to one unlabelled section so
+  // an older cached payload (or a hand-built one) still renders
+  const sections = $derived(
+    data.sections ?? (data.games?.length ? [{ key: 'all', title: '', games: data.games }] : [])
+  );
 </script>
 
 <svelte:head>
@@ -53,7 +99,7 @@
 
 <main class="page" class:slim={!data.games || !data.games.length}>
   <div class="gallery-doodles" aria-hidden="true">
-    {#each DOODLES as d (d.src)}
+    {#each DOODLES as d (d.i)}
       <span class="ed {d.side}" style="--top:{d.top}; --edge:{d.edge}px; --w:{d.w}px;">
         <img src="/assets/doodle_{d.src}.png" alt="" />
       </span>
@@ -81,45 +127,63 @@
       <p class="lede center intro2 sub">click one to go play it (in no particular order)</p>
     </header>
 
-    <ul class="grid">
-      {#each data.games as g (g.key)}
-        <!-- the cover link stretches over the whole card (its ::after); the
-             author links sit above the stretch so they stay clickable -->
-        <li
-          class="tile"
-          style="--h9:url('/assets/hover9_{hoverVar[g.key] ?? 'a'}@8x.png'); --rot:{rotOf(g.key)}deg"
-        >
-          <a class="card-link" href={g.url} target="_blank" rel="noopener">
-            <span class="thumb">
-              {#if g.thumb}
-                <img src={g.thumb} alt="" loading="lazy" />
-              {:else}
-                <img class="ph" src="/assets/doodle_{placeholderOf(g.key)}.png" alt="" loading="lazy" />
-              {/if}
-            </span>
-            <span class="name">{g.title}</span>
+    <!-- newest jam first, then everything before it. Each section gets the same
+         wall; only the heading above it changes. -->
+    {#each sections as s (s.key)}
+      <!-- the wrapper owns the gap above the heading so the link itself can
+           shrink-wrap the words - otherwise hovering the empty space above a
+           jam name would light up its underline. The link wraps the heading
+           rather than sitting inside it: jiggle rewrites the h2's contents into
+           letter spans, so an anchor in there would be thrown away. -->
+      <div class="sect-wrap">
+        {#if s.href}
+          <a class="sect-link" href={s.href} target="_blank" rel="noopener">
+            <h2 class="sect" use:jiggle>{s.title}</h2>
           </a>
-          {#if g.authors.length}
-            <p class="by">
-              by
-              {#each g.authors as a, i (a.name)}
-                {#if i}{' + '}{/if}
-                {#if a.slackId}
-                  <a
-                    class="who"
-                    href="https://hackclub.slack.com/team/{a.slackId}"
-                    target="_blank"
-                    rel="noopener">{a.name}</a
-                  >
+        {:else}
+          <h2 class="sect" use:jiggle>{s.title}</h2>
+        {/if}
+      </div>
+      <ul class="grid">
+        {#each s.games as g (g.key)}
+          <!-- the cover link stretches over the whole card (its ::after); the
+               author links sit above the stretch so they stay clickable -->
+          <li
+            class="tile"
+            style="--h9:url('/assets/hover9_{hoverVar[g.key] ?? 'a'}@8x.png'); --rot:{rotOf(g.key)}deg"
+          >
+            <a class="card-link" href={g.url} target="_blank" rel="noopener">
+              <span class="thumb">
+                {#if g.thumb}
+                  <img src={g.thumb} alt="" loading="lazy" />
                 {:else}
-                  <span>{a.name}</span>
+                  <img class="ph" src="/assets/doodle_{placeholderOf(g.key)}.png" alt="" loading="lazy" />
                 {/if}
-              {/each}
-            </p>
-          {/if}
-        </li>
-      {/each}
-    </ul>
+              </span>
+              <span class="name">{g.title}</span>
+            </a>
+            {#if g.authors.length}
+              <p class="by">
+                by
+                {#each g.authors as a, i (a.name)}
+                  {#if i}{' + '}{/if}
+                  {#if a.slackId}
+                    <a
+                      class="who"
+                      href="https://hackclub.slack.com/team/{a.slackId}"
+                      target="_blank"
+                      rel="noopener">{a.name}</a
+                    >
+                  {:else}
+                    <span>{a.name}</span>
+                  {/if}
+                {/each}
+              </p>
+            {/if}
+          </li>
+        {/each}
+      </ul>
+    {/each}
 
     <p class="join-note">
       wanna see your game up here? <a href="/">join the next jam!</a>
@@ -231,6 +295,46 @@
     flex-direction: column;
     align-items: center;
     gap: calc(18px * var(--scale));
+  }
+
+  /* ===== section headings ===== */
+  /* one per jam, and they have to survive being read after scrolling past ~35
+     rows of cards - hence the size and the big air above the break. */
+  /* the gap above a heading lives on the wrapper, never on the link, so the
+     hover target is only the words */
+  .sect-wrap {
+    margin-top: calc(160px * var(--scale));
+    text-align: center;
+  }
+  .sect {
+    /* fit-content so the hover rule is exactly as wide as the words - the
+       screen-reader copy is absolutely positioned and adds nothing here */
+    width: fit-content;
+    margin: 0 auto calc(40px * var(--scale));
+    padding-bottom: calc(1px * var(--scale));
+    /* reserved at rest so hovering doesn't shift the wall down */
+    border-bottom: calc(5px * var(--scale)) solid transparent;
+    font-size: calc(44px * var(--scale));
+    font-weight: normal;
+    line-height: 1.05;
+    text-align: center;
+  }
+  .sect:empty {
+    display: none;
+  }
+  /* each heading links to that jam's itch page - inline-block so it hugs the
+     text rather than spanning the column */
+  .sect-link {
+    display: inline-block;
+    color: inherit;
+    text-decoration: none;
+  }
+  /* a border, not text-decoration: jiggle splits the heading into inline-block
+     letter spans, and an ancestor's text-decoration skips atomic boxes like
+     those - it only drew in the gaps between words */
+  .sect-link:hover .sect,
+  .sect-link:focus-visible .sect {
+    border-bottom-color: rgba(80, 75, 73, 0.55);
   }
 
   /* ===== the wall ===== */
