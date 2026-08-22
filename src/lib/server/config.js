@@ -47,7 +47,14 @@ export const config = {
     yswsTable: env.AIRTABLE_YSWS_TABLE || 'YSWS Project Submission', // the unified DB component
     jamsTable: env.AIRTABLE_JAMS_TABLE || 'Jams' // one row per jam; /gallery names its sections from it
   },
-  origin: env.ORIGIN // optional; otherwise derived from the request origin
+  origin: env.ORIGIN, // optional; otherwise derived from the request origin
+  // Apliiq print-on-demand: used only by /prizes/track-shirt to look up a
+  // t-shirt order's status. Absent creds just make that one page say tracking
+  // is unavailable; nothing else on the site depends on it.
+  apliiq: {
+    appId: env.APLIIQ_APP_ID,
+    sharedSecret: env.APLIIQ_SHARED_SECRET
+  }
 };
 
 // Airtable field names, in one place so they track the actual "Sign Ups" schema.
