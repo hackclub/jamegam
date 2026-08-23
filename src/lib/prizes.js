@@ -84,7 +84,6 @@ export const PRIZES = [
   { src: 'mecchachameleon', alt: 'MECCHA CHAMELEON',       name: 'meccha chameleon',       c: '#97db91', s: 90,  r: 8,   fresh: true, game: true, shopOnly: true, href: 'https://store.steampowered.com/app/4704690/MECCHA_CHAMELEON/' },
   { src: 'supermeatboy',    alt: 'Super Meat Boy',         name: 'super meat boy',         c: '#db9591', s: 90,  r: -7,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/40800/Super_Meat_Boy/' },
   { src: 'crueltysquad',    alt: 'Cruelty Squad',          name: 'cruelty squad',          c: '#97db91', s: 92,  r: 11,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/1388770/Cruelty_Squad/' },
-  { src: 'gmtkhoodie',      alt: 'GMTK 200th hoodie',      name: 'gmtk hoodie',            c: '#91a4db', s: 108, r: -8,  opts: [SIZE_OPTION, { key: 'color', label: 'color', choices: ['black', 'blue', 'red', 'orange', 'navy'] }], href: 'https://game-makers-toolkit.creator-spring.com/listing/gmtk-200th?product=212', blurb: 'the official gmtk hoodie! this one will only be here for a month' },
   { src: 'tshirt',          alt: 'Jame Gam t-shirt',        name: 'jame gam t-shirt',       c: '#97db91', s: 96,  r: 8,   opts: [SIZE_OPTION], note: ' (preorder, ships early aug)', blurb: 'official jame gam shirt! preorder - ships early august. the design shown is a placeholder, not the real one' }
 ];
 
@@ -112,7 +111,7 @@ export const PRIZE_HD = new Set([
   'ashorthike', 'downwell', 'inscryption', 'animalwell', 'obradinn',
   'thomaswasalone', 'superhexagon', 'hotlinemiami', 'supermeatboy', 'crueltysquad',
   'silksong',
-  'deltarune', 'megabonk', 'otamatone', 'ceiling', 'minecraft', 'gmtkhoodie',
+  'deltarune', 'megabonk', 'otamatone', 'ceiling', 'minecraft',
   'fangamer', 'magazine',
   'terraria', 'omori', 'oneshot', 'bandcamp', 'tshirt', 'nektar', 'stylophone',
   'cultofthelamb', 'deadcells', 'bindingofisaac', 'geometrydash',
