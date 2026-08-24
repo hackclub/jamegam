@@ -23,7 +23,7 @@
   import { jiggle } from '$lib/actions/jiggle.js';
   import { rainbowBorder } from '$lib/actions/rainbowBorder.js';
   import { PRIZE_GAMES, PRIZE_STUFF, PRIZE_HD, GAME_PICK_COUNT } from '$lib/prizes.js';
-  import { variantValues, PICK_WINDOW_DAYS } from '$lib/shop.js';
+  import { variantValues, itemBlockedIn, PICK_WINDOW_DAYS } from '$lib/shop.js';
   import Dust from '$lib/components/Dust.svelte';
 
   let { data } = $props();
@@ -64,6 +64,14 @@
   }
 
   const address = $derived(data.addresses?.find((a) => String(a.id) === String(addressId)) ?? null);
+  // some prizes are too pricey to source/ship to certain countries (see
+  // blockCountries in prizes.js). Key off the chosen shipping address, falling
+  // back to the primary/first so it's decided even before the address modal
+  // opens. Server re-checks in /api/shop/order.
+  const shipCountry = $derived(
+    (address ?? data.addresses?.find((a) => a.primary) ?? data.addresses?.[0])?.country ?? ''
+  );
+  const blocked = (p) => itemBlockedIn(p, shipCountry);
   const currentPrizeSrc = $derived(
     data.order?.type === 'prize' ? (PRIZE_STUFF.find((p) => p.name === data.order.prize)?.src ?? null) : null
   );
@@ -562,6 +570,7 @@
           <button
             class="tile"
             class:sel={currentPrizeSrc === p.src}
+            class:dim={!browseOnly && blocked(p)}
             type="button"
             style="--h9:url('/assets/hover9_{hoverVar[p.src] ?? 'a'}@8x.png')"
             onclick={() => openModal(p)}
@@ -739,6 +748,9 @@
           {#if modal.p.blurb}
             <p class="m-info">{modal.p.blurb}</p>
           {/if}
+          {#if modal.kind === 'item' && modal.p.blockCountries?.length}
+            <p class="m-unavailable">not available in {modal.p.blockCountries.join(', ')} :(</p>
+          {/if}
           {#if modal.kind === 'game'}
             <p class="m-note">instead of one prize, you can grab {GAME_PICK_COUNT} indie games.</p>
           {/if}
@@ -776,6 +788,9 @@
 
           {#if browseOnly}
             <!-- browse-only: no order action; the header's note/sign-in covers it -->
+          {:else if modal.kind === 'item' && blocked(modal.p)}
+            <!-- blocked in this country: no order action at all; the "not
+                 available in ..." line under the blurb is the only explanation -->
           {:else if modal.kind === 'game'}
             {#if gamePicks.includes(modal.p.src)}
               <!-- with all 3 picked, this modal is also the way back to ordering
@@ -1644,6 +1659,14 @@
   /* the m-link pushes m-info down when both exist; keep the pair tight */
   .m-link + .m-info {
     margin-top: calc(-6px * var(--scale));
+  }
+  /* the country-block note, sitting just under the blurb - fainter/greyer than
+     the blurb so it reads as a quiet caveat, not part of the pitch */
+  .m-unavailable {
+    margin: calc(4px * var(--scale)) 0 0;
+    line-height: 1.3;
+    color: rgba(80, 75, 73, 0.4);
+    max-width: 34ch;
   }
   .m-note {
     margin: 0;

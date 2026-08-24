@@ -47,6 +47,29 @@ export function variantValues(item, picks) {
     .join(', ');
 }
 
+// ---- per-item country restrictions ----
+// Some prizes are too pricey to source or ship in certain countries. An item in
+// prizes.js can declare `blockCountries: ['india']`; the shop then hides its
+// order action and the /api/shop/order endpoint rejects it when the shipping
+// country matches. The match is loose because the address `country` field is
+// free text (from HCA or the submission form), so it arrives as "India", "IN",
+// "in", and so on.
+const COUNTRY_ALIASES = {
+  india: ['india', 'in', 'ind', 'bharat']
+};
+
+/** Does this free-text country string name one of `names` (e.g. ['india'])? */
+export function countryMatches(country, names) {
+  const c = String(country || '').trim().toLowerCase();
+  if (!c) return false;
+  return names.some((name) => (COUNTRY_ALIASES[name] ?? [name]).includes(c));
+}
+
+/** Is `item` blocked from shipping to `country`? */
+export function itemBlockedIn(item, country) {
+  return !!item?.blockCountries?.length && countryMatches(country, item.blockCountries);
+}
+
 // review_status values that open the prize shop. "Prize Only" is Augie's escape
 // hatch for a project he wants to reward but not send to the unified YSWS DB, so
 // it never stages. "No Prize" is the mirror image - it stages to the unified DB

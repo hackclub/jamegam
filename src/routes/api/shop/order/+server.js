@@ -13,7 +13,7 @@ import { readSession, SESSION_COOKIE } from '$lib/server/session.js';
 import { findSubmissions, findOrder, createRecord, patchRecord } from '$lib/server/shopdb.js';
 import { rateLimit } from '$lib/server/ratelimit.js';
 import { config } from '$lib/server/config.js';
-import { SHOP, SHOP_STATUSES, variantText, closesAtFor, closesTextFor } from '$lib/shop.js';
+import { SHOP, SHOP_STATUSES, variantText, itemBlockedIn, closesAtFor, closesTextFor } from '$lib/shop.js';
 import { PRIZE_GAMES, PRIZE_STUFF, GAME_PICK_COUNT } from '$lib/prizes.js';
 
 export const prerender = false;
@@ -37,6 +37,9 @@ export async function POST({ request, cookies, getClientAddress }) {
   // variant/prize/games are always written (empty when not applicable) so
   // changing an order fully overwrites the previous pick.
   let pick;
+  // the resolved prize item, kept around so the country block can re-check it
+  // once we know the shipping address below (games are never country-blocked)
+  let pickedItem = null;
   if (body?.type === 'games') {
     const srcs = [...new Set((Array.isArray(body.games) ? body.games : []).map(String))];
     const chosen = srcs.map((s) => PRIZE_GAMES.find((g) => g.src === s)).filter(Boolean);
@@ -47,6 +50,7 @@ export async function POST({ request, cookies, getClientAddress }) {
   } else if (body?.type === 'prize') {
     const p = PRIZE_STUFF.find((x) => x.src === String(body.prize));
     if (!p) return json({ ok: false, error: 'pick a prize from the pool' }, { status: 422 });
+    pickedItem = p;
     // every option group the item declares (size, colour, ...) has to be a real
     // choice from that group - the UI disables the button until they all are
     const picks = {};
@@ -115,6 +119,15 @@ export async function POST({ request, cookies, getClientAddress }) {
       { status: 409 }
     );
   }
+  // some prizes are too pricey to source/ship to certain countries - reject the
+  // pick here too, so the UI's dimmed tile can't just be worked around
+  if (itemBlockedIn(pickedItem, addr.country)) {
+    return json(
+      { ok: false, error: "that prize isn't available to ship to your country! pick another one" },
+      { status: 422 }
+    );
+  }
+
   // carriers want a phone number on the label, so shipping requires one
   if (body.noStickers !== true && !addr.phone) {
     return json(
