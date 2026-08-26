@@ -84,7 +84,7 @@ export const PRIZES = [
   { src: 'mecchachameleon', alt: 'MECCHA CHAMELEON',       name: 'meccha chameleon',       c: '#97db91', s: 90,  r: 8,   fresh: true, game: true, shopOnly: true, href: 'https://store.steampowered.com/app/4704690/MECCHA_CHAMELEON/' },
   { src: 'supermeatboy',    alt: 'Super Meat Boy',         name: 'super meat boy',         c: '#db9591', s: 90,  r: -7,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/40800/Super_Meat_Boy/' },
   { src: 'crueltysquad',    alt: 'Cruelty Squad',          name: 'cruelty squad',          c: '#97db91', s: 92,  r: 11,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/1388770/Cruelty_Squad/' },
-  { src: 'tshirt',          alt: 'Jame Gam t-shirt',        name: 'jame gam t-shirt',       c: '#97db91', s: 96,  r: 8,   opts: [SIZE_OPTION], note: ' (preorder, ships early aug)', blurb: 'official jame gam shirt! preorder - ships early august. the design shown is a placeholder, not the real one' }
+  { src: 'tshirt',          alt: 'Jame Gam t-shirt',        name: 'jame gam t-shirt',       c: '#97db91', s: 96,  r: 8,   opts: [SIZE_OPTION], note: ' (preorder, ships early aug)', blurb: 'official jame gam shirt! preorder - ships early august. <a href="https://cdn.hackclub.com/01a03f1a-92dc-7fa3-a8c6-a15cd20afbf9/1.png" target="_blank" rel="noopener">size chart</a>' }
 ];
 
 // bench (want, but too pricey for now): raspberry pi 5 (~$80 for the 8gb board,

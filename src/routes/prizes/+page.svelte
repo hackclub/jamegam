@@ -644,6 +644,7 @@
     <div
       class="modal"
       class:duo={modal.kind === 'item' || modal.kind === 'game'}
+      class:wide-fig={modal.kind === 'item' && modal.p?.src === 'tshirt'}
       class:addr={modal.kind === 'address'}
       role="dialog"
       aria-modal="true"
@@ -746,7 +747,7 @@
             </a>
           {/if}
           {#if modal.p.blurb}
-            <p class="m-info">{modal.p.blurb}</p>
+            <p class="m-info">{@html modal.p.blurb}</p>
           {/if}
           {#if modal.kind === 'item' && modal.p.blockCountries?.length}
             <p class="m-unavailable">not available in {modal.p.blockCountries.join(', ')} :(</p>
@@ -779,9 +780,6 @@
                 <p class="m-note">{g.note}</p>
               {/if}
             {/each}
-            {#if modal.p.src === 'tshirt'}
-              <p class="m-note">this is a placeholder, <span class="u">this is not the shirt design</span>.</p>
-            {/if}
           {/if}
 
           {@render errline()}
@@ -1546,6 +1544,17 @@
     column-gap: calc(56px * var(--scale));
     align-items: center;
     text-align: left;
+  }
+  /* the tshirt shot is a detailed landscape mockup with a high-res sprite - give
+     it a wider figure column + less padding so the design reads bigger */
+  .modal.duo.wide-fig {
+    grid-template-columns: minmax(0, calc(460px * var(--scale))) 1fr;
+  }
+  .modal.wide-fig .m-fig {
+    padding: calc(8px * var(--scale));
+  }
+  .modal.wide-fig .m-fig img {
+    max-height: calc(400px * var(--scale));
   }
   .modal:focus {
     outline: none;
