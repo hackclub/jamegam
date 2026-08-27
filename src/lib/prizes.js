@@ -32,6 +32,7 @@ export const PRIZES = [
   { src: 'steam',           alt: 'Steam gift card',        name: 'steam gift card',        c: '#91a4db', s: 74,  r: -15, href: 'https://store.steampowered.com/digitalgiftcards/', blurb: '$25 of steam wallet money to spend on whatever you like' },
   { src: 'lpd8',            alt: 'Akai LPD8 mk2',          name: 'akai lpd8 mk2',          c: '#91a4db', s: 114, r: -6,  fresh: true, shopOnly: true, href: 'https://www.akaipro.com/lpd8-mk2/', blurb: 'a usb midi controller with 8 velocity-sensitive pads and 8 knobs. works with any daw' },
   { src: 'fangamer',        alt: 'Fangamer gift card',     name: 'fangamer gift card',     c: '#db9591', s: 90,  r: -7,  shopOnly: true, href: 'https://www.fangamer.com/', blurb: '$25 for merch from your favorite games' },
+  { src: 'humblebundle',    alt: 'Humble Choice subscription', name: 'humble choice',      c: '#db9591', s: 82,  r: 8,   fresh: true, shopOnly: true, href: 'https://www.humblebundle.com/membership', blurb: 'a month of humble choice: a curated bundle of pc games, yours to keep on steam' },
   { src: 'babaisyou',       alt: 'Baba Is You',            name: 'baba is you',            c: '#97db91', s: 92,  r: -8,  game: true, href: 'https://store.steampowered.com/app/736260/Baba_Is_You/', blurb: '(one of my favorite games)' },
   { src: 'celeste',         alt: 'Celeste',                name: 'celeste',                c: '#91a4db', s: 108, r: 9,   game: true, href: 'https://store.steampowered.com/app/504230/Celeste/', blurb: '(one of my favorite games)' },
   { src: 'deadcells',       alt: 'Dead Cells',             name: 'dead cells',             c: '#91a4db', s: 90,  r: 7,   fresh: true, game: true, shopOnly: true, href: 'https://store.steampowered.com/app/588650/Dead_Cells/' },
@@ -116,5 +117,5 @@ export const PRIZE_HD = new Set([
   'terraria', 'omori', 'oneshot', 'bandcamp', 'tshirt', 'nektar', 'stylophone',
   'cultofthelamb', 'deadcells', 'bindingofisaac', 'geometrydash',
   'mecchachameleon', 'denshattack', 'levelup', 'lpd8', 'assetforge',
-  'tilesetter', 'pixelover'
+  'tilesetter', 'pixelover', 'humblebundle'
 ]);
