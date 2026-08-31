@@ -349,8 +349,8 @@
         </p>
       {:else if data.state === 'closed'}
         <p class="deadline deadline-top loud">
-          the {jamMonth} prize shop has closed and you never picked your prize! dm @augie on
-          slack and i'll sort you out.
+          the {jamMonth} prize shop has closed and you never picked your prize! post in
+          #jame-gam-help and i'll sort you out.
         </p>
       {:else if data.state === 'nosubmission'}
         <p class="deadline deadline-top loud">
@@ -358,7 +358,7 @@
           {#if data.submitUrl}haven't submitted your game yet?
             <a href={data.submitUrl}>submit it here</a>!{/if}
           if you submitted with a different email, <a href="/api/auth/logout">sign out</a> and
-          use that one, or dm @augie on slack and i'll sort it out!
+          use that one, or post in #jame-gam-help and i'll sort it out!
         </p>
       {:else if data.state === 'pending'}
         <p class="deadline deadline-top loud">
@@ -388,7 +388,7 @@
     <section class="panel">
       <p class="lede">
         i couldn't approve your submission this time, so there's no prize pick here. if that seems
-        wrong, dm @augie on slack and i'll take another look!
+        wrong, post in #jame-gam-help and i'll take another look!
       </p>
     </section>
   {:else if data.state === 'noaddress'}
@@ -412,7 +412,7 @@
       {#if data.order.status === 'canceled'}
         <section class="panel">
           <p class="lede">
-            your order for {jamMonth} was cancelled, dm @augie if that sounds wrong!
+            your order for {jamMonth} was cancelled, post in #jame-gam-help if that sounds wrong!
           </p>
         </section>
       {:else}
