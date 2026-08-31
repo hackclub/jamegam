@@ -73,7 +73,7 @@ export const PRIZES = [
   { src: 'inscryption',     alt: 'Inscryption',            name: 'inscryption',            c: '#b991db', s: 92,  r: -11, game: true, shopOnly: true, href: 'https://store.steampowered.com/app/1092790/Inscryption/' },
   { src: 'animalwell',      alt: 'ANIMAL WELL',            name: 'animal well',            c: '#97db91', s: 90,  r: 7,   game: true, shopOnly: true, href: 'https://store.steampowered.com/app/813230/ANIMAL_WELL/', blurb: '(one of my favorite games of all time)' },
   { src: 'obradinn',        alt: 'Return of the Obra Dinn', name: 'return of the obra dinn', c: '#db9591', s: 92, r: -5,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/653530/Return_of_the_Obra_Dinn/' },
-  { src: 'wacom',           alt: 'Wacom drawing tablet',   name: 'basic wacom drawing tablet', c: '#b991db', s: 110, r: 6,  href: 'https://www.wacom.com/en-us/products/pen-tablets/wacom-intuos', blurb: 'an entry-level intuos drawing tablet, with a battery-free pressure-sensitive pen' },
+  { src: 'xppen',           alt: 'XPPen Deco 640 drawing tablet', name: 'xppen deco 640',   c: '#b991db', s: 110, r: 6,  fresh: true, href: 'https://www.xp-pen.com/product/deco-640.html', blurb: 'an entry-level drawing tablet with a battery-free pressure-sensitive pen, usb-c, and 8 shortcut keys' },
   { src: 'kenney',          alt: 'Kenney Game Assets All-in-1', name: 'kenney game asset bundle', c: '#db9591', s: 100, r: -7, lead: 'that’s the', shopOnly: true, href: 'https://kenney.itch.io/kenney-game-assets', blurb: 'an all-in-1 game asset bundle: tens of thousands of 2d, 3d, audio, and ui game assets' },
   { src: 'nektar',          alt: 'Nektar SE25 midi keyboard', name: 'nektar se25',          c: '#91a4db', s: 118, r: -6,  href: 'https://nektartech.com/se25-midi-controller/', blurb: 'a slim 25-key usb midi keyboard, for making your game some music' },
   { src: 'stylophone',      alt: 'Stylophone S-1',         name: 'stylophone s-1',         c: '#dbaf91', s: 96,  r: 9,   href: 'https://stylophone.com/product/stylophone-s-1/', blurb: 'the pocket synth you play with a stylus. an icon since 1968' },
@@ -103,7 +103,7 @@ export const PRIZE_STUFF = PRIZES.filter((p) => !p.game);
 // spots (/shop modal, the your-pick card). Generated from the figma originals
 // + steam art by claude-workspace/prize-originals/make-prize.sh, which also
 // documents the sprite recipe. Still missing:
-// pico8, aseprite, pixelcomposer, po12, wacom, kenney.
+// pico8, aseprite, pixelcomposer, po12, kenney.
 export const PRIZE_HD = new Set([
   'artofgamedesign', 'babaisyou', 'camera', 'celeste', 'controller', 'duck',
   'hollowknight', 'mascot', 'shark', 'steam', 'thumby',
@@ -117,5 +117,5 @@ export const PRIZE_HD = new Set([
   'terraria', 'omori', 'oneshot', 'bandcamp', 'tshirt', 'nektar', 'stylophone',
   'cultofthelamb', 'deadcells', 'bindingofisaac', 'geometrydash',
   'mecchachameleon', 'denshattack', 'levelup', 'lpd8', 'assetforge',
-  'tilesetter', 'pixelover', 'humblebundle'
+  'tilesetter', 'pixelover', 'humblebundle', 'xppen'
 ]);
