@@ -3,8 +3,8 @@
 // The shop serves LAST month's submitters, so it intentionally lags jam.js by
 // one cycle. There is no shop-wide close date - see PICK_WINDOW_DAYS below.
 export const SHOP = {
-  jam: '2026-07', // must match submission_form.jam
-  jamName: 'the GMTK game jam' // display name (lags jam.js by a cycle, so it can't read JAM.name)
+  jam: '2026-08', // must match submission_form.jam
+  jamName: 'the brackeys 2026.2 game jam' // display name (lags jam.js by a cycle, so it can't read JAM.name)
 };
 
 export const TSHIRT_SIZES = ['S', 'M', 'L', 'XL'];
