@@ -90,6 +90,9 @@ export const PRIZES = [
   { src: 'mecchachameleon', alt: 'MECCHA CHAMELEON',       name: 'meccha chameleon',       c: '#97db91', s: 90,  r: 8,   fresh: true, game: true, shopOnly: true, href: 'https://store.steampowered.com/app/4704690/MECCHA_CHAMELEON/' },
   { src: 'supermeatboy',    alt: 'Super Meat Boy',         name: 'super meat boy',         c: '#db9591', s: 90,  r: -7,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/40800/Super_Meat_Boy/' },
   { src: 'crueltysquad',    alt: 'Cruelty Squad',          name: 'cruelty squad',          c: '#97db91', s: 92,  r: 11,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/1388770/Cruelty_Squad/' },
+  { src: 'tinytraffic',     alt: 'Tiny Traffic',           name: 'tiny traffic',           c: '#91a4db', s: 90,  r: -8,  fresh: true, game: true, shopOnly: true, href: 'https://store.steampowered.com/app/1445980/Tiny_Traffic/' },
+  { src: 'endacopia',       alt: 'Endacopia',              name: 'endacopia',              c: '#b991db', s: 90,  r: 7,   fresh: true, game: true, shopOnly: true, href: 'https://store.steampowered.com/app/2684630/Endacopia/' },
+  { src: 'whiteknuckle',    alt: 'White Knuckle',          name: 'white knuckle',          c: '#97db91', s: 90,  r: -9,  fresh: true, game: true, shopOnly: true, href: 'https://store.steampowered.com/app/3195790/White_Knuckle/' },
   { src: 'tshirt',          alt: 'Jame Gam t-shirt',        name: 'jame gam t-shirt',       c: '#97db91', s: 96,  r: 8,   opts: [SIZE_OPTION], note: ' (preorder, ships early aug)', blurb: 'official jame gam shirt! preorder - ships early august. <a href="https://cdn.hackclub.com/01a03f1a-92dc-7fa3-a8c6-a15cd20afbf9/1.png" target="_blank" rel="noopener">size chart</a>' },
 
   // ---- winners bracket ----
@@ -105,6 +108,7 @@ export const PRIZES = [
   { src: 'b_mxmaster4', frame: 'plain',  alt: 'Logitech MX Master 4',      name: 'logitech mx master 4',    c: '#dbaf91', bracket: true, href: 'https://www.logitech.com/en-us/shop/p/mx-master-4', blurb: 'logitech\'s flagship mouse' },
   { src: 'b_whch720n', frame: 'slim',   alt: 'Sony WH-CH720N headphones', name: 'sony wh-ch720n headphones',          c: '#91a4db', bracket: true, href: 'https://electronics.sony.com/audio/headphones/headband/p/whch720n-b', blurb: 'high-quality wireless headphones' },
   { src: 'b_8bitdokb',   frame: 'scroll', alt: '8BitDo Retro Mechanical Keyboard', name: '8bitdo retro mechanical keyboard', c: '#b991db', bracket: true, href: 'https://www.8bitdo.com/retro-mechanical-keyboard/', blurb: 'an nes mechanical keyboard' },
+  { src: 'b_polaroidgo', frame: 'gilt',  alt: 'Polaroid Go Starter Set',    name: 'polaroid go', c: '#97db91', bracket: true, href: 'https://www.polaroid.com/en_us/products/polaroid-go-starter-set/white', blurb: 'the tiniest instant camera. the starter set, so film included' },
   { src: 'b_humble', frame: 'shadowed',     alt: 'Humble Choice for one year',   name: 'humble choice (1 year)',  img: 'humblebundle', c: '#db9591', bracket: true, href: 'https://www.humblebundle.com/membership', blurb: 'twelve months of free pc games' }
 ];
 
@@ -154,9 +158,9 @@ export const PRIZE_HD = new Set([
   'fangamer', 'magazine',
   'terraria', 'omori', 'oneshot', 'bandcamp', 'tshirt', 'nektar', 'stylophone',
   'cultofthelamb', 'deadcells', 'bindingofisaac', 'geometrydash',
-  'mecchachameleon', 'denshattack', 'levelup', 'lpd8', 'assetforge',
+  'mecchachameleon', 'denshattack', 'levelup', 'lpd8', 'assetforge', 'tinytraffic', 'endacopia', 'whiteknuckle',
   'tilesetter', 'pixelover', 'humblebundle', 'xppen',
   // winners bracket
   'b_flstudio', 'b_retroidclassic', 'b_retroid4pro', 'b_gtavi',
-  'b_steamworks', 'b_mxmaster4', 'b_whch720n', 'b_8bitdokb'
+  'b_steamworks', 'b_mxmaster4', 'b_whch720n', 'b_8bitdokb', 'b_polaroidgo'
 ]);
