@@ -22,11 +22,17 @@
   import { invalidateAll } from '$app/navigation';
   import { jiggle } from '$lib/actions/jiggle.js';
   import { rainbowBorder } from '$lib/actions/rainbowBorder.js';
-  import { PRIZE_GAMES, PRIZE_STUFF, PRIZE_HD, GAME_PICK_COUNT } from '$lib/prizes.js';
+  import { PRIZE_GAMES, PRIZE_STUFF, PRIZE_BRACKET, PRIZE_HD, GAME_PICK_COUNT, imgOf } from '$lib/prizes.js';
   import { variantValues, itemBlockedIn, PICK_WINDOW_DAYS } from '$lib/shop.js';
+  import { frameVars } from '$lib/frames.js';
   import Dust from '$lib/components/Dust.svelte';
 
   let { data } = $props();
+
+  // the whole "instead of one thing" pool: the stuff and the winners bracket
+  // both order as a single `prize`, so anything reading an order back has to
+  // look in both.
+  const PRIZE_ITEMS = [...PRIZE_STUFF, ...PRIZE_BRACKET];
 
   // ---- selection state (games accumulate; prizes order straight from the modal) ----
   let gamePicks = $state([]); // srcs, up to GAME_PICK_COUNT
@@ -50,7 +56,7 @@
       .filter(Boolean);
   }
   if (data.order?.type === 'prize') {
-    const ordered = PRIZE_STUFF.find((p) => p.name === data.order.prize);
+    const ordered = PRIZE_ITEMS.find((p) => p.name === data.order.prize);
     if (ordered) optionPicks[ordered.src] = { ...data.order.options };
   }
   if (data.order?.noStickers) noStickers = true;
@@ -73,7 +79,7 @@
   );
   const blocked = (p) => itemBlockedIn(p, shipCountry);
   const currentPrizeSrc = $derived(
-    data.order?.type === 'prize' ? (PRIZE_STUFF.find((p) => p.name === data.order.prize)?.src ?? null) : null
+    data.order?.type === 'prize' ? (PRIZE_ITEMS.find((p) => p.name === data.order.prize)?.src ?? null) : null
   );
   const pickNames = $derived(gamePicks.map((s) => PRIZE_GAMES.find((g) => g.src === s)?.name).filter(Boolean));
   // do the accumulated game picks differ from what's already ordered?
@@ -102,7 +108,7 @@
   // "L, navy" for the your-pick card
   const orderedVariant = $derived(
     data.order?.type === 'prize'
-      ? variantValues(PRIZE_STUFF.find((p) => p.name === data.order.prize), data.order.options)
+      ? variantValues(PRIZE_ITEMS.find((p) => p.name === data.order.prize), data.order.options)
       : ''
   );
 
@@ -132,7 +138,10 @@
   }
 
   // the 2x-pixel-grid art where it exists (big spots only - the grid stays 1x)
-  const hdSrc = (src) => `/assets/${PRIZE_HD.has(src) ? 'prizehd_' : 'prize_'}${src}.png`;
+  const hdSrc = (x) => {
+    const art = imgOf(x);
+    return `/assets/${PRIZE_HD.has(art) ? 'prizehd_' : 'prize_'}${art}.png`;
+  };
 
   // a stable "random" tilt per prize for the your-pick card (hash of the src,
   // so it doesn't reshuffle on hydration or reload)
@@ -238,6 +247,10 @@
   // pick UI and the browse list are a normal top-to-bottom document scroll.
   const slim = $derived(data.state === 'shop' ? !!data.locked : !browseOnly);
 
+  // the winners bracket is browsable by everyone - it's the carrot - and only
+  // locks once someone is actually picking and didn't place top 10.
+  const bracketLocked = $derived(!browseOnly && !data.winner);
+
   // "june", from the shop's jam label ('2026-06') - for copy, instead of the raw label
   const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
   const jamMonth = $derived(MONTHS[(parseInt(data.jam?.split('-')[1], 10) || 0) - 1] ?? data.jam);
@@ -288,7 +301,8 @@
   let hoverVar = $state({});
   onMount(() => {
     const v = {};
-    for (const p of [...PRIZE_STUFF, ...PRIZE_GAMES]) v[p.src] = 'abc'[Math.floor(Math.random() * 3)];
+    for (const p of [...PRIZE_STUFF, ...PRIZE_GAMES, ...PRIZE_BRACKET])
+      v[p.src] = 'abc'[Math.floor(Math.random() * 3)];
     hoverVar = v;
 
     const tick = setInterval(() => (now = Date.now()), 1000);
@@ -576,7 +590,7 @@
             onclick={() => openModal(p)}
           >
             {#if p.fresh}<span class="fresh">new!</span>{/if}
-            <span class="thumb"><img src="/assets/prize_{p.src}.png" alt={p.alt} loading="lazy" /></span>
+            <span class="thumb"><img src="/assets/prize_{imgOf(p)}.png" alt={p.alt} loading="lazy" /></span>
             <span class="name">{p.name}</span>
           </button>
         </li>
@@ -609,8 +623,55 @@
             onclick={() => openModal(p)}
           >
             {#if p.fresh}<span class="fresh">new!</span>{/if}
-            <span class="thumb"><img src="/assets/prize_{p.src}.png" alt={p.alt} loading="lazy" /></span>
+            <span class="thumb"><img src="/assets/prize_{imgOf(p)}.png" alt={p.alt} loading="lazy" /></span>
             <span class="name">{p.name}</span>
+          </button>
+        </li>
+      {/each}
+    </ul>
+  </section>
+
+  <!-- the winners bracket: a third "instead of" branch, only orderable by the
+       jam's top 10. Everyone browsing sees it live; the lock only lands once
+       someone is actually picking (see bracketLocked). Tiles stay clickable
+       when locked - the modal is where the "top 10 only" explanation lives. -->
+  <section class="group bracket" class:locked={bracketLocked}>
+    <!-- "how it works"-style header: tag at the left, line trailing right -->
+    <div class="gh">
+      <span class="gh-tag crowned">
+        <span class="crown" aria-hidden="true"></span>
+        <h2 class="txt gh-title">winners bracket</h2>
+      </span>
+      <span class="gh-line" aria-hidden="true"></span>
+    </div>
+    <p class="gh-sub">
+      <span class="gh-sub-t">
+        {bracketLocked || browseOnly
+          ? 'for the cozy fall jam, placing in the top 10 will unlock this tier!'
+          : 'you placed top 10! pick any one'}
+      </span>
+    </p>
+    <ul class="grid">
+      {#each PRIZE_BRACKET as p (p.src)}
+        <li>
+          <button
+            class="tile"
+            class:sel={currentPrizeSrc === p.src}
+            class:dim={bracketLocked || (!browseOnly && blocked(p))}
+            type="button"
+            style="--h9:url('/assets/hover9_{hoverVar[p.src] ?? 'a'}@8x.png')"
+            onclick={() => openModal(p)}
+          >
+            <span class="framed" style={frameVars(p.frame)}>
+              <!-- the 2x sprite in the frame's opening: it's a much bigger
+                   spot than a plain tile, and the hd twin fills it at a clean
+                   integer scale instead of blurring the 1x up -->
+              <span class="thumb"><img src={hdSrc(p)} alt={p.alt} loading="lazy" /></span>
+            </span>
+            <span class="name">{p.name}</span>
+            <!-- the lock marker sits under the name, clear of the frame's
+                 ornate corners (the "new!" slot up top is unusable here) -->
+            {#if bracketLocked}<span class="locked-tag">top 10 only</span>{/if}
           </button>
         </li>
       {/each}
@@ -713,7 +774,7 @@
           <p class="m-name">your {GAME_PICK_COUNT} games</p>
           <div class="m-games">
             {#each gamePicks as src (src)}
-              <img src="/assets/prize_{src}.png" alt={PRIZE_GAMES.find((g) => g.src === src)?.name} />
+              <img src="/assets/prize_{imgOf(src)}.png" alt={PRIZE_GAMES.find((g) => g.src === src)?.name} />
             {/each}
           </div>
           <p class="m-info">{pickNames.join(', ')}</p>
@@ -755,8 +816,14 @@
           {#if modal.kind === 'game'}
             <p class="m-note">instead of one prize, you can grab {GAME_PICK_COUNT} indie games.</p>
           {/if}
+          {#if modal.p.bracket && bracketLocked}
+            <p class="m-note">
+              the winners bracket is for the jam's top 10! not pickable for you,
+              but have a look.
+            </p>
+          {/if}
 
-          {#if modal.kind === 'item' && modal.p.opts && !browseOnly}
+          {#if modal.kind === 'item' && modal.p.opts && !browseOnly && !(modal.p.bracket && bracketLocked)}
             <!-- one button row per option group (size, colour, ...). The label
                  only earns its line when there's more than one group to tell
                  apart. -->
@@ -786,6 +853,9 @@
 
           {#if browseOnly}
             <!-- browse-only: no order action; the header's note/sign-in covers it -->
+          {:else if modal.p.bracket && bracketLocked}
+            <!-- locked bracket item: the "top 10 only" note above is the whole
+                 explanation, so no action here -->
           {:else if modal.kind === 'item' && blocked(modal.p)}
             <!-- blocked in this country: no order action at all; the "not
                  available in ..." line under the blurb is the only explanation -->
@@ -1389,6 +1459,194 @@
   .tile.dim {
     opacity: 0.4;
   }
+  /* ===== the winners bracket ===== */
+  /* the top shelf: a crown perched on the header tag and a gilt frame around
+     every item, so the tier reads as a step up from the other two grids. Its
+     header and pick-note stay at full strength even while the tiles are
+     locked - it's a real thing you could have won, not dead chrome. */
+  /* extra air above the header: the crown hangs off the top of the tag and
+     needs somewhere to hang */
+  .group.bracket {
+    margin-top: calc(84px * var(--scale));
+  }
+  /* the trailing rule picks up the crown's yellow instead of the grey the other
+     two sections use. Same art, recoloured pixel-for-pixel (identical alpha) -
+     see underline550_crown.png. */
+  .bracket .gh-line {
+    position: relative;
+    background-image: url('/assets/underline550_crown.png');
+  }
+
+  /* ---- the gold shimmer on the crown + its rule ----
+     A highlight sweeps across both, slowly and on the same clock so they read
+     as one piece of gilding catching the light. The moving gradient is masked
+     by the artwork itself, so it lights up exactly the painted pixels and
+     nothing around them - the flat #dbd991 underneath is what shows when the
+     highlight is elsewhere (and is the whole thing if masks aren't supported).
+     The gradient holds two identical periods across a 200%-wide box, so
+     shifting it by exactly one period loops with no visible seam - and each
+     period is one long soft swell rather than a glint, so the light spreads
+     over most of the artwork at once. */
+  .crown::after,
+  .bracket .gh-line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(
+      100deg,
+      transparent 0%,
+      rgba(250, 245, 178, 0.7) 25%,
+      transparent 50%,
+      rgba(250, 245, 178, 0.7) 75%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    background-repeat: repeat-x;
+    animation: gild 11s linear infinite;
+  }
+  .crown::after {
+    -webkit-mask: url('/assets/crown.png') center / 100% 100% no-repeat;
+    mask: url('/assets/crown.png') center / 100% 100% no-repeat;
+  }
+  /* the rule tiles, so its mask has to tile on the same grid as its background */
+  .bracket .gh-line::after {
+    -webkit-mask: url('/assets/underline550_crown.png') left center / auto 100% repeat-x;
+    mask: url('/assets/underline550_crown.png') left center / auto 100% repeat-x;
+  }
+  @keyframes gild {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: 0% 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .crown::after,
+    .bracket .gh-line::after {
+      animation: none;
+      opacity: 0;
+    }
+  }
+  /* the framed grid is dense, so the header, the pick-note and the wall each
+     need more room to breathe than the other two sections' do */
+  .bracket .gh {
+    margin-bottom: calc(34px * var(--scale));
+  }
+  .bracket .gh-sub {
+    margin: calc(14px * var(--scale)) 0 calc(54px * var(--scale));
+  }
+  .bracket.locked .tile {
+    cursor: help; /* still opens the modal, just can't be ordered */
+  }
+  /* the crown straddles the tag's top-left corner, sitting on it rather than
+     inside it. Same --scale pixel grid as q_box, so it reads as one drawing. */
+  .gh-tag.crowned {
+    position: relative;
+    overflow: visible;
+  }
+  .crown {
+    position: absolute;
+    /* the crown art is 39x29 at 1x, drawn at the same pixel scale as the q_box
+       border it perches on: q_box is 197x46 native and renders about 1.45x
+       that (per --scale), so the crown's pixels match the box's pixels */
+    width: calc(39px * 1.45 * var(--scale));
+    aspect-ratio: 39 / 29;
+    background: url('/assets/crown.png') center / 100% 100% no-repeat;
+    /* it straddles the corner: the band's left leg hangs over the box's left
+       edge and its base overlaps the top edge, so it sits ON the corner rather
+       than floating above it */
+    top: calc(-28px * var(--scale));
+    left: calc(-14px * var(--scale));
+    image-rendering: pixelated;
+    pointer-events: none;
+  }
+  /* not a grid: the frames are all different shapes, so they hang in masonry
+     columns like a salon wall rather than in ruled rows with ragged gaps under
+     the shorter ones. column-width (not column-count) keeps it responsive -
+     three columns at full width, then two, then one, with no breakpoints. */
+  .bracket .grid {
+    display: block;
+    columns: calc(250px * var(--scale));
+    column-gap: calc(30px * var(--scale));
+  }
+  .bracket .grid li {
+    break-inside: avoid;
+    margin-bottom: calc(34px * var(--scale));
+  }
+  /* framed tiles: the tile is the frame, its aspect locked to the art's own
+     1719:1600 so the gilt is never stretched, and the product shot sits in the
+     opening (measured off the source: 14.7/15.0% side, 17.9/18.2% top/bottom). */
+  .bracket .tile {
+    height: auto;
+    padding: calc(10px * var(--scale)) 0 0;
+    gap: calc(10px * var(--scale));
+    /* frames differ in height; hang them all from a common top edge */
+    justify-content: flex-start;
+  }
+  /* the lumpy hover patch is inset from the tile everywhere else; here the
+     frame is the thing being hovered, so the patch has to reach around it
+     rather than tuck inside its edges */
+  .bracket .tile::before {
+    inset: calc(-6px * var(--scale));
+  }
+  /* each item hangs in its own frame (frames.js supplies the vars), all sized
+     to the same area so a tall portrait and a wide landscape read as equally
+     big pictures - a gallery wall of mismatched frames, not mismatched sizes. */
+  .framed {
+    position: relative;
+    /* --fr-h is sqrt(1/aspect), so this is sqrt(area): every frame covers the
+       same area whatever its shape */
+    height: calc(var(--fr-h) * 193px * var(--scale));
+    aspect-ratio: var(--fr-ar);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* The frame art, at full strength. It doesn't shout over the page because the
+     art itself is desaturated into the site's palette band (S~33 / L~71, where
+     the site's chrome and accents live) by build-frames.sh, rather than being
+     faded with opacity. Undistorted (not a 9-slice), so crests, oval openings
+     and ornamental corners all survive intact.
+     The source is deliberately low-res (150px on the long side), so it scales
+     up nearest-neighbour onto a chunky pixel grid like the rest of the art
+     instead of reading as a photograph. */
+  .framed::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--fr) center / 100% 100% no-repeat;
+    image-rendering: pixelated;
+    pointer-events: none;
+  }
+  /* the opening is placed with `inset`, NOT percentage padding: padding
+     percentages resolve against the container's WIDTH on all four sides, which
+     silently squashes the opening on every frame that isn't square. */
+  .bracket .thumb {
+    position: absolute;
+    inset: var(--fr-pt) var(--fr-pr) var(--fr-pb) var(--fr-pl);
+    height: auto;
+    width: auto;
+  }
+  /* a mat: the picture never runs right up to the moulding */
+  .bracket .thumb img {
+    max-width: 84%;
+    max-height: 84%;
+  }
+  .bracket .name {
+    flex: none;
+    justify-content: center;
+    padding-bottom: calc(14px * var(--scale));
+  }
+  /* the lock marker, under the name: a colder colour than the "new!" sticker so
+     it doesn't read as an invitation */
+  .locked-tag {
+    color: #91a4db;
+    font-size: calc(var(--t-card) * 0.85);
+  }
+
   /* the little "new!" sticker on freshly-added prizes */
   .fresh {
     position: absolute;

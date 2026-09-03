@@ -12,7 +12,8 @@
   // itself lives in $lib/prizes.js (shared with the /shop pick flow); the
   // scatter only reads the per-item s (size) + r (tilt) fields from it.
   // shopOnly items (late additions to the shop) stay out of the scatter.
-  const prizes = PRIZES.filter((p) => !p.shopOnly);
+  // bracket items are shop-only by nature (and carry no scatter size/tilt)
+  const prizes = PRIZES.filter((p) => !p.shopOnly && !p.bracket);
 
   let content;                                          // .prizes-content element
   let pos = $state(prizes.map(() => ({ x: 0, y: 0 }))); // per-item centre (px)

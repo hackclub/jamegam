@@ -6,6 +6,11 @@
 //   c     accent colour (the muted-rainbow palette) used for the hover caption
 //   s, r  scatter-only: bounding-box size (comp px, ×--scale) + tilt; ignored by /prizes
 //   game  true if it's an indie game (you can pick GAME_PICK_COUNT games instead of one item)
+//   frame bracket only: which picture frame it hangs in (see frames.js)
+//   bracket  true if it lives in the winners bracket - the third "instead of" branch,
+//         only orderable by people marked top 10 for the jam (see PRIZE_BRACKET)
+//   img   image basename override, when an item borrows another item's art
+//         (placeholders do this). Everything else keys off `src`, so `src` stays unique.
 //   href  where the prize links to (store page / product), if any
 //   lead  overrides the "that's a"/"that's an" caption lead for names with an article
 //   note  optional deemphasized trailing note (e.g. a condition)
@@ -85,7 +90,22 @@ export const PRIZES = [
   { src: 'mecchachameleon', alt: 'MECCHA CHAMELEON',       name: 'meccha chameleon',       c: '#97db91', s: 90,  r: 8,   fresh: true, game: true, shopOnly: true, href: 'https://store.steampowered.com/app/4704690/MECCHA_CHAMELEON/' },
   { src: 'supermeatboy',    alt: 'Super Meat Boy',         name: 'super meat boy',         c: '#db9591', s: 90,  r: -7,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/40800/Super_Meat_Boy/' },
   { src: 'crueltysquad',    alt: 'Cruelty Squad',          name: 'cruelty squad',          c: '#97db91', s: 92,  r: 11,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/1388770/Cruelty_Squad/' },
-  { src: 'tshirt',          alt: 'Jame Gam t-shirt',        name: 'jame gam t-shirt',       c: '#97db91', s: 96,  r: 8,   opts: [SIZE_OPTION], note: ' (preorder, ships early aug)', blurb: 'official jame gam shirt! preorder - ships early august. <a href="https://cdn.hackclub.com/01a03f1a-92dc-7fa3-a8c6-a15cd20afbf9/1.png" target="_blank" rel="noopener">size chart</a>' }
+  { src: 'tshirt',          alt: 'Jame Gam t-shirt',        name: 'jame gam t-shirt',       c: '#97db91', s: 96,  r: 8,   opts: [SIZE_OPTION], note: ' (preorder, ships early aug)', blurb: 'official jame gam shirt! preorder - ships early august. <a href="https://cdn.hackclub.com/01a03f1a-92dc-7fa3-a8c6-a15cd20afbf9/1.png" target="_blank" rel="noopener">size chart</a>' },
+
+  // ---- winners bracket ----
+  // The top-10 tier. Upgraded versions of pool prizes reuse the pool's art via
+  // `img`; the rest have their own sprites. No blurbs here on purpose.
+  { src: 'b_steam', frame: 'round',      alt: '$100 Steam gift card',          name: '$100 steam gift card',        img: 'steam',     c: '#91a4db', bracket: true, href: 'https://store.steampowered.com/digitalgiftcards/', blurb: '$100 of steam wallet money' },
+  { src: 'b_fangamer', frame: 'ornate',   alt: '$100 Fangamer gift card',   name: '$100 fangamer gift card', img: 'fangamer',  c: '#db9591', bracket: true, href: 'https://www.fangamer.com/', blurb: '$100 for merch from your favorite games' },
+  { src: 'b_flstudio', frame: 'oval',   alt: 'FL Studio License',                 name: 'fl studio license',               c: '#dbaf91', bracket: true, href: 'https://www.image-line.com/fl-studio/', blurb: 'a lifetime license for the fl studio audio workstation' },
+  { src: 'b_retroidclassic', frame: 'acanthus', alt: 'Retroid Pocket Classic', name: 'retroid pocket classic', c: '#97db91', bracket: true, href: 'https://www.goretroid.com/collections/retro-game-system/products/retroid-pocket-classic', blurb: 'a pocket gaming handheld for emulators' },
+  { src: 'b_retroid4pro', frame: 'gilt', alt: 'Retroid Pocket 4 Pro',     name: 'retroid pocket 4 pro',    c: '#97db91', bracket: true, href: 'https://www.goretroid.com/collections/retro-game-system/products/retroid-pocket-4-handheld', blurb: 'a pocket gaming handheld for emulators' },
+  { src: 'b_gtavi', frame: 'beaded',      alt: 'Grand Theft Auto VI (Ultimate Edition preorder)', name: 'gta vi ultimate preorder', c: '#b991db', bracket: true, href: 'https://www.rockstargames.com/VI', blurb: 'gta 6! ultimate edition' },
+  { src: 'b_steamworks', frame: 'salon', alt: 'Steam publishing license',  name: 'steam publishing license', c: '#91a4db', bracket: true, href: 'https://partner.steamgames.com/', blurb: 'a license to publish your game on steam for real' },
+  { src: 'b_mxmaster4', frame: 'plain',  alt: 'Logitech MX Master 4',      name: 'logitech mx master 4',    c: '#dbaf91', bracket: true, href: 'https://www.logitech.com/en-us/shop/p/mx-master-4', blurb: 'logitech\'s flagship mouse' },
+  { src: 'b_whch720n', frame: 'slim',   alt: 'Sony WH-CH720N headphones', name: 'sony wh-ch720n headphones',          c: '#91a4db', bracket: true, href: 'https://electronics.sony.com/audio/headphones/headband/p/whch720n-b', blurb: 'high-quality wireless headphones' },
+  { src: 'b_8bitdokb',   frame: 'scroll', alt: '8BitDo Retro Mechanical Keyboard', name: '8bitdo retro mechanical keyboard', c: '#b991db', bracket: true, href: 'https://www.8bitdo.com/retro-mechanical-keyboard/', blurb: 'an nes mechanical keyboard' },
+  { src: 'b_humble', frame: 'shadowed',     alt: 'Humble Choice for one year',   name: 'humble choice (1 year)',  img: 'humblebundle', c: '#db9591', bracket: true, href: 'https://www.humblebundle.com/membership', blurb: 'twelve months of free pc games' }
 ];
 
 // bench (want, but too pricey for now): raspberry pi 5 (~$80 for the 8gb board,
@@ -96,8 +116,26 @@ export const GAME_PICK_COUNT = 2;
 
 // the indie games (you can pick GAME_PICK_COUNT of these instead of one physical
 // prize) and everything else, split for the list page + shop. Order preserved.
-export const PRIZE_GAMES = PRIZES.filter((p) => p.game);
-export const PRIZE_STUFF = PRIZES.filter((p) => !p.game);
+export const PRIZE_GAMES = PRIZES.filter((p) => p.game && !p.bracket);
+export const PRIZE_STUFF = PRIZES.filter((p) => !p.game && !p.bracket);
+
+// the winners bracket: a third "instead of" branch, open only to people marked
+// top 10 for the jam (`winners_bracket` on their submission row). Everyone else
+// still sees the section - it is aspirational, and browsing it is the point -
+// but the tiles lock once they're actually in picking mode.
+// PLACEHOLDER CONTENT: these borrow existing art via `img` while the real
+// bracket pool + sprites get drawn. Swap the names/blurbs and drop `img` once
+// there's real art at /assets/prize_{src}.png.
+export const PRIZE_BRACKET = PRIZES.filter((p) => p.bracket);
+
+// the art basename for an item - `img` when it borrows someone else's art, else
+// `src`. Takes an item or a bare src, because the order row only stores names
+// and the your-pick card works back from srcs.
+const IMG_BY_SRC = new Map(PRIZES.map((p) => [p.src, p.img ?? p.src]));
+export const imgOf = (x) => {
+  const src = typeof x === 'string' ? x : x?.src;
+  return IMG_BY_SRC.get(src) ?? src;
+};
 
 // srcs that have a prizehd_{src}.png - a 2x-pixel-grid version for the big
 // spots (/shop modal, the your-pick card). Generated from the figma originals
@@ -117,5 +155,8 @@ export const PRIZE_HD = new Set([
   'terraria', 'omori', 'oneshot', 'bandcamp', 'tshirt', 'nektar', 'stylophone',
   'cultofthelamb', 'deadcells', 'bindingofisaac', 'geometrydash',
   'mecchachameleon', 'denshattack', 'levelup', 'lpd8', 'assetforge',
-  'tilesetter', 'pixelover', 'humblebundle', 'xppen'
+  'tilesetter', 'pixelover', 'humblebundle', 'xppen',
+  // winners bracket
+  'b_flstudio', 'b_retroidclassic', 'b_retroid4pro', 'b_gtavi',
+  'b_steamworks', 'b_mxmaster4', 'b_whch720n', 'b_8bitdokb'
 ]);

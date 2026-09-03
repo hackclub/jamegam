@@ -14,7 +14,7 @@ import { findSubmissions, findOrder, createRecord, patchRecord } from '$lib/serv
 import { rateLimit } from '$lib/server/ratelimit.js';
 import { config } from '$lib/server/config.js';
 import { SHOP, SHOP_STATUSES, variantText, itemBlockedIn, closesAtFor, closesTextFor } from '$lib/shop.js';
-import { PRIZE_GAMES, PRIZE_STUFF, GAME_PICK_COUNT } from '$lib/prizes.js';
+import { PRIZE_GAMES, PRIZE_STUFF, PRIZE_BRACKET, GAME_PICK_COUNT } from '$lib/prizes.js';
 
 export const prerender = false;
 
@@ -48,7 +48,10 @@ export async function POST({ request, cookies, getClientAddress }) {
     }
     pick = { prize_type: 'indie games', prize: '', variant: '', games: chosen.map((g) => g.name).join('\n') };
   } else if (body?.type === 'prize') {
-    const p = PRIZE_STUFF.find((x) => x.src === String(body.prize));
+    // the bracket orders through the same `prize` slot (it's a third "instead
+    // of one thing" branch, not an extra pick), so both pools are searched here
+    // and the top-10 gate is applied below, once we have their submission rows.
+    const p = [...PRIZE_STUFF, ...PRIZE_BRACKET].find((x) => x.src === String(body.prize));
     if (!p) return json({ ok: false, error: 'pick a prize from the pool' }, { status: 422 });
     pickedItem = p;
     // every option group the item declares (size, colour, ...) has to be a real
@@ -73,6 +76,13 @@ export async function POST({ request, cookies, getClientAddress }) {
   const approved = submissions.filter((r) => SHOP_STATUSES.includes(r.fields.review_status));
   if (!approved.length) {
     return json({ ok: false, error: 'no approved submission for this jam yet' }, { status: 403 });
+  }
+
+  // ---- the winners bracket gate ----
+  // Same field the page reads: `winners_bracket`, ticked by hand on whoever
+  // placed top 10. Absent field means nobody qualifies, which is the safe default.
+  if (pickedItem?.bracket && !approved.some((r) => r.fields.winners_bracket === true)) {
+    return json({ ok: false, error: 'the winners bracket is for the jam\'s top 10 only' }, { status: 403 });
   }
 
   // ---- their personal pick window ----

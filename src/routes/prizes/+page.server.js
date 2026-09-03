@@ -30,7 +30,10 @@ export async function load({ cookies, url }) {
     // the submission form for this shop's cycle - only offered while jam.js is
     // still on the same cycle (after JAM rolls over, its form is next month's)
     submitUrl: JAM.startDate.slice(0, 7) === SHOP.jam ? JAM.submitUrl : null,
-    authError: url.searchParams.get('auth') === 'error'
+    authError: url.searchParams.get('auth') === 'error',
+    // top-10 placing, ticked by hand on the submission row. Gates the winners
+    // bracket section; browse-only visitors see it unlocked either way.
+    winner: false
   };
 
   const session = readSession(cookies.get(SESSION_COOKIE));
@@ -57,6 +60,11 @@ export async function load({ cookies, url }) {
     return { ...base, state: allRejected ? 'rejected' : 'pending', me };
   }
   const gameTitles = approved.map((r) => r.fields.game_title).filter(Boolean);
+  // the winners bracket gate. Augie ticks `winners_bracket` on the submission
+  // row for whoever placed top 10; any one of a repeat submitter's approved
+  // rows placing is enough. The field may not exist yet, in which case every
+  // row reads undefined and nobody is a winner - which is the right default.
+  base.winner = approved.some((r) => r.fields.winners_bracket === true);
 
   // their personal pick window, from the earliest prize DM across their rows (a
   // repeat submitter has several rows but only ever got one DM). The DM both
