@@ -225,6 +225,8 @@
   .faq-a :global(.faq-em) { color: #504b49; }
   /* a fainter aside, dimmer than the already-dim answer body */
   .faq-a :global(.faq-dim) { color: rgba(80, 75, 73, 0.5); }
+  /* paragraph break inside an answer: a half-line gap, smaller than a blank line */
+  .faq-a :global(.faq-break) { display: block; height: 0.55em; }
   /* inline links pick up the item's rainbow colour */
   .faq-a :global(a) {
     color: var(--c);

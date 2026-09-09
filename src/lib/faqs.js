@@ -30,9 +30,14 @@ export const FAQS = [
     a: "good. everyone who puts in effort gets a prize, that's the whole point :)"
   },
   {
+    id: 'effort',
+    q: 'how long do i need to spend on my game?',
+    a: 'as long as you want! you just need to put some effort in, and try to make a game you\'re proud of :)<br>the bar is pretty low.<span class="faq-break"></span><span class="faq-dim">if you\'re working on a team, you should be putting enough effort in that you could\'ve made your own, smaller game in the same amount of time!</span>'
+  },
+  {
     id: 'international',
     q: "i'm not in the us...",
-    a: "not a problem, jame gam is international & i'll ship you stickers wherever you live"
+    a: "not a problem, jame gam is international & i'll ship you prizes wherever you live"
   },
   {
     id: 'team',
@@ -62,7 +67,7 @@ export const FAQS = [
   {
     id: 'hackatime',
     q: 'do i need to use hackatime to track my time?',
-    a: '<a href="https://hackatime.hackclub.com/" target="_blank" rel="noopener">hackatime</a> is optional for jame gam, but if you track your time, you\'ll get sent a special bonus sticker! <span class="faq-dim">this is a test, so this might change in the future</span>'
+    a: '<a href="https://hackatime.hackclub.com/" target="_blank" rel="noopener">hackatime</a> is optional for jame gam, but it\'s highly encouraged!'
   },
   {
     id: 'font',
