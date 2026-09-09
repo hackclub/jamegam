@@ -17,7 +17,7 @@ export const FAQS = [
   {
     id: 'start',
     q: 'how do i start learning to make a games?',
-    a: 'pick a game engine, and follow one tutorial all the way through. <a href="https://godotengine.org" target="_blank" rel="noopener">godot</a> is a great first pick (free and beginner friendly), and <a href="https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html" target="_blank" rel="noopener">here</a> is a link to their official 2d game tutorial. definitely ask around in hack club for other suggestions or advice :)'
+    a: 'pick a game engine, and follow one tutorial all the way through. <a href="https://godotengine.org" target="_blank" rel="noopener">godot</a> is a great first pick (free and beginner friendly), and <a href="https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html" target="_blank" rel="noopener">here</a> is a link to their official 2d game tutorial. definitely ask around in hack club for other suggestions or advice :)<span class="faq-break"></span><span class="faq-dim">you can\'t submit a game from a tutorial, though! if you\'re just starting out, you should try following a tutorial before the jam so you know the basics ;)</span>'
   },
   {
     id: 'busy',
@@ -48,6 +48,11 @@ export const FAQS = [
     id: 'assets',
     q: 'can i use premade asset packs?',
     a: "if you want, yes! just make sure you credit everything you didn't make yourself in your game's description :)"
+  },
+  {
+    id: 'tutorial',
+    q: 'can i follow a tutorial?',
+    a: "sorry, no! you need to make a fully custom game for jame gam. if you're just starting out, you should try following a tutorial before the jam so you know the basics ;)"
   },
   {
     id: 'ai',
