@@ -23,7 +23,7 @@
   import { jiggle } from '$lib/actions/jiggle.js';
   import { rainbowBorder } from '$lib/actions/rainbowBorder.js';
   import { PRIZE_GAMES, PRIZE_STUFF, PRIZE_BRACKET, PRIZE_HD, GAME_PICK_COUNT, imgOf } from '$lib/prizes.js';
-  import { variantValues, itemBlockedIn, PICK_WINDOW_DAYS } from '$lib/shop.js';
+  import { variantValues, itemBlockedIn, listOr, PICK_WINDOW_DAYS } from '$lib/shop.js';
   import { frameVars } from '$lib/frames.js';
   import Dust from '$lib/components/Dust.svelte';
 
@@ -811,7 +811,7 @@
             <p class="m-info">{@html modal.p.blurb}</p>
           {/if}
           {#if modal.kind === 'item' && modal.p.blockCountries?.length}
-            <p class="m-unavailable">not available in {modal.p.blockCountries.join(', ')} :(</p>
+            <p class="m-unavailable">not available in {listOr(modal.p.blockCountries)} :(</p>
           {/if}
           {#if modal.kind === 'game'}
             <p class="m-note">instead of one prize, you can grab {GAME_PICK_COUNT} indie games.</p>

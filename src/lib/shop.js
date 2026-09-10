@@ -55,7 +55,8 @@ export function variantValues(item, picks) {
 // free text (from HCA or the submission form), so it arrives as "India", "IN",
 // "in", and so on.
 const COUNTRY_ALIASES = {
-  india: ['india', 'in', 'ind', 'bharat']
+  india: ['india', 'in', 'ind', 'bharat'],
+  pakistan: ['pakistan', 'pk', 'pak']
 };
 
 /** Does this free-text country string name one of `names` (e.g. ['india'])? */
@@ -143,4 +144,11 @@ export function closesTextFor(dmSentAt) {
     day: 'numeric'
   }).format(new Date(at));
   return `${when.toLowerCase()} at 11:59pm ET`;
+}
+
+/** "india", "india or pakistan", "india, pakistan or nepal" */
+export function listOr(names) {
+  const a = [...(names ?? [])];
+  if (a.length <= 1) return a.join('');
+  return `${a.slice(0, -1).join(', ')} or ${a.at(-1)}`;
 }
