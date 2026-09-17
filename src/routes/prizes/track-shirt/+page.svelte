@@ -48,7 +48,7 @@
                status text, just the friendly line + the number -->
           <p class="lede">order #{data.order} is on its way!</p>
           <p class="fine">
-            tracking: {#if r.trackingUrl}<a href={r.trackingUrl} target="_blank" rel="noreferrer">{r.tracking}</a>{:else}{r.tracking}{/if}{#if r.carrier} ({r.carrier}){/if}
+            tracking: {#if r.trackingUrl}<a href={r.trackingUrl} target="_blank" rel="noreferrer">{r.tracking}</a>{:else}{r.tracking}{/if}{#if r.carrier}{' '}({r.carrier}){/if}
           </p>
         {:else}
           <p class="lede">order #{data.order} is being made!</p>

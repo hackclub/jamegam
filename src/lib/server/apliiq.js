@@ -54,7 +54,14 @@ export async function lookupOrder(orderId) {
 
   const sn = (order.SN && order.SN[0]) || {};
   const tracking = (sn.TrackingNumber || '').trim();
-  const carrier = (sn.Carrier || '').trim();
+  let carrier = (sn.Carrier || '').trim();
+  // Apliiq sometimes puts the carrier's tracking URL prefix in Carrier (e.g.
+  // "https://a1.asendiausa.com/tracking/?trackingnumber=") instead of a name.
+  let urlPrefix = '';
+  if (/^https?:\/\//i.test(carrier)) {
+    urlPrefix = carrier;
+    carrier = /asendia/i.test(urlPrefix) ? 'Asendia' : '';
+  }
   return {
     configured: true,
     found: true,
@@ -63,7 +70,7 @@ export async function lookupOrder(orderId) {
     expected: (order.ExpectedDate || '').trim(),
     tracking,
     carrier,
-    trackingUrl: tracking ? trackingUrl(carrier, tracking) : ''
+    trackingUrl: !tracking ? '' : urlPrefix ? urlPrefix + encodeURIComponent(tracking) : trackingUrl(carrier, tracking)
   };
 }
 
