@@ -39,6 +39,7 @@ export const config = {
     // code so no Vercel provisioning is needed; env can still override.
     announceChannelId: env.SLACK_JAMEGAM_ANNOUNCE_CHANNEL_ID || 'C0BBDUFF7K8',
     signingSecret: env.SLACK_SIGNING_SECRET // verifies the Events API callbacks (/api/slack/events)
+    nephthysEventsUrl: env.NEPHTHYS_EVENTS_URL, // https://<nephthys host>/slack/events; unset = no forwarding
   },
   shop: {
     sessionSecret: env.SESSION_SECRET, // HMAC key for the shop session cookie
