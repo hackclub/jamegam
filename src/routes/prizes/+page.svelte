@@ -7,7 +7,8 @@
   // pending, shop closed) the same grids render as a browse-only prize list:
   // modals still open (info + store links, no order action), and the header
   // carries a one-line note saying why there's no picking - sign-in nudge,
-  // "no submission under this email", "in review", or "shop closed".
+  // "in review", or "shop closed". No submission gets no note at all: most
+  // of those visitors are just browsing, not missing a submission.
   //
   // Pick flow: clicking any card opens a modal with a bit more info + the
   // order button (plus a button row per option group the item declares - size,
@@ -365,14 +366,6 @@
         <p class="deadline deadline-top loud">
           the {jamMonth} prize shop has closed and you never picked your prize! post in
           #jame-gam-help and i'll sort you out.
-        </p>
-      {:else if data.state === 'nosubmission'}
-        <p class="deadline deadline-top loud">
-          hm, i don't see a {jamMonth} jam submission under {data.me.email}.
-          {#if data.submitUrl}haven't submitted your game yet?
-            <a href={data.submitUrl}>submit it here</a>!{/if}
-          if you submitted with a different email, <a href="/api/auth/logout">sign out</a> and
-          use that one, or post in #jame-gam-help and i'll sort it out!
         </p>
       {:else if data.state === 'pending'}
         <p class="deadline deadline-top loud">
