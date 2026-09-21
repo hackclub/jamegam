@@ -97,7 +97,9 @@ export async function POST({ request, getClientAddress }) {
       email,
       dataVariables: {
         name: 'chat', // first email: we only have their email, not their name
-        joinUrl: `${origin}/api/auth/login?email=${encodeURIComponent(email)}`
+        joinUrl: `${origin}/api/auth/login?email=${encodeURIComponent(email)}`,
+        jamName: JAM.displayName,
+        jamLink: JAM.itchUrl
       }
     });
   } catch (err) {
