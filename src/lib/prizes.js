@@ -29,7 +29,7 @@ import { TSHIRT_SIZES } from './shop.js';
 export const SIZE_OPTION = { key: 'size', label: 'size', choices: TSHIRT_SIZES, note: 'us sizing!' };
 
 export const PRIZES = [
-  { src: 'shark',           alt: 'blahaj shark plush',    name: 'blahaj plushie',         c: '#db9591', s: 118, r: -9,  href: 'https://www.ikea.com/us/en/p/blahaj-soft-toy-shark-90373590/', blurb: 'a full meter of friend (the large version) <span style="opacity:.5">blahaj fulfillment may be delayed up to 30 days after ordering</span>' },
+  { src: 'shark',           alt: 'blahaj shark plush',    name: 'blahaj plushie',         c: '#db9591', s: 118, r: -9,  href: 'https://www.ikea.com/us/en/p/blahaj-soft-toy-shark-90373590/', blurb: 'a full meter of friend (the large version) <span style="opacity:.5">ships from the us. blahaj fulfillment may be delayed up to 30 days after ordering</span>' },
   { src: 'hollowknight',    alt: 'Hollow Knight',         name: 'hollow knight',          c: '#dbaf91', s: 94,  r: 7,   game: true, href: 'https://store.steampowered.com/app/367520/Hollow_Knight/' },
   { src: 'silksong',        alt: 'Hollow Knight: Silksong', name: 'hollow knight: silksong', c: '#b991db', s: 92, r: -8,  game: true, shopOnly: true, href: 'https://store.steampowered.com/app/1030300/Hollow_Knight_Silksong/' },
   { src: 'controller',      alt: '8BitDo controller',      name: '8bitdo controller',      c: '#97db91', s: 102, r: 12,  lead: 'that’s an', opts: [{ key: 'color', label: 'color', choices: ['green', 'mint', 'peach', 'purple', 'transparent black'] }], blockCountries: ['india'], href: 'https://www.8bitdo.com/ultimate-2c-wireless-controller/', blurb: 'a nice wireless controller for pc and android, with hall effect sticks and triggers' },
