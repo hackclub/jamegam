@@ -1,11 +1,47 @@
-// The prize shop for the jam that just wrapped. Like jam.js, UPDATE THIS each
-// month once review starts: point `jam` at the label the submission form used.
-// The shop serves LAST month's submitters, so it intentionally lags jam.js by
-// one cycle. There is no shop-wide close date - see PICK_WINDOW_DAYS below.
+// The prize shop's open cycles. Like jam.js, UPDATE THIS each month once review
+// starts: add the new month's label (the one the submission form writes to
+// `submission_form.jam`) and its display name. Keep old cycles listed while
+// anyone from them can still turn up: a game parked as Pending or Needs Augie
+// gets reviewed weeks late, and its DM must land on a shop that still knows
+// that month. Retire a cycle by deleting it once nothing from it is outstanding.
+// Oldest first, newest last; `resolveCycle` below picks one per person, so the
+// overlap is invisible to submitters. There is no shop-wide close date - see
+// PICK_WINDOW_DAYS below.
 export const SHOP = {
-  jam: '2026-08', // must match submission_form.jam
-  jamName: 'the brackeys 2026.2 game jam' // display name (lags jam.js by a cycle, so it can't read JAM.name)
+  cycles: {
+    '2026-08': 'the brackeys 2026.2 game jam',
+    '2026-09': 'the cozy fall jam'
+  }
 };
+
+/** The open cycle labels, oldest first. */
+export const SHOP_JAMS = Object.keys(SHOP.cycles);
+
+/** The newest open cycle - what signed-out copy talks about. */
+export const SHOP_CURRENT = SHOP_JAMS[SHOP_JAMS.length - 1];
+
+/**
+ * Which cycle the shop shows this person. `submissions` and `orders` are their
+ * rows across every open cycle. Orders are never changed after they are placed
+ * (a cycle stays listed only for fulfillment and late reviews), so the rule is
+ * short:
+ *   1. the newest cycle where they have an approved row and no order yet - a
+ *      late-reviewed straggler picks for that month, whatever else is open;
+ *   2. otherwise the newest cycle they have any row in - an order to look at,
+ *      or a submission still in review.
+ * With no rows at all this is the newest open cycle ("no submission" state).
+ */
+export function resolveCycle(submissions, orders) {
+  const hasOrder = new Set(orders.map((o) => o.fields.jam));
+  const jams = [...SHOP_JAMS].reverse();
+  const pickable = jams.find(
+    (j) =>
+      !hasOrder.has(j) &&
+      submissions.some((r) => r.fields.jam === j && SHOP_STATUSES.includes(r.fields.review_status))
+  );
+  if (pickable) return pickable;
+  return jams.find((j) => submissions.some((r) => r.fields.jam === j)) ?? SHOP_CURRENT;
+}
 
 export const TSHIRT_SIZES = ['S', 'M', 'L', 'XL'];
 

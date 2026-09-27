@@ -10,10 +10,11 @@
 // submitted to the unified DB.
 import { json } from '@sveltejs/kit';
 import { readSession, SESSION_COOKIE } from '$lib/server/session.js';
-import { findSubmissions, findOrder, createRecord, patchRecord } from '$lib/server/shopdb.js';
+import { createRecord, patchRecord } from '$lib/server/shopdb.js';
+import { loadCycle } from '$lib/server/shopcycle.js';
 import { rateLimit } from '$lib/server/ratelimit.js';
 import { config } from '$lib/server/config.js';
-import { SHOP, SHOP_STATUSES, variantText, itemBlockedIn, closesAtFor, closesTextFor } from '$lib/shop.js';
+import { SHOP_STATUSES, variantText, itemBlockedIn, closesAtFor, closesTextFor } from '$lib/shop.js';
 import { PRIZE_GAMES, PRIZE_STUFF, PRIZE_BRACKET, GAME_PICK_COUNT } from '$lib/prizes.js';
 
 export const prerender = false;
@@ -71,8 +72,9 @@ export async function POST({ request, cookies, getClientAddress }) {
 
   // ---- re-check the approval gate server-side ----
   // Same gate as the page: reviewer-approved (or Prize Only), not "has a staged
-  // YSWS row".
-  const submissions = await findSubmissions(session.email, SHOP.jam);
+  // YSWS row". Same cycle as the page too: resolved from their rows, so the
+  // order lands on the month they were actually shown.
+  const { jam, submissions, order: existing } = await loadCycle(session.email);
   const approved = submissions.filter((r) => SHOP_STATUSES.includes(r.fields.review_status));
   if (!approved.length) {
     return json({ ok: false, error: 'no approved submission for this jam yet' }, { status: 403 });
@@ -150,12 +152,12 @@ export async function POST({ request, cookies, getClientAddress }) {
   }
 
   const fields = {
-    order_name: `${`${session.firstName ?? ''} ${session.lastName ?? ''}`.trim() || session.email} - ${SHOP.jam}`,
+    order_name: `${`${session.firstName ?? ''} ${session.lastName ?? ''}`.trim() || session.email} - ${jam}`,
     email: session.email,
     first_name: session.firstName ?? '',
     last_name: session.lastName ?? '',
     slack_id: session.slackId ?? '',
-    jam: SHOP.jam,
+    jam,
     submission: approved.map((r) => r.id),
     ...pick,
     address_line_1: addr.line1,
@@ -177,7 +179,6 @@ export async function POST({ request, cookies, getClientAddress }) {
     processing: 'your order is already being fulfilled and can no longer be changed',
     canceled: 'your order was canceled and can no longer be changed'
   };
-  const existing = await findOrder(session.email, SHOP.jam);
   const lockedError = LOCKED_STATUSES[existing?.fields?.status];
   if (lockedError) {
     return json({ ok: false, error: lockedError }, { status: 409 });

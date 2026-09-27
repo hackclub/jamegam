@@ -4,9 +4,11 @@
 //   signedout | nosubmission | pending | rejected | awaitingdm | noaddress |
 //   closed | shop (pick UI / order summary) | error
 import { readSession, SESSION_COOKIE } from '$lib/server/session.js';
-import { findSubmissions, findOrder } from '$lib/server/shopdb.js';
+import { loadCycle } from '$lib/server/shopcycle.js';
 import {
   SHOP,
+  SHOP_JAMS,
+  SHOP_CURRENT,
   SHOP_STATUSES,
   REJECTED_STATUSES,
   parseVariant,
@@ -21,15 +23,17 @@ export async function load({ cookies, url }) {
   // Defaults, used until we know who's asking. The only deadline there is comes
   // from a person's prize DM, so a signed-out visitor has no date to show and
   // nothing is closed; anyone DMed gets their own deadline swapped in below.
+  // The jam is the newest open cycle until we know who's asking, then whichever
+  // cycle resolves for them (a late-reviewed straggler sees last month's).
   const base = {
-    jam: SHOP.jam,
-    jamName: SHOP.jamName,
+    jam: SHOP_CURRENT,
+    jamName: SHOP.cycles[SHOP_CURRENT],
     closesAt: null,
     closesText: null,
     closed: false,
-    // the submission form for this shop's cycle - only offered while jam.js is
-    // still on the same cycle (after JAM rolls over, its form is next month's)
-    submitUrl: JAM.startDate.slice(0, 7) === SHOP.jam ? JAM.submitUrl : null,
+    // the submission form for the current jam - only offered once its cycle is
+    // open here too (after JAM rolls over, its form is next month's)
+    submitUrl: SHOP_JAMS.includes(JAM.startDate.slice(0, 7)) ? JAM.submitUrl : null,
     authError: url.searchParams.get('auth') === 'error',
     // top-10 placing, ticked by hand on the submission row. Gates the winners
     // bracket section; browse-only visitors see it unlocked either way.
@@ -40,9 +44,11 @@ export async function load({ cookies, url }) {
   if (!session) return { ...base, state: 'signedout' };
   const me = { firstName: session.firstName, email: session.email };
 
-  let submissions;
+  let submissions, orderRec;
   try {
-    submissions = await findSubmissions(session.email, SHOP.jam);
+    const cycle = await loadCycle(session.email);
+    ({ submissions, order: orderRec } = cycle);
+    Object.assign(base, { jam: cycle.jam, jamName: cycle.jamName });
   } catch (err) {
     console.error('[shop] submissions lookup failed:', err);
     return { ...base, state: 'error', me };
@@ -85,12 +91,6 @@ export async function load({ cookies, url }) {
   }
   const closedForThem = base.closed;
 
-  let orderRec = null;
-  try {
-    orderRec = await findOrder(session.email, SHOP.jam);
-  } catch (err) {
-    console.error('[shop] order lookup failed:', err);
-  }
   const order = orderRec
     ? {
         type: orderRec.fields.prize_type === 'indie games' ? 'games' : 'prize',

@@ -89,18 +89,21 @@ export async function patchRecord(table, id, fields) {
   return res.json();
 }
 
-// All of this person's submissions for the jam. A repeat submitter can have
-// several rows; the shop treats them as one person with one prize.
-export function findSubmissions(email, jam) {
-  if (MOCK) return Promise.resolve([mockSubmission(email, jam)]);
-  const formula = `AND(LOWER({email})='${esc(email.toLowerCase())}', {jam}='${esc(jam)}')`;
-  return listRecords(config.shop.submissionsTable, formula, 10);
+// {jam} is one of `jams` (a list of month labels)
+const jamsClause = (jams) => `OR(${jams.map((j) => `{jam}='${esc(j)}'`).join(', ')})`;
+
+// All of this person's submissions across the given jams. A repeat submitter can
+// have several rows per jam; the shop treats them as one person with one prize
+// per jam, and resolveCycle (shop.js) decides which jam they are looking at.
+export function findSubmissions(email, jams) {
+  if (MOCK) return Promise.resolve([mockSubmission(email, jams[jams.length - 1])]);
+  const formula = `AND(LOWER({email})='${esc(email.toLowerCase())}', ${jamsClause(jams)})`;
+  return listRecords(config.shop.submissionsTable, formula, 10 * jams.length);
 }
 
-// One order per person per jam - the shop upserts against this.
-export async function findOrder(email, jam) {
-  if (MOCK) return mockOrder;
-  const formula = `AND(LOWER({email})='${esc(email.toLowerCase())}', {jam}='${esc(jam)}')`;
-  const recs = await listRecords(config.shop.ordersTable, formula, 1);
-  return recs[0] ?? null;
+// This person's orders across the given jams: at most one per jam.
+export function findOrders(email, jams) {
+  if (MOCK) return Promise.resolve(mockOrder ? [mockOrder] : []);
+  const formula = `AND(LOWER({email})='${esc(email.toLowerCase())}', ${jamsClause(jams)})`;
+  return listRecords(config.shop.ordersTable, formula, jams.length);
 }
