@@ -1,0 +1,2914 @@
+{
+  "jam": "cozy-fall-jam-2026",
+  "jamId": 419289,
+  "fetchedAt": "2026-10-08T18:15:35.796Z",
+  "entries": {
+    "tenairi.itch.io/beetles-juice": {
+      "url": "https://tenairi.itch.io/beetles-juice",
+      "title": "Beetles’ Juice",
+      "rank": 1,
+      "ratings": 59,
+      "score": 4.233,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060407",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEwNzAxLmpwZw==/300x240%23c/MWpUGO.jpg"
+    },
+    "devmaxius.itch.io/stick-to-the-roots": {
+      "url": "https://devmaxius.itch.io/stick-to-the-roots",
+      "title": "Stick to the Roots",
+      "rank": 2,
+      "ratings": 15,
+      "score": 4.2,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062660",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NDM4LnBuZw==/300x240%23c/uY7XZu.png"
+    },
+    "mazzykissdesigns.itch.io/of-myth-and-mocha": {
+      "url": "https://mazzykissdesigns.itch.io/of-myth-and-mocha",
+      "title": "Of Myth & Mocha",
+      "rank": 3,
+      "ratings": 16,
+      "score": 4.094,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062782",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyODA2LnBuZw==/300x240%23c/CcN7K3.png"
+    },
+    "mongrelmead.itch.io/the-wind-knows-the-way": {
+      "url": "https://mongrelmead.itch.io/the-wind-knows-the-way",
+      "title": "The Wind Knows the Way",
+      "rank": 4,
+      "ratings": 41,
+      "score": 4.049,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063737",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1OTE4LnBuZw==/300x240%23c/WaivYl.png"
+    },
+    "benthepachuco.itch.io/herencia": {
+      "url": "https://benthepachuco.itch.io/herencia",
+      "title": "Herencia",
+      "rank": 5,
+      "ratings": 46,
+      "score": 4.038,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059063",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjg4NTk1LnBuZw==/300x240%23c/lgWAti.png"
+    },
+    "sleepingcolossus.itch.io/cozy-cafe": {
+      "url": "https://sleepingcolossus.itch.io/cozy-cafe",
+      "title": "Cozy Cafe (Game Jam Submission)",
+      "rank": 6,
+      "ratings": 27,
+      "score": 4.037,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063922",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2ODQxLnBuZw==/300x240%23c/MxLPod.png"
+    },
+    "shaunnortonau.itch.io/one-dam-job": {
+      "url": "https://shaunnortonau.itch.io/one-dam-job",
+      "title": "One Dam Job!",
+      "rank": 7,
+      "ratings": 59,
+      "score": 4.034,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059000",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAxNTA4LnBuZw==/300x240%23c/PWNaVB.png"
+    },
+    "crowmeister.itch.io/tanuki": {
+      "url": "https://crowmeister.itch.io/tanuki",
+      "title": "Tanuki Patisserie",
+      "rank": 8,
+      "ratings": 33,
+      "score": 3.985,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063548",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NDgyLmpwZw==/300x240%23c/BF9OET.jpg"
+    },
+    "uwibbit.itch.io/soup-for-the-spirits": {
+      "url": "https://uwibbit.itch.io/soup-for-the-spirits",
+      "title": "Soup for the Spirits",
+      "rank": 9,
+      "ratings": 33,
+      "score": 3.939,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059993",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk0NDIzLnBuZw==/300x240%23c/xbX%2FZa.png"
+    },
+    "dragonrider1223.itch.io/rooted": {
+      "url": "https://dragonrider1223.itch.io/rooted",
+      "title": "Rooted",
+      "rank": 10,
+      "ratings": 44,
+      "score": 3.915,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061308",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzI5ODg1LnBuZw==/300x240%23c/jVWBC0.png"
+    },
+    "lazilydev.itch.io/leaf-raker": {
+      "url": "https://lazilydev.itch.io/leaf-raker",
+      "title": "Leaf Raker",
+      "rank": 11,
+      "ratings": 31,
+      "score": 3.903,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061024",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAxMTcxLnBuZw==/300x240%23c/kBLwQo.png"
+    },
+    "whaopos.itch.io/fall-is-the-season-of-harvest": {
+      "url": "https://whaopos.itch.io/fall-is-the-season-of-harvest",
+      "title": "Fall is the Season of Harvest",
+      "rank": 12,
+      "ratings": 18,
+      "score": 3.861,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063405",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEzOTIwLnBuZw==/300x240%23c/CAlo%2Bm.png"
+    },
+    "ethandacat.itch.io/make-a-leaf": {
+      "url": "https://ethandacat.itch.io/make-a-leaf",
+      "title": "make a leaf",
+      "rank": 13,
+      "ratings": 71,
+      "score": 3.835,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5055434",
+      "platforms": [
+        "windows",
+        "osx",
+        "linux",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjgxNzI5LnBuZw==/300x240%23c/bFFisc.png"
+    },
+    "foursquarez.itch.io/pumpkin": {
+      "url": "https://foursquarez.itch.io/pumpkin",
+      "title": "Pump'Kin",
+      "rank": 14,
+      "ratings": 52,
+      "score": 3.822,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063543",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzI0ODYzLnBuZw==/300x240%23c/aEdnb7.png"
+    },
+    "xxchester.itch.io/cozy-log-cafe": {
+      "url": "https://xxchester.itch.io/cozy-log-cafe",
+      "title": "Cozy Log Cafè",
+      "rank": 15,
+      "ratings": 25,
+      "score": 3.82,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5057587",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEwNDQyLnBuZw==/300x240%23c/HBUG%2BU.png"
+    },
+    "studiopeppernut.itch.io/root-is-due": {
+      "url": "https://studiopeppernut.itch.io/root-is-due",
+      "title": "Root is Due",
+      "rank": 16,
+      "ratings": 27,
+      "score": 3.796,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5052049",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE0NTEyLnBuZw==/300x240%23c/d3DZqQ.png"
+    },
+    "cheese-gremlin.itch.io/murdery-fall-mystery": {
+      "url": "https://cheese-gremlin.itch.io/murdery-fall-mystery",
+      "title": "A Murdery Fall Mystery",
+      "rank": 17,
+      "ratings": 19,
+      "score": 3.789,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061300",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA0MDUwLnBuZw==/300x240%23c/f9Qnel.png"
+    },
+    "youknowgasai.itch.io/rootsplease": {
+      "url": "https://youknowgasai.itch.io/rootsplease",
+      "title": "Roots Please",
+      "rank": 18,
+      "ratings": 23,
+      "score": 3.783,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060671",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwNDE5NzAwLnBuZw==/300x240%23c/KZ1EAY.png"
+    },
+    "anack.itch.io/october-27": {
+      "url": "https://anack.itch.io/october-27",
+      "title": "October 27",
+      "rank": 19,
+      "ratings": 29,
+      "score": 3.776,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5052364",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2MTcxLnBuZw==/300x240%23c/QUvIZF.png"
+    },
+    "amethystjewelia.itch.io/tracing-pawprints": {
+      "url": "https://amethystjewelia.itch.io/tracing-pawprints",
+      "title": "Tracing Pawprints",
+      "rank": 20,
+      "ratings": 19,
+      "score": 3.763,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062210",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA3ODkwLnBuZw==/300x240%23c/xGCdi6.png"
+    },
+    "pirawan.itch.io/green-again": {
+      "url": "https://pirawan.itch.io/green-again",
+      "title": "Green Again",
+      "rank": 21,
+      "ratings": 21,
+      "score": 3.738,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5045655",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjYzMjM4LmpwZw==/300x240%23c/knDPyL.jpg"
+    },
+    "chunkychinchillagames.itch.io/root-cellar": {
+      "url": "https://chunkychinchillagames.itch.io/root-cellar",
+      "title": "Root Cellar",
+      "rank": 22,
+      "ratings": 33,
+      "score": 3.705,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5050092",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk2NTkzLnBuZw==/300x240%23c/wbGUB7.png"
+    },
+    "honeyjuice.itch.io/bb-harvesting-tactics": {
+      "url": "https://honeyjuice.itch.io/bb-harvesting-tactics",
+      "title": "butterfly beth: Harvesting Tactics",
+      "rank": 23,
+      "ratings": 16,
+      "score": 3.703,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062609",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA5OTUwLnBuZw==/300x240%23c/hj7DFH.png"
+    },
+    "sovium.itch.io/the-garden-of-wonders": {
+      "url": "https://sovium.itch.io/the-garden-of-wonders",
+      "title": "The Garden of Wonders",
+      "rank": 24,
+      "ratings": 24,
+      "score": 3.688,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060842",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk5MjM1LnBuZw==/300x240%23c/Km1a7l.png"
+    },
+    "not-a-kappa-games.itch.io/guard-dog": {
+      "url": "https://not-a-kappa-games.itch.io/guard-dog",
+      "title": "Guard Dog",
+      "rank": 25,
+      "ratings": 42,
+      "score": 3.637,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5054700",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjYzMDQ3LnBuZw==/300x240%23c/efTRKo.png"
+    },
+    "gillworks.itch.io/zero-is-hungry": {
+      "url": "https://gillworks.itch.io/zero-is-hungry",
+      "title": "Zero is Hungry",
+      "rank": 26,
+      "ratings": 31,
+      "score": 3.613,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060972",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAwMDkzLnBuZw==/300x240%23c/9Fb%2BZi.png"
+    },
+    "team-ruby-games.itch.io/micequest": {
+      "url": "https://team-ruby-games.itch.io/micequest",
+      "title": "MiceQuest",
+      "rank": 27,
+      "ratings": 26,
+      "score": 3.596,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5055439",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAxMDYyLnBuZw==/300x240%23c/Hz1Wf8.png"
+    },
+    "bokchoywithsoy.itch.io/pond-fishing": {
+      "url": "https://bokchoywithsoy.itch.io/pond-fishing",
+      "title": "Pond Fishing",
+      "rank": 28,
+      "ratings": 47,
+      "score": 3.59,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061933",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1ODQ1LnBuZw==/300x240%23c/ow1eDn.png"
+    },
+    "montyco.itch.io/funguess": {
+      "url": "https://montyco.itch.io/funguess",
+      "title": "Funguess",
+      "rank": 29,
+      "ratings": 16,
+      "score": 3.578,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063808",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2MTYyLnBuZw==/300x240%23c/HtM%2BHN.png"
+    },
+    "loremus.itch.io/pumpkin-tree": {
+      "url": "https://loremus.itch.io/pumpkin-tree",
+      "title": "Pumpkin Tree",
+      "rank": 30,
+      "ratings": 17,
+      "score": 3.574,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060637",
+      "platforms": [
+        "windows",
+        "osx",
+        "linux",
+        "android",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk3OTM5LnBuZw==/300x240%23c/wuH2UX.png"
+    },
+    "lonephalcon.itch.io/bark-the-herder": {
+      "url": "https://lonephalcon.itch.io/bark-the-herder",
+      "title": "Bark the Herder",
+      "rank": 31,
+      "ratings": 21,
+      "score": 3.56,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5058980",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk5MTYyLnBuZw==/300x240%23c/Xh0laM.png"
+    },
+    "lochi-makes-games.itch.io/ants": {
+      "url": "https://lochi-makes-games.itch.io/ants",
+      "title": "ants",
+      "rank": 32,
+      "ratings": 17,
+      "score": 3.559,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063007",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyMjk2LnBuZw==/300x240%23c/iWQ19i.png"
+    },
+    "potato-chisps.itch.io/i-just-want-a-carrot": {
+      "url": "https://potato-chisps.itch.io/i-just-want-a-carrot",
+      "title": "i just want a carrot",
+      "rank": 33,
+      "ratings": 27,
+      "score": 3.556,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060120",
+      "platforms": [
+        "windows",
+        "linux",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk2MzExLnBuZw==/300x240%23c/zeyw1I.png"
+    },
+    "qx37v.itch.io/reroot": {
+      "url": "https://qx37v.itch.io/reroot",
+      "title": "Reroot",
+      "rank": 34,
+      "ratings": 19,
+      "score": 3.539,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063318",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEzNDIzLnBuZw==/300x240%23c/IjYG5y.png"
+    },
+    "cement-ik.itch.io/cookie-weather": {
+      "url": "https://cement-ik.itch.io/cookie-weather",
+      "title": "Cookie Weather",
+      "rank": 35,
+      "ratings": 15,
+      "score": 3.533,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063017",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEzMTMzLnBuZw==/300x240%23c/DDOJen.png"
+    },
+    "jornadavagabunda.itch.io/leaf-and-learn": {
+      "url": "https://jornadavagabunda.itch.io/leaf-and-learn",
+      "title": "Leaf and Learn",
+      "rank": 36,
+      "ratings": 44,
+      "score": 3.523,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5052080",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjg0ODI4LnBuZw==/300x240%23c/u5lbdV.png"
+    },
+    "dw13054050.itch.io/pumpkin-patchup": {
+      "url": "https://dw13054050.itch.io/pumpkin-patchup",
+      "title": "Pumpkin Patchup",
+      "rank": 37,
+      "ratings": 17,
+      "score": 3.5,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5057948",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjgyMzkwLnBuZw==/300x240%23c/tRXllr.png"
+    },
+    "nekosoftware.itch.io/fox-park": {
+      "url": "https://nekosoftware.itch.io/fox-park",
+      "title": "Fox Park",
+      "rank": 38,
+      "ratings": 26,
+      "score": 3.49,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5057066",
+      "platforms": [
+        "windows",
+        "linux",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE0NjY0LnBuZw==/300x240%23c/wqfbNa.png"
+    },
+    "orven.itch.io/let-it-grow": {
+      "url": "https://orven.itch.io/let-it-grow",
+      "title": "Let it grow!",
+      "rank": 39,
+      "ratings": 20,
+      "score": 3.425,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063761",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE4NjU1LnBuZw==/300x240%23c/rXnlo8.png"
+    },
+    "chtichoko.itch.io/fish-and-clean": {
+      "url": "https://chtichoko.itch.io/fish-and-clean",
+      "title": "Fish and Clean",
+      "rank": 40,
+      "ratings": 22,
+      "score": 3.409,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5058941",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAyMDc3LnBuZw==/300x240%23c/awNReD.png"
+    },
+    "protes.itch.io/waldbaden": {
+      "url": "https://protes.itch.io/waldbaden",
+      "title": "Waldbaden",
+      "rank": 41,
+      "ratings": 22,
+      "score": 3.386,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061143",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1NzM5LmpwZWc=/300x240%23c/qa%2BCOW.jpeg"
+    },
+    "verontsik.itch.io/da-scarf-businez": {
+      "url": "https://verontsik.itch.io/da-scarf-businez",
+      "title": "da scarf businez",
+      "rank": 42,
+      "ratings": 26,
+      "score": 3.385,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063391",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE4NTAwLnBuZw==/300x240%23c/ZrE0qb.png"
+    },
+    "myxsss.itch.io/colorfull-fall": {
+      "url": "https://myxsss.itch.io/colorfull-fall",
+      "title": "Colorfull Fall",
+      "rank": 43,
+      "ratings": 34,
+      "score": 3.382,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5058571",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjg1Mzg4LnBuZw==/300x240%23c/sKbKUH.png"
+    },
+    "arjun-bhumula.itch.io/pips-acorns": {
+      "url": "https://arjun-bhumula.itch.io/pips-acorns",
+      "title": "Pip's Acorns",
+      "rank": 44,
+      "ratings": 19,
+      "score": 3.382,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062569",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA5ODgwLnBuZw==/300x240%23c/upIw3J.png"
+    },
+    "thimoca.itch.io/bonsai-buddy": {
+      "url": "https://thimoca.itch.io/bonsai-buddy",
+      "title": "Bonsai Buddy",
+      "rank": 45,
+      "ratings": 23,
+      "score": 3.38,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060373",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyMjY0LnBuZw==/300x240%23c/a0q%2FhD.png"
+    },
+    "cally-taylor.itch.io/my-little-jam-cart": {
+      "url": "https://cally-taylor.itch.io/my-little-jam-cart",
+      "title": "My Little Jam Cart",
+      "rank": 46,
+      "ratings": 23,
+      "score": 3.37,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063054",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzExODM3LnBuZw==/300x240%23c/OwdvJt.png"
+    },
+    "the-sleepy-hut.itch.io/fluffy-bun": {
+      "url": "https://the-sleepy-hut.itch.io/fluffy-bun",
+      "title": "Fluffy Bun",
+      "rank": 47,
+      "ratings": 18,
+      "score": 3.361,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063617",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyNTgzLnBuZw==/300x240%23c/AFDgeq.png"
+    },
+    "kodumaster.itch.io/rangle-them-rootveg": {
+      "url": "https://kodumaster.itch.io/rangle-them-rootveg",
+      "title": "Rangle Them RootVeg",
+      "rank": 48,
+      "ratings": 26,
+      "score": 3.356,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063457",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE4MTc1LnBuZw==/300x240%23c/BXkyBD.png"
+    },
+    "guillermo-porras.itch.io/cosita": {
+      "url": "https://guillermo-porras.itch.io/cosita",
+      "title": "Cosita",
+      "rank": 49,
+      "ratings": 14,
+      "score": 3.33,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063958",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzIwMzk1LnBuZw==/300x240%23c/Ao0vmm.png"
+    },
+    "riamo.itch.io/ponder": {
+      "url": "https://riamo.itch.io/ponder",
+      "title": "Ponder",
+      "rank": 50,
+      "ratings": 24,
+      "score": 3.312,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063481",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEzOTAxLnBuZw==/300x240%23c/smhmMb.png"
+    },
+    "hekmin.itch.io/from-your-roots": {
+      "url": "https://hekmin.itch.io/from-your-roots",
+      "title": "From Your Roots",
+      "rank": 51,
+      "ratings": 20,
+      "score": 3.288,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061473",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAzNjE5LmpwZw==/300x240%23c/1juQuI.jpg"
+    },
+    "thesecondleft.itch.io/taking-root": {
+      "url": "https://thesecondleft.itch.io/taking-root",
+      "title": "Taking Root",
+      "rank": 52,
+      "ratings": 14,
+      "score": 3.278,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062966",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzExNDkzLnBuZw==/300x240%23c/hFYILO.png"
+    },
+    "kopelat.itch.io/collector": {
+      "url": "https://kopelat.itch.io/collector",
+      "title": "Collector",
+      "rank": 53,
+      "ratings": 27,
+      "score": 3.269,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064040",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzg2MjU1LnBuZw==/300x240%23c/t5b8Zz.png"
+    },
+    "leloupv.itch.io/tanglecrops": {
+      "url": "https://leloupv.itch.io/tanglecrops",
+      "title": "TangleCrops",
+      "rank": 54,
+      "ratings": 15,
+      "score": 3.267,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063602",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzM3NjA4LnBuZw==/300x240%23c/bHFASY.png"
+    },
+    "lsxac-design.itch.io/dreamaway": {
+      "url": "https://lsxac-design.itch.io/dreamaway",
+      "title": "Dreamaway - Dreams of Auutum",
+      "rank": 55,
+      "ratings": 16,
+      "score": 3.266,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063247",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1MDAwLnBuZw==/300x240%23c/ozaAYU.png"
+    },
+    "valk0x29a.itch.io/cozy-break": {
+      "url": "https://valk0x29a.itch.io/cozy-break",
+      "title": "Cozy Break",
+      "rank": 56,
+      "ratings": 13,
+      "score": 3.258,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063965",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE5MDU4LnBuZw==/300x240%23c/Pp8UX1.png"
+    },
+    "sleepytreefrog.itch.io/restfulburrow": {
+      "url": "https://sleepytreefrog.itch.io/restfulburrow",
+      "title": "Restful Burrow",
+      "rank": 57,
+      "ratings": 24,
+      "score": 3.24,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5054707",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjg4ODE2LnBuZw==/300x240%23c/SQ5lsF.png"
+    },
+    "choco-latte00.itch.io/fallbucks": {
+      "url": "https://choco-latte00.itch.io/fallbucks",
+      "title": "Fallbucks",
+      "rank": 58,
+      "ratings": 23,
+      "score": 3.239,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060718",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAyNTI2LmpwZw==/300x240%23c/bx%2Bdyy.jpg"
+    },
+    "iamleftie.itch.io/verdant-swing": {
+      "url": "https://iamleftie.itch.io/verdant-swing",
+      "title": "Verdant Swing",
+      "rank": 59,
+      "ratings": 14,
+      "score": 3.226,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062139",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA3MjM4LnBuZw==/300x240%23c/xBeki7.png"
+    },
+    "i-zan.itch.io/sprout": {
+      "url": "https://i-zan.itch.io/sprout",
+      "title": "THE PEACH SPROUT",
+      "rank": 60,
+      "ratings": 17,
+      "score": 3.221,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5058866",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwNDIxNzYyLnBuZw==/300x240%23c/b2LtCu.png"
+    },
+    "bayostudio.itch.io/bear-with-me": {
+      "url": "https://bayostudio.itch.io/bear-with-me",
+      "title": "Bear With Me",
+      "rank": 61,
+      "ratings": 17,
+      "score": 3.206,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5055732",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjY5MDI5LnBuZw==/300x240%23c/pCrL1N.png"
+    },
+    "kazak-vladimir.itch.io/rootodoro": {
+      "url": "https://kazak-vladimir.itch.io/rootodoro",
+      "title": "Rootodoro",
+      "rank": 62,
+      "ratings": 15,
+      "score": 3.183,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061569",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyNzU2LnBuZw==/300x240%23c/VWLtfr.png"
+    },
+    "elitevelas.itch.io/hurry-henrietta-hedgehog": {
+      "url": "https://elitevelas.itch.io/hurry-henrietta-hedgehog",
+      "title": "Hurry Henrietta Hedgehog",
+      "rank": 63,
+      "ratings": 18,
+      "score": 3.181,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5056147",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA2MzA1LnBuZw==/300x240%23c/65IiK6.png"
+    },
+    "artsv.itch.io/blown-away": {
+      "url": "https://artsv.itch.io/blown-away",
+      "title": "Blown Away",
+      "rank": 64,
+      "ratings": 21,
+      "score": 3.179,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062031",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA4ODA2LnBuZw==/300x240%23c/Y668pN.png"
+    },
+    "niko-o-0.itch.io/bean-root": {
+      "url": "https://niko-o-0.itch.io/bean-root",
+      "title": "Bean Root",
+      "rank": 65,
+      "ratings": 17,
+      "score": 3.176,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063595",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1Mjk1LnBuZw==/300x240%23c/HvzXls.png"
+    },
+    "virtual-boo.itch.io/falling-piano": {
+      "url": "https://virtual-boo.itch.io/falling-piano",
+      "title": "Attention ! Falling Piano",
+      "rank": 66,
+      "ratings": 23,
+      "score": 3.163,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062000",
+      "platforms": [
+        "windows",
+        "linux",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA3ODc5LnBuZw==/300x240%23c/vNv8ne.png"
+    },
+    "sobugnar.itch.io/leaf-simulator": {
+      "url": "https://sobugnar.itch.io/leaf-simulator",
+      "title": "Leaf Simulator",
+      "rank": 67,
+      "ratings": 18,
+      "score": 3.153,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063604",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE0NzQ0LnBuZw==/300x240%23c/LVVyO2.png"
+    },
+    "boronho.itch.io/blowing-between-roots": {
+      "url": "https://boronho.itch.io/blowing-between-roots",
+      "title": "Blowing between Roots",
+      "rank": 68,
+      "ratings": 17,
+      "score": 3.147,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063897",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3ODA5LnBuZw==/300x240%23c/u1XqC8.png"
+    },
+    "kosm0-o.itch.io/a-sip-of-autumn": {
+      "url": "https://kosm0-o.itch.io/a-sip-of-autumn",
+      "title": "A Sip of Autumn",
+      "rank": 69,
+      "ratings": 34,
+      "score": 3.147,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061978",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE4MzAzLnBuZw==/300x240%23c/C6tPK2.png"
+    },
+    "nebirid.itch.io/a-great-plant": {
+      "url": "https://nebirid.itch.io/a-great-plant",
+      "title": "A Great Plan(t)",
+      "rank": 70,
+      "ratings": 16,
+      "score": 3.141,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060295",
+      "platforms": [
+        "windows",
+        "osx",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE5OTk4LnBuZw==/300x240%23c/XwKMB%2B.png"
+    },
+    "kodyart.itch.io/a-treasure-of-family-roots": {
+      "url": "https://kodyart.itch.io/a-treasure-of-family-roots",
+      "title": "A Treasure of Family Roots",
+      "rank": 71,
+      "ratings": 12,
+      "score": 3.112,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5057639",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA4MjczLnBuZw==/300x240%23c/kDMGj5.png"
+    },
+    "supertanuki.itch.io/the-mushroom-forest": {
+      "url": "https://supertanuki.itch.io/the-mushroom-forest",
+      "title": "The mushroom forest",
+      "rank": 72,
+      "ratings": 15,
+      "score": 3.1,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5057195",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAyMzMxLnBuZw==/300x240%23c/qtz%2FMP.png"
+    },
+    "weird-pumpkins-studios.itch.io/fey-bouquet": {
+      "url": "https://weird-pumpkins-studios.itch.io/fey-bouquet",
+      "title": "Fey Bouquet",
+      "rank": 73,
+      "ratings": 16,
+      "score": 3.094,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062473",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA5NDQwLnBuZw==/300x240%23c/4Ag4NQ.png"
+    },
+    "mzee08.itch.io/the-last-mooncake": {
+      "url": "https://mzee08.itch.io/the-last-mooncake",
+      "title": "The Last Mooncake",
+      "rank": 74,
+      "ratings": 14,
+      "score": 3.071,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063668",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1Nzg3LnBuZw==/300x240%23c/PiZ%2Fgf.png"
+    },
+    "lucascosta.itch.io/norcasnoon": {
+      "url": "https://lucascosta.itch.io/norcasnoon",
+      "title": "Norca's Noon",
+      "rank": 75,
+      "ratings": 15,
+      "score": 3.067,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064115",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzQwNTE5LnBuZw==/300x240%23c/udeN6V.png"
+    },
+    "coolestoneofthemall.itch.io/feed-the-fire": {
+      "url": "https://coolestoneofthemall.itch.io/feed-the-fire",
+      "title": "Feed The Fire",
+      "rank": 76,
+      "ratings": 34,
+      "score": 3.066,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5057178",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjc4MDk4LnBuZw==/300x240%23c/UOU53J.png"
+    },
+    "pgad.itch.io/root-route": {
+      "url": "https://pgad.itch.io/root-route",
+      "title": "Root Route",
+      "rank": 77,
+      "ratings": 22,
+      "score": 3.057,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063089",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1NzU3LnBuZw==/300x240%23c/KrpOL7.png"
+    },
+    "egladil.itch.io/cat-distribution-system": {
+      "url": "https://egladil.itch.io/cat-distribution-system",
+      "title": "Cat Distribution System",
+      "rank": 78,
+      "ratings": 23,
+      "score": 3.043,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063065",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzExNDk4LnBuZw==/300x240%23c/Rep7UD.png"
+    },
+    "awindowisnotcodingiguess.itch.io/the-winter-burrow": {
+      "url": "https://awindowisnotcodingiguess.itch.io/the-winter-burrow",
+      "title": "The Winter Burrow",
+      "rank": 79,
+      "ratings": 21,
+      "score": 3.036,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063915",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3MjM4LnBuZw==/300x240%23c/NYq9uj.png"
+    },
+    "shimmybailey.itch.io/monchy-mole": {
+      "url": "https://shimmybailey.itch.io/monchy-mole",
+      "title": "monchy mole",
+      "rank": 80,
+      "ratings": 18,
+      "score": 3.028,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064122",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3OTc3LnBuZw==/300x240%23c/A89HCk.png"
+    },
+    "itapita0.itch.io/rootle": {
+      "url": "https://itapita0.itch.io/rootle",
+      "title": "Rootle",
+      "rank": 82,
+      "ratings": 21,
+      "score": 3.024,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059332",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAxNDA0LmpwZWc=/300x240%23c/f1%2BsYH.jpeg"
+    },
+    "verbmage.itch.io/roothook": {
+      "url": "https://verbmage.itch.io/roothook",
+      "title": "Roothook",
+      "rank": 83,
+      "ratings": 18,
+      "score": 3.014,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063823",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NzcxLnBuZw==/300x240%23c/JcO%2FSg.png"
+    },
+    "neptuniann.itch.io/the-leaf-game": {
+      "url": "https://neptuniann.itch.io/the-leaf-game",
+      "title": "Don't Leaf it",
+      "rank": 84,
+      "ratings": 17,
+      "score": 3,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5050828",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk3OTY0LnBuZw==/300x240%23c/JkIY6G.png"
+    },
+    "readsack.itch.io/windy-falls": {
+      "url": "https://readsack.itch.io/windy-falls",
+      "title": "Windy Falls",
+      "rank": 84,
+      "ratings": 19,
+      "score": 3,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063317",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE0MDQyLnBuZw==/300x240%23c/Ad7eeP.png"
+    },
+    "randompigion.itch.io/beetles-burrow": {
+      "url": "https://randompigion.itch.io/beetles-burrow",
+      "title": "Beetle's Burrow",
+      "rank": 86,
+      "ratings": 34,
+      "score": 2.993,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064011",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE4ODIwLnBuZw==/300x240%23c/7nPyQe.png"
+    },
+    "reikodes.itch.io/rootshooter": {
+      "url": "https://reikodes.itch.io/rootshooter",
+      "title": "RootShooter",
+      "rank": 87,
+      "ratings": 9,
+      "score": 2.969,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063637",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwNTA0NjIwLnBuZw==/300x240%23c/z%2BLFr2.png"
+    },
+    "kaplin86.itch.io/town-of-roottown": {
+      "url": "https://kaplin86.itch.io/town-of-roottown",
+      "title": "Town Of RootTown",
+      "rank": 88,
+      "ratings": 14,
+      "score": 2.95,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063084",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyNTUyLnBuZw==/300x240%23c/umK3i7.png"
+    },
+    "quxlest.itch.io/leaf-me-alone": {
+      "url": "https://quxlest.itch.io/leaf-me-alone",
+      "title": "Leaf me Alone",
+      "rank": 89,
+      "ratings": 21,
+      "score": 2.94,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062064",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE0NzgxLnBuZw==/300x240%23c/Wg7LoS.png"
+    },
+    "convergegamedev.itch.io/campcryptid": {
+      "url": "https://convergegamedev.itch.io/campcryptid",
+      "title": "Camp Cryptid",
+      "rank": 90,
+      "ratings": 20,
+      "score": 2.938,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063195",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzYxNTYzLnBuZw==/300x240%23c/cTT78L.png"
+    },
+    "matthewcapocci.itch.io/reconnecting-with-my-roots": {
+      "url": "https://matthewcapocci.itch.io/reconnecting-with-my-roots",
+      "title": "Reconnecting with my Roots",
+      "rank": 91,
+      "ratings": 17,
+      "score": 2.926,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5055830",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAyNzM5LnBuZw==/300x240%23c/AJ%2FG%2Fw.png"
+    },
+    "whozaifa.itch.io/cozy-catch": {
+      "url": "https://whozaifa.itch.io/cozy-catch",
+      "title": "Cozy Catch",
+      "rank": 92,
+      "ratings": 13,
+      "score": 2.918,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062673",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzExMzY3LnBuZw==/300x240%23c/mY8CAg.png"
+    },
+    "breaddev1.itch.io/cup-o-joe": {
+      "url": "https://breaddev1.itch.io/cup-o-joe",
+      "title": "Cup O' Joe",
+      "rank": 93,
+      "ratings": 21,
+      "score": 2.917,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061384",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAyNjA2LnBuZw==/300x240%23c/tGuOKn.png"
+    },
+    "xvcf.itch.io/brewberry": {
+      "url": "https://xvcf.itch.io/brewberry",
+      "title": "Brewberry",
+      "rank": 94,
+      "ratings": 23,
+      "score": 2.913,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5058710",
+      "platforms": [
+        "windows",
+        "osx",
+        "linux",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA0MTUzLnBuZw==/300x240%23c/iDQX8a.png"
+    },
+    "refikysg.itch.io/cinnamon-bakery": {
+      "url": "https://refikysg.itch.io/cinnamon-bakery",
+      "title": "Cinnamon Bakery",
+      "rank": 95,
+      "ratings": 20,
+      "score": 2.913,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064065",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwNDMyNjI4LnBuZw==/300x240%23c/6GD%2F8s.png"
+    },
+    "chaorrupted.itch.io/bugsy": {
+      "url": "https://chaorrupted.itch.io/bugsy",
+      "title": "Bugsy!",
+      "rank": 96,
+      "ratings": 31,
+      "score": 2.911,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5049370",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3Njk2LmpwZWc=/300x240%23c/rdiPcn.jpeg"
+    },
+    "olmgames.itch.io/fox-hole": {
+      "url": "https://olmgames.itch.io/fox-hole",
+      "title": "Fox Hole",
+      "rank": 97,
+      "ratings": 24,
+      "score": 2.896,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060003",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk0MjgyLnBuZw==/300x240%23c/aeNXJF.png"
+    },
+    "ixdeh.itch.io/roots-of-yggdrasil": {
+      "url": "https://ixdeh.itch.io/roots-of-yggdrasil",
+      "title": "Roots of Yggdrasil",
+      "rank": 98,
+      "ratings": 28,
+      "score": 2.893,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062709",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NDQ0LnBuZw==/300x240%23c/yW41QU.png"
+    },
+    "bluedragon-space.itch.io/solefire": {
+      "url": "https://bluedragon-space.itch.io/solefire",
+      "title": "Solefire",
+      "rank": 99,
+      "ratings": 23,
+      "score": 2.891,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5058947",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk1NjQ2LnBuZw==/300x240%23c/yDl8yy.png"
+    },
+    "possiblyselena.itch.io/showtunes": {
+      "url": "https://possiblyselena.itch.io/showtunes",
+      "title": "Showtunes",
+      "rank": 100,
+      "ratings": 27,
+      "score": 2.889,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063362",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE0MDk5LnBuZw==/300x240%23c/4ARn9Y.png"
+    },
+    "zapdan-54.itch.io/square-pumpkins": {
+      "url": "https://zapdan-54.itch.io/square-pumpkins",
+      "title": "Square Pumpkins",
+      "rank": 101,
+      "ratings": 13,
+      "score": 2.882,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060935",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAwMzgxLnBuZw==/300x240%23c/DU%2B5sX.png"
+    },
+    "cannice.itch.io/cozyfalljam2026": {
+      "url": "https://cannice.itch.io/cozyfalljam2026",
+      "title": "Blown Away",
+      "rank": 102,
+      "ratings": 50,
+      "score": 2.88,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5058262",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE0ODAyLnBuZw==/300x240%23c/w16mWF.png"
+    },
+    "notdaijoubu0.itch.io/matchmaker": {
+      "url": "https://notdaijoubu0.itch.io/matchmaker",
+      "title": "Matchmaker",
+      "rank": 103,
+      "ratings": 8,
+      "score": 2.876,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062445",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzY4Njk2LmpwZw==/300x240%23c/FHt4Y0.jpg"
+    },
+    "robylogic-71.itch.io/broomy-days": {
+      "url": "https://robylogic-71.itch.io/broomy-days",
+      "title": "Broomy Days",
+      "rank": 104,
+      "ratings": 14,
+      "score": 2.864,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061964",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA2ODA2LnBuZw==/300x240%23c/xRpBU%2F.png"
+    },
+    "ctrl-z-assem.itch.io/black-root": {
+      "url": "https://ctrl-z-assem.itch.io/black-root",
+      "title": "Black-Root",
+      "rank": 105,
+      "ratings": 18,
+      "score": 2.833,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5058245",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwNDAzOTc1LnBuZw==/300x240%23c/M5Fz1R.png"
+    },
+    "rawrjaaa.itch.io/little-tree-keeper": {
+      "url": "https://rawrjaaa.itch.io/little-tree-keeper",
+      "title": "Little Tree Keeper",
+      "rank": 106,
+      "ratings": 18,
+      "score": 2.833,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061786",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzI5NzAxLnBuZw==/300x240%23c/kaN4S4.png"
+    },
+    "dragoncat420.itch.io/gardening-in-the-fall": {
+      "url": "https://dragoncat420.itch.io/gardening-in-the-fall",
+      "title": "Gardening in the fall",
+      "rank": 106,
+      "ratings": 15,
+      "score": 2.833,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063856",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2MzQ4LnBuZw==/300x240%23c/ZCBMh2.png"
+    },
+    "mjhypers.itch.io/leaf-laundering": {
+      "url": "https://mjhypers.itch.io/leaf-laundering",
+      "title": "Leaf Laundering",
+      "rank": 108,
+      "ratings": 20,
+      "score": 2.763,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063984",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NzYwLnBuZw==/300x240%23c/rayLJJ.png"
+    },
+    "friedkernel.itch.io/the-root-giver": {
+      "url": "https://friedkernel.itch.io/the-root-giver",
+      "title": "The Root Giver",
+      "rank": 109,
+      "ratings": 14,
+      "score": 2.76,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064067",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NTgyLnBuZw==/300x240%23c/T3yUxn.png"
+    },
+    "samyduh.itch.io/route-of-unity": {
+      "url": "https://samyduh.itch.io/route-of-unity",
+      "title": "Route of Unity",
+      "rank": 110,
+      "ratings": 15,
+      "score": 2.75,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059606",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk3OTQ5LnBuZw==/300x240%23c/WTQ4ex.png"
+    },
+    "kabirutreja.itch.io/fish-from-the-root": {
+      "url": "https://kabirutreja.itch.io/fish-from-the-root",
+      "title": "Fish From The Root",
+      "rank": 111,
+      "ratings": 20,
+      "score": 2.725,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063704",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2ODczLnBuZw==/300x240%23c/Pa5ROX.png"
+    },
+    "mitchglitchisdabestg.itch.io/root-cafe": {
+      "url": "https://mitchglitchisdabestg.itch.io/root-cafe",
+      "title": "Root Cafe",
+      "rank": 112,
+      "ratings": 13,
+      "score": 2.721,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059784",
+      "platforms": [
+        "windows",
+        "osx",
+        "linux"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk4MTg2LnBuZw==/300x240%23c/uj0%2Br1.png"
+    },
+    "jays-denn.itch.io/pumpkin-festival": {
+      "url": "https://jays-denn.itch.io/pumpkin-festival",
+      "title": "Pumpkin Festival",
+      "rank": 112,
+      "ratings": 13,
+      "score": 2.721,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060706",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk4NzU1LnBuZw==/300x240%23c/ChTieu.png"
+    },
+    "ctrlchrisie.itch.io/leave-it": {
+      "url": "https://ctrlchrisie.itch.io/leave-it",
+      "title": "Leave it!",
+      "rank": 114,
+      "ratings": 17,
+      "score": 2.721,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062530",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1NDA2LnBuZw==/300x240%23c/sQTvj8.png"
+    },
+    "cdkrot.itch.io/krotik-and-cheese": {
+      "url": "https://cdkrot.itch.io/krotik-and-cheese",
+      "title": "Krotik and Cheese",
+      "rank": 115,
+      "ratings": 15,
+      "score": 2.7,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062994",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyMzk1LnBuZw==/300x240%23c/mGSHx%2B.png"
+    },
+    "lutehammer.itch.io/memory-keeper": {
+      "url": "https://lutehammer.itch.io/memory-keeper",
+      "title": "Memory Keeper",
+      "rank": 116,
+      "ratings": 48,
+      "score": 2.667,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062150",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzIwODgzLnBuZw==/300x240%23c/UK4A22.png"
+    },
+    "sailoruk.itch.io/uproot": {
+      "url": "https://sailoruk.itch.io/uproot",
+      "title": "Uproot",
+      "rank": 117,
+      "ratings": 13,
+      "score": 2.632,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063343",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE0MDkwLnBuZw==/300x240%23c/yrrG5V.png"
+    },
+    "8-square.itch.io/sun-roots": {
+      "url": "https://8-square.itch.io/sun-roots",
+      "title": "Sun&Roots",
+      "rank": 118,
+      "ratings": 16,
+      "score": 2.625,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061927",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA2NTAxLnBuZw==/300x240%23c/L5tNpn.png"
+    },
+    "painfulstuble.itch.io/archiver-98": {
+      "url": "https://painfulstuble.itch.io/archiver-98",
+      "title": "Archiver 98",
+      "rank": 119,
+      "ratings": 14,
+      "score": 2.622,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061732",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA0ODk3LnBuZw==/300x240%23c/UkVllb.png"
+    },
+    "aidanhillgit.itch.io/beary-rooted": {
+      "url": "https://aidanhillgit.itch.io/beary-rooted",
+      "title": "Beary Rooted",
+      "rank": 120,
+      "ratings": 13,
+      "score": 2.578,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063871",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2NTI4LnBuZw==/300x240%23c/PTPEQU.png"
+    },
+    "hencat.itch.io/big-root-planet": {
+      "url": "https://hencat.itch.io/big-root-planet",
+      "title": "Big Root Planet",
+      "rank": 120,
+      "ratings": 13,
+      "score": 2.578,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063880",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2NTAyLnBuZw==/300x240%23c/1XsEvK.png"
+    },
+    "marckiwii.itch.io/a-photo-of-my-dad": {
+      "url": "https://marckiwii.itch.io/a-photo-of-my-dad",
+      "title": "A Photo Of My Dad",
+      "rank": 122,
+      "ratings": 25,
+      "score": 2.56,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063852",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2NzM1LnBuZw==/300x240%23c/7Wud6b.png"
+    },
+    "thegm26.itch.io/before-the-axes": {
+      "url": "https://thegm26.itch.io/before-the-axes",
+      "title": "Before The Axes",
+      "rank": 123,
+      "ratings": 14,
+      "score": 2.553,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063207",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEzMjcxLnBuZw==/300x240%23c/bCWT%2BA.png"
+    },
+    "maxmastercoder-itch.itch.io/cafe-autum": {
+      "url": "https://maxmastercoder-itch.itch.io/cafe-autum",
+      "title": "Cafe Autumn",
+      "rank": 124,
+      "ratings": 14,
+      "score": 2.536,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063044",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzExODk3LnBuZw==/300x240%23c/OMdAmf.png"
+    },
+    "skrunklysparky.itch.io/rootninja": {
+      "url": "https://skrunklysparky.itch.io/rootninja",
+      "title": "Root Ninja",
+      "rank": 125,
+      "ratings": 14,
+      "score": 2.519,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061294",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAyMTM0LnBuZw==/300x240%23c/aIQPVa.png"
+    },
+    "proobly.itch.io/cozy-barista-simulator": {
+      "url": "https://proobly.itch.io/cozy-barista-simulator",
+      "title": "Cozy Barista Simulator",
+      "rank": 126,
+      "ratings": 34,
+      "score": 2.515,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060346",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk2MjQ4LnBuZw==/300x240%23c/uzz7Db.png"
+    },
+    "djarcwolf.itch.io/root-my-beloved": {
+      "url": "https://djarcwolf.itch.io/root-my-beloved",
+      "title": "Root, My Beloved",
+      "rank": 127,
+      "ratings": 13,
+      "score": 2.506,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063152",
+      "platforms": [
+        "windows",
+        "linux",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NzI0LnBuZw==/300x240%23c/Ice3bT.png"
+    },
+    "deacrow.itch.io/pumpkin-farm": {
+      "url": "https://deacrow.itch.io/pumpkin-farm",
+      "title": "Pumpkin Farm",
+      "rank": 128,
+      "ratings": 14,
+      "score": 2.501,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062990",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3OTMwLnBuZw==/300x240%23c/wEDJEP.png"
+    },
+    "ankushroy.itch.io/hidden-banana": {
+      "url": "https://ankushroy.itch.io/hidden-banana",
+      "title": "Hidden Banana",
+      "rank": 129,
+      "ratings": 15,
+      "score": 2.5,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062943",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyODc0LnBuZw==/300x240%23c/QNRMWp.png"
+    },
+    "someitoj.itch.io/the-root-cause": {
+      "url": "https://someitoj.itch.io/the-root-cause",
+      "title": "The Root Cause",
+      "rank": 130,
+      "ratings": 37,
+      "score": 2.493,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061645",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA0NTY5LnBuZw==/300x240%23c/%2FGJr9J.png"
+    },
+    "ash-creates.itch.io/rythms-of-fall": {
+      "url": "https://ash-creates.itch.io/rythms-of-fall",
+      "title": "Rhythms of Fall",
+      "rank": 131,
+      "ratings": 13,
+      "score": 2.488,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064119",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzQxMTAyLnBuZw==/300x240%23c/0qW5pg.png"
+    },
+    "yaya0605.itch.io/leafblowing-simulator": {
+      "url": "https://yaya0605.itch.io/leafblowing-simulator",
+      "title": "Leafblowing Simulator",
+      "rank": 132,
+      "ratings": 25,
+      "score": 2.48,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060950",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk3MTc0LmpwZw==/300x240%23c/NZ%2Bqvx.jpg"
+    },
+    "noregen.itch.io/rakemaxxing": {
+      "url": "https://noregen.itch.io/rakemaxxing",
+      "title": "RakeMaxxing",
+      "rank": 133,
+      "ratings": 6,
+      "score": 2.477,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061781",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEwMjc4LnBuZw==/300x240%23c/ebnySN.png"
+    },
+    "tileryr.itch.io/card-stacking-simulator": {
+      "url": "https://tileryr.itch.io/card-stacking-simulator",
+      "title": "Card Stacking Simulator",
+      "rank": 134,
+      "ratings": 18,
+      "score": 2.472,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061430",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzkwMzAzLnBuZw==/300x240%23c/WOV8te.png"
+    },
+    "malotenbende.itch.io/strong-roots-to-grow-on": {
+      "url": "https://malotenbende.itch.io/strong-roots-to-grow-on",
+      "title": "Strong roots to grow on",
+      "rank": 135,
+      "ratings": 16,
+      "score": 2.469,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061785",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1NDkxLnBuZw==/300x240%23c/BJlIi0.png"
+    },
+    "dream-faver.itch.io/root-creature": {
+      "url": "https://dream-faver.itch.io/root-creature",
+      "title": "Root Creature",
+      "rank": 136,
+      "ratings": 12,
+      "score": 2.441,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063837",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3MzA0LnBuZw==/300x240%23c/AW3gY%2B.png"
+    },
+    "illusyra.itch.io/monke-park": {
+      "url": "https://illusyra.itch.io/monke-park",
+      "title": "MonkE Park",
+      "rank": 137,
+      "ratings": 13,
+      "score": 2.435,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064094",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NDEzLnBuZw==/300x240%23c/UIClFX.png"
+    },
+    "recsaur.itch.io/btyr": {
+      "url": "https://recsaur.itch.io/btyr",
+      "title": "Back To Your Roots!!!",
+      "rank": 138,
+      "ratings": 14,
+      "score": 2.432,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064033",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE4MDg5LnBuZw==/300x240%23c/zPMReL.png"
+    },
+    "djflooo.itch.io/between-roots-and-leaves": {
+      "url": "https://djflooo.itch.io/between-roots-and-leaves",
+      "title": "Between Roots and Leaves",
+      "rank": 138,
+      "ratings": 14,
+      "score": 2.432,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064085",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NzI1LnBuZw==/300x240%23c/SGDCK7.png"
+    },
+    "avycado13.itch.io/cozyfall-game": {
+      "url": "https://avycado13.itch.io/cozyfall-game",
+      "title": "Deep Under",
+      "rank": 140,
+      "ratings": 18,
+      "score": 2.431,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063703",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzI2Mjg5LnBuZw==/300x240%23c/qvUG8Q.png"
+    },
+    "redorangeplus.itch.io/hibernation": {
+      "url": "https://redorangeplus.itch.io/hibernation",
+      "title": "Hibernation",
+      "rank": 141,
+      "ratings": 13,
+      "score": 2.399,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062831",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzExNzI5LnBuZw==/300x240%23c/nhpCQw.png"
+    },
+    "mandrakegames.itch.io/sever-the-root-of-all-evil": {
+      "url": "https://mandrakegames.itch.io/sever-the-root-of-all-evil",
+      "title": "Sever the root of all evil",
+      "rank": 142,
+      "ratings": 23,
+      "score": 2.391,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063174",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2NzU2LnBuZw==/300x240%23c/rKKtVF.png"
+    },
+    "awesomeotaku.itch.io/peaceful-leaves": {
+      "url": "https://awesomeotaku.itch.io/peaceful-leaves",
+      "title": "Peaceful Leaves",
+      "rank": 143,
+      "ratings": 14,
+      "score": 2.381,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059661",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjkyMjM2LnBuZw==/300x240%23c/9sh18t.png"
+    },
+    "roquefortcheese.itch.io/leafemulator": {
+      "url": "https://roquefortcheese.itch.io/leafemulator",
+      "title": "Leaf Emulator",
+      "rank": 144,
+      "ratings": 25,
+      "score": 2.38,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063413",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEzOTEzLnBuZw==/300x240%23c/FPHVI%2B.png"
+    },
+    "monkeyasaurus.itch.io/space-fruit": {
+      "url": "https://monkeyasaurus.itch.io/space-fruit",
+      "title": "Space Fruit",
+      "rank": 145,
+      "ratings": 20,
+      "score": 2.337,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5055090",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzMyOTIwLnBuZw==/300x240%23c/vvTtoi.png"
+    },
+    "ffinik.itch.io/familyroots": {
+      "url": "https://ffinik.itch.io/familyroots",
+      "title": "FamilyRoots",
+      "rank": 146,
+      "ratings": 13,
+      "score": 2.327,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059449",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjkwNTY1LnBuZw==/300x240%23c/2CEtwA.png"
+    },
+    "ayamamoru.itch.io/bettlejus": {
+      "url": "https://ayamamoru.itch.io/bettlejus",
+      "title": "BettleJus",
+      "rank": 147,
+      "ratings": 21,
+      "score": 2.274,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063981",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3MTQxLnBuZw==/300x240%23c/bo%2B9wW.png"
+    },
+    "musa-chusnaini.itch.io/fall-food": {
+      "url": "https://musa-chusnaini.itch.io/fall-food",
+      "title": "Fall Food",
+      "rank": 148,
+      "ratings": 12,
+      "score": 2.273,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063047",
+      "platforms": [
+        "web"
+      ],
+      "cover": null
+    },
+    "tyler-the-frogman.itch.io/the-croaky-root": {
+      "url": "https://tyler-the-frogman.itch.io/the-croaky-root",
+      "title": "The Croaky Root",
+      "rank": 149,
+      "ratings": 13,
+      "score": 2.256,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063244",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEzMjAwLnBuZw==/300x240%23c/%2BtwxNb.png"
+    },
+    "banana-goat.itch.io/genesis-guardian": {
+      "url": "https://banana-goat.itch.io/genesis-guardian",
+      "title": "Genesis Guardian",
+      "rank": 150,
+      "ratings": 15,
+      "score": 2.25,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063888",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2NTc2LmpwZw==/300x240%23c/KXkEZK.jpg"
+    },
+    "citruschaos.itch.io/the-roots-cafe": {
+      "url": "https://citruschaos.itch.io/the-roots-cafe",
+      "title": "The Roots Cafe",
+      "rank": 151,
+      "ratings": 14,
+      "score": 2.243,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061453",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAzMDY0LnBuZw==/300x240%23c/cszKc6.png"
+    },
+    "anshshukla.itch.io/autumn-fall": {
+      "url": "https://anshshukla.itch.io/autumn-fall",
+      "title": "Autumn fall",
+      "rank": 152,
+      "ratings": 14,
+      "score": 2.243,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063189",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyODA3LnBuZw==/300x240%23c/atWU6b.png"
+    },
+    "prti.itch.io/shell-of-a-time": {
+      "url": "https://prti.itch.io/shell-of-a-time",
+      "title": "Shell of a Time",
+      "rank": 153,
+      "ratings": 14,
+      "score": 2.208,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5048787",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE5ODE0LnBuZw==/300x240%23c/qIjpDj.png"
+    },
+    "fawy2020.itch.io/rooting-around": {
+      "url": "https://fawy2020.itch.io/rooting-around",
+      "title": "Rooting around",
+      "rank": 154,
+      "ratings": 14,
+      "score": 2.191,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064108",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzM3MzgzLnBuZw==/300x240%23c/AjRIxI.png"
+    },
+    "mossfiction.itch.io/manodoro": {
+      "url": "https://mossfiction.itch.io/manodoro",
+      "title": "Manodoro - the pomodoro companion",
+      "rank": 155,
+      "ratings": 8,
+      "score": 2.191,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064020",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzM1MzM5LnBuZw==/300x240%23c/5duKlR.png"
+    },
+    "starcoder.itch.io/when-autumn": {
+      "url": "https://starcoder.itch.io/when-autumn",
+      "title": "When Autumn Comes",
+      "rank": 156,
+      "ratings": 22,
+      "score": 2.182,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064057",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3ODE2LnBuZw==/300x240%23c/pmbny4.png"
+    },
+    "ivanding.itch.io/cataclysmic-bonsai": {
+      "url": "https://ivanding.itch.io/cataclysmic-bonsai",
+      "title": "Cataclysmic-Bonsai",
+      "rank": 157,
+      "ratings": 12,
+      "score": 2.18,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063893",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzIxMzk1LnBuZw==/300x240%23c/fI2wXz.png"
+    },
+    "akatona.itch.io/i-spread": {
+      "url": "https://akatona.itch.io/i-spread",
+      "title": "I Spread",
+      "rank": 158,
+      "ratings": 12,
+      "score": 2.18,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5058021",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA2ODE1LnBuZw==/300x240%23c/w68IJa.png"
+    },
+    "yosulman.itch.io/sprout": {
+      "url": "https://yosulman.itch.io/sprout",
+      "title": "SPROUT",
+      "rank": 159,
+      "ratings": 15,
+      "score": 2.15,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059426",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjkwNzYzLnBuZw==/300x240%23c/Zx9dLC.png"
+    },
+    "stealthcheetah.itch.io/dying-tree": {
+      "url": "https://stealthcheetah.itch.io/dying-tree",
+      "title": "Dying Tree",
+      "rank": 160,
+      "ratings": 16,
+      "score": 2.141,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061408",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAyODk1LnBuZw==/300x240%23c/SCvdws.png"
+    },
+    "raspyrobinstudios.itch.io/papermaking": {
+      "url": "https://raspyrobinstudios.itch.io/papermaking",
+      "title": "PaperMaking",
+      "rank": 161,
+      "ratings": 7,
+      "score": 2.123,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064144",
+      "platforms": [
+        "windows",
+        "linux"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NzE2LnBuZw==/300x240%23c/Tv8MvB.png"
+    },
+    "false-memory-labs.itch.io/pumpkinrush": {
+      "url": "https://false-memory-labs.itch.io/pumpkinrush",
+      "title": "PumpkinRush",
+      "rank": 162,
+      "ratings": 14,
+      "score": 2.122,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064038",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE5MDgzLnBuZw==/300x240%23c/cn1Q%2Fa.png"
+    },
+    "moon-town.itch.io/lifting-spirits": {
+      "url": "https://moon-town.itch.io/lifting-spirits",
+      "title": "Uplifting Spirits",
+      "rank": 163,
+      "ratings": 5,
+      "score": 2.107,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063900",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2NzcwLnBuZw==/300x240%23c/2m%2FqoH.png"
+    },
+    "caod1c.itch.io/root-sort": {
+      "url": "https://caod1c.itch.io/root-sort",
+      "title": "Root Sort",
+      "rank": 164,
+      "ratings": 13,
+      "score": 2.095,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064045",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3Mzg1LnBuZw==/300x240%23c/Xbl2A9.png"
+    },
+    "the-white-writer.itch.io/relaxing-with-the-root": {
+      "url": "https://the-white-writer.itch.io/relaxing-with-the-root",
+      "title": "Relaxing with the Root",
+      "rank": 165,
+      "ratings": 26,
+      "score": 2.058,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5053336"
+    },
+    "viywolf.itch.io/autumn-treasure-hunt": {
+      "url": "https://viywolf.itch.io/autumn-treasure-hunt",
+      "title": "Autumn Treasure Hunt",
+      "rank": 166,
+      "ratings": 14,
+      "score": 2.053,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060986",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAwNTk5LnBuZw==/300x240%23c/UdSUwO.png"
+    },
+    "leonormoru.itch.io/holey-moley": {
+      "url": "https://leonormoru.itch.io/holey-moley",
+      "title": "Holey Moley",
+      "rank": 167,
+      "ratings": 5,
+      "score": 2.05,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061074",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1NzE0LnBuZw==/300x240%23c/lBs7cM.png"
+    },
+    "knight-fall.itch.io/chestnut-critics": {
+      "url": "https://knight-fall.itch.io/chestnut-critics",
+      "title": "Chestnut Critics",
+      "rank": 168,
+      "ratings": 12,
+      "score": 2.031,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061051",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3OTU0LnBuZw==/300x240%23c/I0LVsZ.png"
+    },
+    "ciretrus.itch.io/careless-weeding": {
+      "url": "https://ciretrus.itch.io/careless-weeding",
+      "title": "СareFree Weeding",
+      "rank": 169,
+      "ratings": 17,
+      "score": 2,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5053118",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk4NTY1LnBuZw==/300x240%23c/4mPwt2.png"
+    },
+    "littlechaosgames.itch.io/hollowbrook": {
+      "url": "https://littlechaosgames.itch.io/hollowbrook",
+      "title": "Hollowbrook",
+      "rank": 169,
+      "ratings": 16,
+      "score": 2,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5057942",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjgxNjg2LnBuZw==/300x240%23c/6NaOF%2F.png"
+    },
+    "gurnoor-tamber.itch.io/carrot-root": {
+      "url": "https://gurnoor-tamber.itch.io/carrot-root",
+      "title": "Carrot_root",
+      "rank": 171,
+      "ratings": 13,
+      "score": 1.987,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062690",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEwMjg2LnBuZw==/300x240%23c/M85HKn.png"
+    },
+    "wizardhatstudio.itch.io/before-first-frost": {
+      "url": "https://wizardhatstudio.itch.io/before-first-frost",
+      "title": "Before First Frost",
+      "rank": 172,
+      "ratings": 4,
+      "score": 1.969,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060308",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE4NTkxLnBuZw==/300x240%23c/f%2FPecI.png"
+    },
+    "darthobsidian.itch.io/fall-beats": {
+      "url": "https://darthobsidian.itch.io/fall-beats",
+      "title": "Fall Beats",
+      "rank": 173,
+      "ratings": 5,
+      "score": 1.963,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059682",
+      "platforms": [
+        "windows",
+        "linux"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjkyMDk1LnBuZw==/300x240%23c/EJ%2B3v4.png"
+    },
+    "icysolar.itch.io/amberleaf-village": {
+      "url": "https://icysolar.itch.io/amberleaf-village",
+      "title": "Amberleaf Village",
+      "rank": 174,
+      "ratings": 13,
+      "score": 1.898,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5057585",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjc5ODg0LmpwZw==/300x240%23c/T6Awi%2F.jpg"
+    },
+    "balllagurochka.itch.io/longlongago": {
+      "url": "https://balllagurochka.itch.io/longlongago",
+      "title": "Long, long ago",
+      "rank": 175,
+      "ratings": 6,
+      "score": 1.897,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063346",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzI0NjY4LnBuZw==/300x240%23c/4z%2BVK8.png"
+    },
+    "invader-b.itch.io/lawnsquirrel": {
+      "url": "https://invader-b.itch.io/lawnsquirrel",
+      "title": "Lawn Squirrel",
+      "rank": 176,
+      "ratings": 12,
+      "score": 1.882,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059871",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NzMzLnBuZw==/300x240%23c/AWtgcg.png"
+    },
+    "tht-1.itch.io/droplet-farmer": {
+      "url": "https://tht-1.itch.io/droplet-farmer",
+      "title": "droplet farmer",
+      "rank": 177,
+      "ratings": 12,
+      "score": 1.882,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063367",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEzOTQzLnBuZw==/300x240%23c/oONHk%2F.png"
+    },
+    "essandarr.itch.io/pixi-roots": {
+      "url": "https://essandarr.itch.io/pixi-roots",
+      "title": "Pixi Roots",
+      "rank": 178,
+      "ratings": 5,
+      "score": 1.876,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5049297",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjkzMTQyLnBuZw==/300x240%23c/8g6Vsv.png"
+    },
+    "redraf.itch.io/rake-rustle": {
+      "url": "https://redraf.itch.io/rake-rustle",
+      "title": "Rake & Rustle",
+      "rank": 179,
+      "ratings": 7,
+      "score": 1.854,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063785",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2NDE2LnBuZw==/300x240%23c/AS8htS.png"
+    },
+    "rw1234.itch.io/themushroomgame": {
+      "url": "https://rw1234.itch.io/themushroomgame",
+      "title": "The Mushroom Game",
+      "rank": 180,
+      "ratings": 15,
+      "score": 1.833,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059389",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjkwNTMwLnBuZw==/300x240%23c/F7liWe.png"
+    },
+    "gumpys-doodles.itch.io/farm-or-be-farmed": {
+      "url": "https://gumpys-doodles.itch.io/farm-or-be-farmed",
+      "title": "farm or be farmed",
+      "rank": 181,
+      "ratings": 5,
+      "score": 1.819,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060023",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk0NjQxLnBuZw==/300x240%23c/mqz7ee.png"
+    },
+    "kittycat81.itch.io/mushroom": {
+      "url": "https://kittycat81.itch.io/mushroom",
+      "title": "Mushroom",
+      "rank": 182,
+      "ratings": 15,
+      "score": 1.8,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061805",
+      "platforms": [
+        "web"
+      ],
+      "cover": null
+    },
+    "gemma-pricot.itch.io/the-burrow-club": {
+      "url": "https://gemma-pricot.itch.io/the-burrow-club",
+      "title": "The Burrow Club",
+      "rank": 183,
+      "ratings": 5,
+      "score": 1.79,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5055675",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE5OTMwLnBuZw==/300x240%23cb/XyVDg%2F.png"
+    },
+    "uknewme.itch.io/fall-cozy-game": {
+      "url": "https://uknewme.itch.io/fall-cozy-game",
+      "title": "Fall cozy game",
+      "rank": 184,
+      "ratings": 23,
+      "score": 1.772,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5050353",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjM2NzQ1LnBuZw==/300x240%23c/yIrlrP.png"
+    },
+    "dooont.itch.io/leaf-fall-game": {
+      "url": "https://dooont.itch.io/leaf-fall-game",
+      "title": "Leaf Fall Game",
+      "rank": 185,
+      "ratings": 16,
+      "score": 1.766,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064110",
+      "platforms": [
+        "web"
+      ],
+      "cover": null
+    },
+    "kartik-biddoliya.itch.io/backyard-chase": {
+      "url": "https://kartik-biddoliya.itch.io/backyard-chase",
+      "title": "Backyard Chase",
+      "rank": 186,
+      "ratings": 22,
+      "score": 1.761,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5056810",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1NTQ3LnBuZw==/300x240%23c/89cacp.png"
+    },
+    "runkostyaesy-entertaiment.itch.io/e-and-leaf": {
+      "url": "https://runkostyaesy-entertaiment.itch.io/e-and-leaf",
+      "title": "Ember: LEAF🍂 | Cozy Fall Jam 2026 Special",
+      "rank": 187,
+      "ratings": 5,
+      "score": 1.761,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5055562",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjY5ODk4LnBuZw==/300x240%23c/AvTGIf.png"
+    },
+    "minder43.itch.io/ghost-mole": {
+      "url": "https://minder43.itch.io/ghost-mole",
+      "title": "Ghost Mole",
+      "rank": 187,
+      "ratings": 5,
+      "score": 1.761,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062010",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA3NzEyLnBuZw==/300x240%23c/uBgUqp.png"
+    },
+    "beeey.itch.io/setting-out-roots": {
+      "url": "https://beeey.itch.io/setting-out-roots",
+      "title": "Setting Out Roots",
+      "rank": 189,
+      "ratings": 13,
+      "score": 1.754,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063586",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1ODcwLnBuZw==/300x240%23c/6Tyi70.png"
+    },
+    "btndog.itch.io/cozy-leaves": {
+      "url": "https://btndog.itch.io/cozy-leaves",
+      "title": "Cozy Leaves",
+      "rank": 190,
+      "ratings": 13,
+      "score": 1.754,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061727",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwNDI4MDU5LmpwZw==/300x240%23c/bCnN4%2B.jpg"
+    },
+    "anarchistdev.itch.io/creatures-of-the-deadwood": {
+      "url": "https://anarchistdev.itch.io/creatures-of-the-deadwood",
+      "title": "Creatures of the Deadwood",
+      "rank": 191,
+      "ratings": 5,
+      "score": 1.732,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064042",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE4MTI3LnBuZw==/300x240%23c/beKs87.png"
+    },
+    "luckycatdev.itch.io/leaf-it-behind": {
+      "url": "https://luckycatdev.itch.io/leaf-it-behind",
+      "title": "Leaf it Behind",
+      "rank": 192,
+      "ratings": 4,
+      "score": 1.711,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5051433",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA4NjQxLnBuZw==/300x240%23c/FQGWKO.png"
+    },
+    "giraffario.itch.io/silvener": {
+      "url": "https://giraffario.itch.io/silvener",
+      "title": "Silvener",
+      "rank": 193,
+      "ratings": 7,
+      "score": 1.708,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063924",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3MzgyLnBuZw==/300x240%23c/ol5zEa.png"
+    },
+    "itchiback.itch.io/root-keeper": {
+      "url": "https://itchiback.itch.io/root-keeper",
+      "title": "Root Keeper",
+      "rank": 194,
+      "ratings": 12,
+      "score": 1.677,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064211",
+      "platforms": [
+        "web"
+      ],
+      "cover": null
+    },
+    "iza-wrld.itch.io/falling": {
+      "url": "https://iza-wrld.itch.io/falling",
+      "title": "Fall.ing",
+      "rank": 195,
+      "ratings": 5,
+      "score": 1.674,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062799",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyNDY1LnBuZw==/300x240%23c/hlUlLf.png"
+    },
+    "aayanalikhan09.itch.io/cat": {
+      "url": "https://aayanalikhan09.itch.io/cat",
+      "title": "cat",
+      "rank": 196,
+      "ratings": 13,
+      "score": 1.647,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064128",
+      "platforms": [
+        "web"
+      ],
+      "cover": null
+    },
+    "zander-games.itch.io/merge-fish": {
+      "url": "https://zander-games.itch.io/merge-fish",
+      "title": "Merge Fish",
+      "rank": 197,
+      "ratings": 25,
+      "score": 1.64,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064027",
+      "platforms": [
+        "windows",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE0MDA0LnBuZw==/300x240%23c/hIhhJI.png"
+    },
+    "peppermintgames.itch.io/witchs-brews": {
+      "url": "https://peppermintgames.itch.io/witchs-brews",
+      "title": "Witch's Brews",
+      "rank": 198,
+      "ratings": 7,
+      "score": 1.635,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5039880",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAwNjY2LnBuZw==/300x240%23c/mfw3F8.png"
+    },
+    "annaohskoder.itch.io/harvest-hide": {
+      "url": "https://annaohskoder.itch.io/harvest-hide",
+      "title": "Harvest & Hide",
+      "rank": 199,
+      "ratings": 5,
+      "score": 1.617,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063894",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE5NDYyLmpwZw==/300x240%23c/f1c55e.jpg"
+    },
+    "arhaanarora.itch.io/why-do-leaves-fall": {
+      "url": "https://arhaanarora.itch.io/why-do-leaves-fall",
+      "title": "Why do leaves fall",
+      "rank": 200,
+      "ratings": 6,
+      "score": 1.581,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062614",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyODczLnBuZw==/300x240%23c/eJeSjt.png"
+    },
+    "sevenofspiders.itch.io/roots-thing": {
+      "url": "https://sevenofspiders.itch.io/roots-thing",
+      "title": "Roots (thing)",
+      "rank": 201,
+      "ratings": 13,
+      "score": 1.575,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063427",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE0MDMwLnBuZw==/300x240%23c/s4VoLF.png"
+    },
+    "sparsh230.itch.io/root-game": {
+      "url": "https://sparsh230.itch.io/root-game",
+      "title": "Root game",
+      "rank": 202,
+      "ratings": 12,
+      "score": 1.547,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064107",
+      "platforms": [
+        "windows",
+        "android",
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NzI5LnBuZw==/300x240%23c/zWN4Wf.png"
+    },
+    "aero-code.itch.io/catch-the-leaves": {
+      "url": "https://aero-code.itch.io/catch-the-leaves",
+      "title": "Catch the leaves!",
+      "rank": 203,
+      "ratings": 4,
+      "score": 1.485,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063881",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzI0MjIzLnBuZw==/300x240%23c/niyevJ.png"
+    },
+    "belldrop.itch.io/champi-colony": {
+      "url": "https://belldrop.itch.io/champi-colony",
+      "title": "Champi Colony",
+      "rank": 204,
+      "ratings": 3,
+      "score": 1.453,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063674",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE0OTg5LnBuZw==/300x240%23c/vXyF8Q.png"
+    },
+    "vixybutgames.itch.io/beet-root": {
+      "url": "https://vixybutgames.itch.io/beet-root",
+      "title": "Beet-Root!",
+      "rank": 205,
+      "ratings": 5,
+      "score": 1.443,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060194",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk1NTU4LmpwZw==/300x240%23c/12i3Fl.jpg"
+    },
+    "deathreef.itch.io/root-beer": {
+      "url": "https://deathreef.itch.io/root-beer",
+      "title": "Root b̶e̶a̶r̶ b̶a̶r̶e̶  beer",
+      "rank": 206,
+      "ratings": 6,
+      "score": 1.423,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5050845",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjM5NTI0LnBuZw==/300x240%23c/ZWed5S.png"
+    },
+    "beginner-gamemaker.itch.io/the-tree": {
+      "url": "https://beginner-gamemaker.itch.io/the-tree",
+      "title": "The Tree",
+      "rank": 207,
+      "ratings": 3,
+      "score": 1.416,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060313",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzQ5NjI5LnBuZw==/300x240%23c/vyRpCQ.png"
+    },
+    "subhisseal.itch.io/sudo-root": {
+      "url": "https://subhisseal.itch.io/sudo-root",
+      "title": "sudo root",
+      "rank": 208,
+      "ratings": 2,
+      "score": 1.369,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064089",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzM3NzAxLnBuZw==/300x240%23c/wmXm3T.png"
+    },
+    "cools9.itch.io/leaf-glider": {
+      "url": "https://cools9.itch.io/leaf-glider",
+      "title": "Leaf Glider",
+      "rank": 209,
+      "ratings": 14,
+      "score": 1.346,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5055368",
+      "platforms": [
+        "web"
+      ],
+      "cover": null
+    },
+    "sillygoose102.itch.io/cozyfarminggamer": {
+      "url": "https://sillygoose102.itch.io/cozyfarminggamer",
+      "title": "CozyFarmingGamer",
+      "rank": 210,
+      "ratings": 4,
+      "score": 1.291,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063513",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE0NDc3LnBuZw==/300x240%23c/NpBf%2FU.png"
+    },
+    "jackwithy24.itch.io/leafbound": {
+      "url": "https://jackwithy24.itch.io/leafbound",
+      "title": "Leafbound",
+      "rank": 211,
+      "ratings": 4,
+      "score": 1.259,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5059812",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3NTc3LnBuZw==/300x240%23c/lFvo0o.png"
+    },
+    "pl0xxxy.itch.io/tree-man": {
+      "url": "https://pl0xxxy.itch.io/tree-man",
+      "title": "Tree-man",
+      "rank": 211,
+      "ratings": 4,
+      "score": 1.259,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062360",
+      "platforms": [
+        "windows",
+        "linux"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA4NTU0LnBuZw==/300x240%23c/oQRJVN.png"
+    },
+    "raposinha-169.itch.io/little-autumn-spot": {
+      "url": "https://raposinha-169.itch.io/little-autumn-spot",
+      "title": "Little Autumn Spot (Little activities pdf)",
+      "rank": 213,
+      "ratings": 5,
+      "score": 1.241,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061881",
+      "platforms": [],
+      "cover": null
+    },
+    "creator2026.itch.io/raining-buttons": {
+      "url": "https://creator2026.itch.io/raining-buttons",
+      "title": "Raining buttons",
+      "rank": 214,
+      "ratings": 15,
+      "score": 1.233,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5052949",
+      "platforms": [
+        "web"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjUyNDMyLnBuZw==/300x240%23c/xzgvxb.png"
+    },
+    "juniorbeyblade.itch.io/worm-maze-orb-rush": {
+      "url": "https://juniorbeyblade.itch.io/worm-maze-orb-rush",
+      "title": "Worm Maze Orb Rush",
+      "rank": 215,
+      "ratings": 7,
+      "score": 1.22,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064092",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3Njc0LnBuZw==/300x240%23c/5bGjJL.png"
+    },
+    "life-hack-god.itch.io/rooted": {
+      "url": "https://life-hack-god.itch.io/rooted",
+      "title": "Rooted Defense",
+      "rank": 216,
+      "ratings": 3,
+      "score": 1.193,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061543",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAzMDk0LmpwZWc=/300x240%23c/TdgpN%2F.jpeg"
+    },
+    "zagoz.itch.io/sar-fall": {
+      "url": "https://zagoz.itch.io/sar-fall",
+      "title": "SAR - Fall",
+      "rank": 216,
+      "ratings": 3,
+      "score": 1.193,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063738",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1ODA4LnBuZw==/300x240%23c/loaCnO.png"
+    },
+    "qcortex07.itch.io/fallen": {
+      "url": "https://qcortex07.itch.io/fallen",
+      "title": "Fallen",
+      "rank": 218,
+      "ratings": 7,
+      "score": 1.147,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063865",
+      "platforms": [
+        "web"
+      ],
+      "cover": null
+    },
+    "coughfedev.itch.io/falltender": {
+      "url": "https://coughfedev.itch.io/falltender",
+      "title": "FallTender",
+      "rank": 219,
+      "ratings": 4,
+      "score": 1.13,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063306",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3MjE2LnBuZw==/300x240%23c/2VYw4L.png"
+    },
+    "damonkeypy-gamer.itch.io/the-magical-golden-water": {
+      "url": "https://damonkeypy-gamer.itch.io/the-magical-golden-water",
+      "title": "The magical golden water",
+      "rank": 219,
+      "ratings": 4,
+      "score": 1.13,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063599",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1NzcyLnBuZw==/300x240%23c/9glcx5.png"
+    },
+    "bardon.itch.io/roots-of-halloween": {
+      "url": "https://bardon.itch.io/roots-of-halloween",
+      "title": "Roots of Halloween",
+      "rank": 221,
+      "ratings": 3,
+      "score": 1.118,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5053823",
+      "platforms": [
+        "windows",
+        "osx",
+        "linux",
+        "android"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA1NDI5LnBuZw==/300x240%23c/xl2P%2B8.png"
+    },
+    "ntnf.itch.io/episeed": {
+      "url": "https://ntnf.itch.io/episeed",
+      "title": "Episeed",
+      "rank": 221,
+      "ratings": 3,
+      "score": 1.118,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064267",
+      "platforms": [
+        "windows",
+        "linux"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzc0Mzc0LnBuZw==/300x240%23c/BKAo4b.png"
+    },
+    "vnkc2.itch.io/acorn-delivery": {
+      "url": "https://vnkc2.itch.io/acorn-delivery",
+      "title": "Acorn Delivery",
+      "rank": 223,
+      "ratings": 4,
+      "score": 1.065,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062987",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzExNjYyLnBuZw==/300x240%23c/zwGsm8.png"
+    },
+    "valyalumina13.itch.io/tiny-boats": {
+      "url": "https://valyalumina13.itch.io/tiny-boats",
+      "title": "Tiny Boats",
+      "rank": 224,
+      "ratings": 3,
+      "score": 1.043,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063043",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzgzNDMzLnBuZw==/300x240%23c/KxHxuN.png"
+    },
+    "captian-pear.itch.io/pumpkin-spice-rush": {
+      "url": "https://captian-pear.itch.io/pumpkin-spice-rush",
+      "title": "Pumpkin Spice Rush",
+      "rank": 225,
+      "ratings": 2,
+      "score": 0.959,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061025",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzAwNzA5LnBuZw==/300x240%23c/6eV9IZ.png"
+    },
+    "gmigi.itch.io/the-roots-we-lay": {
+      "url": "https://gmigi.itch.io/the-roots-we-lay",
+      "title": "The Roots We Lay",
+      "rank": 226,
+      "ratings": 3,
+      "score": 0.932,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064014",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3MjUxLnBuZw==/300x240%23c/SSMRmd.png"
+    },
+    "ime.itch.io/frog-search": {
+      "url": "https://ime.itch.io/frog-search",
+      "title": "Frog Search",
+      "rank": 226,
+      "ratings": 3,
+      "score": 0.932,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064052",
+      "platforms": [],
+      "cover": null
+    },
+    "jebpepe.itch.io/feeding-season": {
+      "url": "https://jebpepe.itch.io/feeding-season",
+      "title": "Feeding Season",
+      "rank": 228,
+      "ratings": 2,
+      "score": 0.867,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063221",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyODExLnBuZw==/300x240%23c/1CulYZ.png"
+    },
+    "mistahdave.itch.io/the-roots": {
+      "url": "https://mistahdave.itch.io/the-roots",
+      "title": "The Roots",
+      "rank": 229,
+      "ratings": 2,
+      "score": 0.822,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063151",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzEyNTM0LnBuZw==/300x240%23c/V6jnkL.png"
+    },
+    "aris-the-great.itch.io/up-the-roots": {
+      "url": "https://aris-the-great.itch.io/up-the-roots",
+      "title": "up the roots",
+      "rank": 229,
+      "ratings": 2,
+      "score": 0.822,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064125",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE4NDg4LnBuZw==/300x240%23c/bw03XE.png"
+    },
+    "mols-art.itch.io/the-descent-home": {
+      "url": "https://mols-art.itch.io/the-descent-home",
+      "title": "The Descent Home",
+      "rank": 231,
+      "ratings": 3,
+      "score": 0.82,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5060599",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMjk4MDEwLnBuZw==/300x240%23c/fRw9Uh.png"
+    },
+    "creeper-circuit.itch.io/fall-day2": {
+      "url": "https://creeper-circuit.itch.io/fall-day2",
+      "title": "fall day",
+      "rank": 232,
+      "ratings": 3,
+      "score": 0.783,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5072609",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzY2MDAwLnBuZw==/300x240%23c/gZ2AKi.png"
+    },
+    "enowo.itch.io/find-the-fruit": {
+      "url": "https://enowo.itch.io/find-the-fruit",
+      "title": "Find the fruit",
+      "rank": 233,
+      "ratings": 3,
+      "score": 0.708,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064138",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3ODg4LnBuZw==/300x240%23c/BGDFAB.png"
+    },
+    "chobochun.itch.io/autumn-valley": {
+      "url": "https://chobochun.itch.io/autumn-valley",
+      "title": "Autumn Valley",
+      "rank": 234,
+      "ratings": 2,
+      "score": 0.685,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064111",
+      "platforms": [
+        "windows"
+      ],
+      "cover": null
+    },
+    "befany.itch.io/plant": {
+      "url": "https://befany.itch.io/plant",
+      "title": "Plantonomy",
+      "rank": 235,
+      "ratings": 3,
+      "score": 0.671,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063939",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE2ODc2LnBuZw==/300x240%23c/6JRzPb.png"
+    },
+    "dakoderboi.itch.io/rootcraft": {
+      "url": "https://dakoderboi.itch.io/rootcraft",
+      "title": "Rootcraft (very WIP)",
+      "rank": 236,
+      "ratings": 2,
+      "score": 0.593,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5061714",
+      "platforms": [],
+      "cover": null
+    },
+    "echothedeveloper.itch.io/cozy-cafe": {
+      "url": "https://echothedeveloper.itch.io/cozy-cafe",
+      "title": "Old World Cafe",
+      "rank": 236,
+      "ratings": 2,
+      "score": 0.593,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062049",
+      "platforms": [
+        "windows",
+        "linux"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzExMjEwLmpwZWc=/300x240%23c/8OV8S3.jpeg"
+    },
+    "cocojambo-1.itch.io/desert": {
+      "url": "https://cocojambo-1.itch.io/desert",
+      "title": "Desert",
+      "rank": 236,
+      "ratings": 2,
+      "score": 0.593,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063590",
+      "platforms": [
+        "windows"
+      ],
+      "cover": null
+    },
+    "mac-discord.itch.io/coz-till-you-fall": {
+      "url": "https://mac-discord.itch.io/coz-till-you-fall",
+      "title": "Coz 'till you fall",
+      "rank": 239,
+      "ratings": 2,
+      "score": 0.502,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5062629",
+      "platforms": [
+        "windows"
+      ],
+      "cover": "https://img.itch.zone/aW1nLzMwMzA5ODE5LnBuZw==/300x240%23c/wP9siI.png"
+    },
+    "adventureforge.itch.io/fall-colors-an-alchemists-tale": {
+      "url": "https://adventureforge.itch.io/fall-colors-an-alchemists-tale",
+      "title": "Fall Colors - An Alchemist's Tale",
+      "rank": 239,
+      "ratings": 2,
+      "score": 0.502,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5063762",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE1NTkwLnBuZw==/300x240%23c/jZ9mEo.png"
+    },
+    "narousou.itch.io/these-are-my-roots-fixed": {
+      "url": "https://narousou.itch.io/these-are-my-roots-fixed",
+      "title": "These Are My Roots",
+      "rank": 239,
+      "ratings": 2,
+      "score": 0.502,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064298",
+      "platforms": [
+        "windows"
+      ],
+      "cover": null
+    },
+    "spellcastr.itch.io/castaas": {
+      "url": "https://spellcastr.itch.io/castaas",
+      "title": "Castañas",
+      "rank": 242,
+      "ratings": 2,
+      "score": 0.456,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064090",
+      "platforms": [
+        "linux"
+      ],
+      "cover": null
+    },
+    "elephant-on-github.itch.io/fall-game": {
+      "url": "https://elephant-on-github.itch.io/fall-game",
+      "title": "Pixel farm (fall)",
+      "rank": 243,
+      "ratings": 1,
+      "score": 0.258,
+      "entryUrl": "/jam/cozy-fall-jam-2026/rate/5064073",
+      "platforms": [],
+      "cover": "https://img.itch.zone/aW1nLzMwMzE3MTU2LnBuZw==/300x240%23c/yjhTEv.png"
+    }
+  }
+}

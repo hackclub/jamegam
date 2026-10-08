@@ -20,9 +20,10 @@
 // expire after a couple of hours, and this page is ISR-cached and served stale
 // first, so a direct link breaks for the first visitor after a quiet stretch.
 // Nothing embedded in the page may expire.
+import { dev } from '$app/environment';
 import { config as cfg } from '$lib/server/config.js';
 import { lookupSlackProfile } from '$lib/server/cachet.js';
-import { GALLERY_STATUSES } from '$lib/shop.js';
+import { PREVIEW, withScheme, normUrl, onWall } from '$lib/server/gallery.js';
 
 export const prerender = false;
 // ISR: the airtable sweep + one itch fetch per game run once per window;
@@ -52,26 +53,6 @@ async function listAll(table, fields) {
     offset = data.offset;
   } while (offset);
   return records;
-}
-
-// shippers type the url by hand, so a scheme-less "foo.itch.io/bar" shows up
-// now and then - left alone it links relative to jamegam.hackclub.com (and
-// breaks the dedupe key and the thumbnail fetch too)
-function withScheme(raw) {
-  const s = String(raw ?? '').trim();
-  if (!s) return null;
-  return /^https?:\/\//i.test(s) ? s : `https://${s.replace(/^\/+/, '')}`;
-}
-
-// dedupe key: host + path, no www/query/trailing slash, lowercased - the same
-// game submitted by two teammates (or with ?query cruft) collapses to one card
-function normUrl(raw) {
-  try {
-    const u = new URL(raw);
-    return `${u.hostname.replace(/^www\./, '')}${u.pathname.replace(/\/+$/, '')}`.toLowerCase();
-  } catch {
-    return null;
-  }
 }
 
 const isItch = (raw) => {
@@ -121,6 +102,9 @@ const SCRAPE_BUDGET = 40;
 // records per request, Airtable's batch max. Best-effort: a failed write just
 // means the next regeneration scrapes (or memory-serves) it again.
 async function persistThumbs(found) {
+  // a local dev server shares prod's Airtable token; looking at the page
+  // should not write to the base. Dev keeps covers in memory only.
+  if (dev) return;
   const records = found.flatMap(({ rows, src }) => rows.map((id) => ({ id, fields: { itch_thumb: src } })));
   for (let i = 0; i < records.length; i += 10) {
     try {
@@ -188,7 +172,8 @@ export async function load() {
         'jam',
         'review_status',
         'augie_spotchecked',
-        'itch_thumb'
+        'itch_thumb',
+        'winners_bracket'
       ]),
       // best-effort: a missing/renamed Jams table just costs the pretty heading
       listAll(cfg.shop.jamsTable, ['name', 'start_date', 'itch_url']).catch(() => [])
@@ -204,9 +189,8 @@ export async function load() {
 
     const byUrl = new Map();
     for (const r of subs) {
-      // both gates: a reviewer's yes, and Augie's spotcheck on top of it
-      if (!GALLERY_STATUSES.includes(r.fields.review_status)) continue;
-      if (!r.fields.augie_spotchecked) continue;
+      if (!onWall(r.fields)) continue;
+      const preview = PREVIEW[r.fields.jam];
 
       const url = withScheme(r.fields.playable_url);
       const key = (url && normUrl(url)) ?? `rec:${r.id}`;
@@ -222,12 +206,17 @@ export async function load() {
         url,
         title,
         jam: r.fields.jam ?? '',
+        rank: preview?.results[key]?.rank ?? null, // itch placing, preview jams only
+        // itch's own small cover from the results snapshot, preview jams only
+        snapCover: preview?.results[key]?.cover || null, // itch sends "" for no cover
+        winner: false, // jam top 10, from `winners_bracket` on any teammate's row
         people: [],
         rows: [], // every row of this game, for the cover write-back
         thumb: null, // the stored itch cover, from whichever row has it
         shotRec: null // a row with a screenshot attachment, for the proxy fallback
       };
       entry.rows.push(r.id);
+      if (r.fields.winners_bracket === true) entry.winner = true;
       if (!entry.thumb && r.fields.itch_thumb) entry.thumb = r.fields.itch_thumb;
       if (!entry.shotRec && r.fields.screenshot?.length) entry.shotRec = r.id;
       // teammates submit separately; if they somehow disagree on the jam, the
@@ -271,9 +260,12 @@ export async function load() {
     if (found.length) await persistThumbs(found);
 
     await mapLimit(games, 8, async (g) => {
-      if (!g.thumb) g.thumb = g.shotRec ? `/gallery/thumb/${g.shotRec}` : null;
+      // not scraped yet: the snapshot's cover (low-res, but it never expires),
+      // then the screenshot proxy
+      if (!g.thumb) g.thumb = g.snapCover ?? (g.shotRec ? `/gallery/thumb/${g.shotRec}` : null);
       delete g.rows;
       delete g.shotRec;
+      delete g.snapCover;
       const authors = [];
       for (const p of g.people) {
         const name = cleanName((p.slackId && (await slackName(p.slackId))) || p.first || '');
@@ -314,7 +306,13 @@ export async function load() {
         key: jam || 'unsorted',
         title: jamNames[jam] ?? (jam || 'the rest'),
         href: jamLinks[jam] ?? null, // the jam's itch page, when the Jams row has one
-        games: list
+        // the jam's top 10 lead every section; a preview jam then reads by itch
+        // placing. The sort is stable, so everything else keeps its shuffle.
+        games: list.sort(
+          (a, b) =>
+            b.winner - a.winner ||
+            (PREVIEW[jam] ? (a.rank ?? Infinity) - (b.rank ?? Infinity) : 0)
+        )
       }));
   }
 

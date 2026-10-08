@@ -9,6 +9,27 @@
 
   let { data } = $props();
 
+  // covers come in every size, down to a 16px icon. Scale each one to fill the
+  // 63:50 frame along whichever side it hits first, keeping its own aspect
+  // ratio and leaving the element hugging the picture so the lumpy mask stays
+  // on its edges. Anything blown up 1.5x or more is probably pixel art (or will
+  // look like it), so it gets hard pixels instead of blur.
+  const FRAME = 63 / 50;
+  function fitCover(img) {
+    const fit = () => {
+      if (!img.naturalWidth || !img.naturalHeight) return;
+      const wide = img.naturalWidth / img.naturalHeight >= FRAME;
+      img.dataset.fit = wide ? 'w' : 'h';
+      const frame = img.parentElement.getBoundingClientRect();
+      const scale = wide ? frame.width / img.naturalWidth : frame.height / img.naturalHeight;
+      img.toggleAttribute('data-px', scale >= 1.5);
+    };
+    // hydration can land after a cached image already fired load
+    if (img.complete) fit();
+    img.addEventListener('load', fit);
+    return { destroy: () => img.removeEventListener('load', fit) };
+  }
+
   // same recipe as the shop's edge doodles: ink-recolored, faint, pinned near
   // the viewport edges, distributed down the whole document by --top %.
   // The shop's list is a hand-written five, which is fine for a page of known
@@ -152,10 +173,13 @@
             class="tile"
             style="--h9:url('/assets/hover9_{hoverVar[g.key] ?? 'a'}@8x.png'); --rot:{rotOf(g.key)}deg"
           >
+            {#if g.winner}
+              <span class="crown" role="img" aria-label="top 10 in the jam"></span>
+            {/if}
             <a class="card-link" href={g.url} target="_blank" rel="noopener">
               <span class="thumb">
                 {#if g.thumb}
-                  <img src={g.thumb} alt="" loading="lazy" />
+                  <img src={g.thumb} alt="" loading="lazy" use:fitCover />
                 {:else}
                   <img class="ph" src="/assets/doodle_{placeholderOf(g.key)}.png" alt="" loading="lazy" />
                 {/if}
@@ -385,6 +409,56 @@
     filter: brightness(0.93);
   }
 
+  /* top 10 in the jam: the prize shop's crown, perched on the card's top-left
+     corner. 2 css px per art px, the same grid as the slab's 9-slice, so the
+     crown's pixels match the card's. */
+  .crown {
+    position: absolute;
+    z-index: 2;
+    width: calc(39px * 2 * var(--scale));
+    aspect-ratio: 39 / 29;
+    /* low enough that the base's raised right end rests on the card's top edge */
+    top: calc(-20px * var(--scale));
+    left: calc(-16px * var(--scale));
+    background: url('/assets/crown.png') center / 100% 100% no-repeat;
+    image-rendering: pixelated;
+    transform: rotate(-8deg);
+    pointer-events: none;
+  }
+  /* the prize shop's gilding: a slow highlight masked to the crown's pixels */
+  .crown::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(
+      100deg,
+      transparent 0%,
+      rgba(250, 245, 178, 0.7) 25%,
+      transparent 50%,
+      rgba(250, 245, 178, 0.7) 75%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    background-repeat: repeat-x;
+    -webkit-mask: url('/assets/crown.png') center / 100% 100% no-repeat;
+    mask: url('/assets/crown.png') center / 100% 100% no-repeat;
+    animation: gild 11s linear infinite;
+  }
+  @keyframes gild {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: 0% 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .crown::after {
+      animation: none;
+      opacity: 0;
+    }
+  }
+
   /* cover + title are the game link; its ::after stretches the click target
      over the whole card, and the .who links ride above it */
   .card-link {
@@ -441,6 +515,25 @@
       url('/assets/mask9_r@8x.png') 100% calc(var(--mb) / 2) / var(--mb) calc(100% - var(--mb)) no-repeat,
       linear-gradient(#fff 0 0) calc(var(--mb) / 2) calc(var(--mb) / 2) / calc(100% - var(--mb))
         calc(100% - var(--mb)) no-repeat;
+  }
+  /* fitCover's verdict: fill the frame's width or its height. In container
+     units, because the frame's height comes from aspect-ratio and a percentage
+     height does not resolve against that - `height: 100%` quietly fell back to
+     the picture's natural size. :global because the attributes are set at
+     runtime, and svelte drops a selector it cannot match in the template. */
+  .thumb {
+    container-type: size;
+  }
+  .thumb :global(img[data-fit='w']) {
+    width: 100cqw;
+    height: auto;
+  }
+  .thumb :global(img[data-fit='h']) {
+    width: auto;
+    height: 100cqh;
+  }
+  .thumb :global(img[data-px]) {
+    image-rendering: pixelated;
   }
   /* no cover anywhere: a faint doodle holds the frame (no mask - it's already
      hand-drawn line art) */

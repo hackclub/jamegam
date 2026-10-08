@@ -6,7 +6,7 @@
 // the bytes, and the CDN caches the result for a day.
 import { error } from '@sveltejs/kit';
 import { config as cfg } from '$lib/server/config.js';
-import { GALLERY_STATUSES } from '$lib/shop.js';
+import { onWall } from '$lib/server/gallery.js';
 
 const API = 'https://api.airtable.com/v0';
 
@@ -24,7 +24,7 @@ export async function GET({ params, setHeaders }) {
   const { fields } = await res.json();
 
   // same gates as the wall: only games that are actually on it
-  if (!GALLERY_STATUSES.includes(fields.review_status) || !fields.augie_spotchecked) error(404);
+  if (!onWall(fields)) error(404);
   const shot = fields.screenshot?.[0];
   const src = shot?.thumbnails?.large?.url ?? shot?.url;
   if (!src) error(404);
