@@ -10,9 +10,16 @@
 // could sit on the wall. Reading the reviewer's actual verdict fixes both.
 //
 // Teammates each submit the same game, so rows collapse by playable url,
-// keeping everyone's first name. Thumbnails come from each itch page's og:image
-// tag (those urls don't expire the way Airtable attachment urls do), with the
-// submission screenshot as the fallback.
+// keeping everyone's first name.
+//
+// Thumbnails: the cover is the itch page's og:image, stored on the row in
+// `itch_thumb` the first time it is scraped so each game costs one itch fetch
+// ever (itch 429s a burst of page fetches, and a cold instance has no memory).
+// Rows with no cover yet fall back to the submission screenshot, served through
+// /gallery/thumb/<rec> rather than linked directly: Airtable attachment urls
+// expire after a couple of hours, and this page is ISR-cached and served stale
+// first, so a direct link breaks for the first visitor after a quiet stretch.
+// Nothing embedded in the page may expire.
 import { config as cfg } from '$lib/server/config.js';
 import { lookupSlackProfile } from '$lib/server/cachet.js';
 import { GALLERY_STATUSES } from '$lib/shop.js';
@@ -20,7 +27,10 @@ import { GALLERY_STATUSES } from '$lib/shop.js';
 export const prerender = false;
 // ISR: the airtable sweep + one itch fetch per game run once per window;
 // everyone else gets the cached page instantly.
-export const config = { isr: { expiration: 600 } };
+// maxDuration: a regeneration is two airtable sweeps, up to SCRAPE_BUDGET itch
+// fetches and a cachet lookup per author, ~10-20s cold; Vercel's default
+// limit is in that range, and a timed-out regeneration keeps serving stale.
+export const config = { isr: { expiration: 600 }, maxDuration: 60 };
 
 const API = 'https://api.airtable.com/v0';
 
@@ -73,30 +83,57 @@ const isItch = (raw) => {
   }
 };
 
-// og:image straight off the itch page. Cached in module memory - cover art
-// basically never changes, so a warm instance skips the fetch entirely.
+// og:image straight off the itch page. The durable copy lives in Airtable
+// (`itch_thumb`); this memory cache only bridges a regeneration whose
+// write-back failed. Returns { src } on a real page, { throttled: true } on a
+// 429, null otherwise. Only successes are cached.
 const THUMB_TTL_MS = 24 * 60 * 60 * 1000;
-const thumbCache = new Map(); // norm url -> { src: string|null, at }
+const thumbCache = new Map(); // norm url -> { src, at }
 async function itchThumb(url, key) {
-  const hit = thumbCache.get(key);
-  if (hit && Date.now() - hit.at < THUMB_TTL_MS) return hit.src;
   try {
     const res = await fetch(url, {
       headers: { 'user-agent': 'Mozilla/5.0 (compatible; jamegam-gallery)', accept: 'text/html' },
       signal: AbortSignal.timeout(6000)
     });
-    // only a real page counts: a transient 429/5xx must not cache null for a day
-    if (!res.ok) return hit?.src ?? null;
+    if (res.status === 429) return { throttled: true };
+    if (!res.ok) return null;
     const html = await res.text();
     const src =
       html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)?.[1] ??
       html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i)?.[1] ??
       null;
+    if (!src) return null;
     thumbCache.set(key, { src, at: Date.now() });
-    return src;
+    return { src };
   } catch {
-    // a dead page just falls back to the screenshot; keep the stale cache entry
-    return hit?.src ?? null;
+    return null; // dead page: the screenshot fallback covers it
+  }
+}
+
+// itch rate-limits bursts, so scrape gently: a few in flight, a capped number
+// per regeneration, and stop for this round at the first 429. Games left over
+// show their screenshot and get picked up by a later regeneration; with the
+// result persisted per game the backlog only ever shrinks.
+const SCRAPE_LIMIT = 3;
+const SCRAPE_BUDGET = 40;
+
+// write the scraped cover onto every row of the game (teammates share it), 10
+// records per request, Airtable's batch max. Best-effort: a failed write just
+// means the next regeneration scrapes (or memory-serves) it again.
+async function persistThumbs(found) {
+  const records = found.flatMap(({ rows, src }) => rows.map((id) => ({ id, fields: { itch_thumb: src } })));
+  for (let i = 0; i < records.length; i += 10) {
+    try {
+      const res = await fetch(`${API}/${cfg.airtable.baseId}/${encodeURIComponent(cfg.shop.submissionsTable)}`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${cfg.airtable.token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ records: records.slice(i, i + 10) }),
+        signal: AbortSignal.timeout(10000)
+      });
+      if (!res.ok) console.error('[gallery] itch_thumb write failed:', res.status, await res.text());
+    } catch (err) {
+      console.error('[gallery] itch_thumb write failed:', err);
+    }
   }
 }
 
@@ -150,7 +187,8 @@ export async function load() {
         'description',
         'jam',
         'review_status',
-        'augie_spotchecked'
+        'augie_spotchecked',
+        'itch_thumb'
       ]),
       // best-effort: a missing/renamed Jams table just costs the pretty heading
       listAll(cfg.shop.jamsTable, ['name', 'start_date', 'itch_url']).catch(() => [])
@@ -179,15 +217,19 @@ export async function load() {
         (r.fields.description || '').split('\n')[0].trim().slice(0, 80) ||
         key.split('/').at(-1)?.replaceAll('-', ' ') ||
         'mystery game';
-      const shot = r.fields.screenshot?.[0];
       const entry = byUrl.get(key) ?? {
         key,
         url,
         title,
         jam: r.fields.jam ?? '',
         people: [],
-        screenshot: shot?.thumbnails?.large?.url ?? shot?.url ?? null
+        rows: [], // every row of this game, for the cover write-back
+        thumb: null, // the stored itch cover, from whichever row has it
+        shotRec: null // a row with a screenshot attachment, for the proxy fallback
       };
+      entry.rows.push(r.id);
+      if (!entry.thumb && r.fields.itch_thumb) entry.thumb = r.fields.itch_thumb;
+      if (!entry.shotRec && r.fields.screenshot?.length) entry.shotRec = r.id;
       // teammates submit separately; if they somehow disagree on the jam, the
       // earliest one wins so a game can't jump forward into the new section
       if (r.fields.jam && (!entry.jam || r.fields.jam < entry.jam)) entry.jam = r.fields.jam;
@@ -201,10 +243,37 @@ export async function load() {
     }
 
     games = [...byUrl.values()];
+
+    // covers: stored field first (already on g.thumb), then memory, then scrape
+    const found = [];
+    let budget = SCRAPE_BUDGET;
+    const pending = games.filter((g) => !g.thumb && g.url && isItch(g.url));
+    await mapLimit(pending, SCRAPE_LIMIT, async (g) => {
+      const hit = thumbCache.get(g.key);
+      if (hit && Date.now() - hit.at < THUMB_TTL_MS) {
+        g.thumb = hit.src;
+        found.push({ rows: g.rows, src: hit.src }); // retry the write that must have failed
+        return;
+      }
+      if (budget <= 0) return;
+      budget--;
+      const got = await itchThumb(g.url, g.key);
+      if (got?.throttled) {
+        if (budget > 0) console.warn(`[gallery] itch 429, stopping scrapes this round (${pending.length} pending)`);
+        budget = 0;
+        return;
+      }
+      if (got?.src) {
+        g.thumb = got.src;
+        found.push({ rows: g.rows, src: got.src });
+      }
+    });
+    if (found.length) await persistThumbs(found);
+
     await mapLimit(games, 8, async (g) => {
-      const og = g.url && isItch(g.url) ? await itchThumb(g.url, g.key) : null;
-      g.thumb = og ?? g.screenshot;
-      delete g.screenshot;
+      if (!g.thumb) g.thumb = g.shotRec ? `/gallery/thumb/${g.shotRec}` : null;
+      delete g.rows;
+      delete g.shotRec;
       const authors = [];
       for (const p of g.people) {
         const name = cleanName((p.slackId && (await slackName(p.slackId))) || p.first || '');
