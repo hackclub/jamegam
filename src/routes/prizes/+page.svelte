@@ -248,8 +248,8 @@
   // pick UI and the browse list are a normal top-to-bottom document scroll.
   const slim = $derived(data.state === 'shop' ? !!data.locked : !browseOnly);
 
-  // the winners bracket is browsable by everyone - it's the carrot - and only
-  // locks once someone is actually picking and didn't place top 10.
+  // the bracket section only renders for winners; this still guards the modal
+  // in case a bracket prize is opened some other way.
   const bracketLocked = $derived(!browseOnly && !data.winner);
 
   // "june", from the shop's jam label ('2026-06') - for copy, instead of the raw label
@@ -625,10 +625,9 @@
   </section>
 
   <!-- the winners bracket: a third "instead of" branch, only orderable by the
-       jam's top 10. Everyone browsing sees it live; the lock only lands once
-       someone is actually picking (see bracketLocked). Tiles stay clickable
-       when locked - the modal is where the "top 10 only" explanation lives. -->
-  <section class="group bracket" class:locked={bracketLocked}>
+       jam's top 10, and only shown to them. -->
+  {#if data.winner}
+  <section class="group bracket">
     <!-- "how it works"-style header: tag at the left, line trailing right -->
     <div class="gh">
       <span class="gh-tag crowned">
@@ -639,9 +638,7 @@
     </div>
     <p class="gh-sub">
       <span class="gh-sub-t">
-        {bracketLocked || browseOnly
-          ? 'for the cozy fall jam, placing in the top 10 will unlock this tier!'
-          : 'you placed top 10! pick any one'}
+        you placed top 10! pick any one
       </span>
     </p>
     <ul class="grid">
@@ -650,7 +647,7 @@
           <button
             class="tile"
             class:sel={currentPrizeSrc === p.src}
-            class:dim={bracketLocked || (!browseOnly && blocked(p))}
+            class:dim={!browseOnly && blocked(p)}
             type="button"
             style="--h9:url('/assets/hover9_{hoverVar[p.src] ?? 'a'}@8x.png')"
             onclick={() => openModal(p)}
@@ -662,14 +659,12 @@
               <span class="thumb"><img src={hdSrc(p)} alt={p.alt} loading="lazy" /></span>
             </span>
             <span class="name">{p.name}</span>
-            <!-- the lock marker sits under the name, clear of the frame's
-                 ornate corners (the "new!" slot up top is unusable here) -->
-            {#if bracketLocked}<span class="locked-tag">top 10 only</span>{/if}
           </button>
         </li>
       {/each}
     </ul>
   </section>
+  {/if}
 
   <p class="suggest-note">
     don't see anything you like?
@@ -1530,9 +1525,6 @@
   .bracket .gh-sub {
     margin: calc(14px * var(--scale)) 0 calc(54px * var(--scale));
   }
-  .bracket.locked .tile {
-    cursor: help; /* still opens the modal, just can't be ordered */
-  }
   /* the crown straddles the tag's top-left corner, sitting on it rather than
      inside it. Same --scale pixel grid as q_box, so it reads as one drawing. */
   .gh-tag.crowned {
@@ -1633,13 +1625,6 @@
     justify-content: center;
     padding-bottom: calc(14px * var(--scale));
   }
-  /* the lock marker, under the name: a colder colour than the "new!" sticker so
-     it doesn't read as an invitation */
-  .locked-tag {
-    color: #91a4db;
-    font-size: calc(var(--t-card) * 0.85);
-  }
-
   /* the little "new!" sticker on freshly-added prizes */
   .fresh {
     position: absolute;
