@@ -34,6 +34,15 @@
   // both order as a single `prize`, so anything reading an order back has to
   // look in both.
   const PRIZE_ITEMS = [...PRIZE_STUFF, ...PRIZE_BRACKET];
+  // the shirts: detailed landscape mockups, so they lead the stuff grid as
+  // double-wide tiles side by side (a 156px prizemd_ sprite at 2x), and their
+  // item modal gets the wide figure
+  const FEATURED = ['hcshirt', 'tshirt'];
+  const WIDE_FIG = new Set(FEATURED);
+  const STUFF = [
+    ...FEATURED.map((src) => PRIZE_STUFF.find((p) => p.src === src)).filter(Boolean),
+    ...PRIZE_STUFF.filter((p) => !WIDE_FIG.has(p.src))
+  ];
 
   // ---- selection state (games accumulate; prizes order straight from the modal) ----
   let gamePicks = $state([]); // srcs, up to GAME_PICK_COUNT
@@ -569,9 +578,9 @@
       <span class="gh-line" aria-hidden="true"></span>
     </div>
     <p class="gh-sub"><span class="gh-sub-t">pick any one</span></p>
-    <ul class="grid">
-      {#each PRIZE_STUFF as p (p.src)}
-        <li>
+    <ul class="grid stuff">
+      {#each STUFF as p (p.src)}
+        <li class:big={WIDE_FIG.has(p.src)}>
           <button
             class="tile"
             class:sel={currentPrizeSrc === p.src}
@@ -581,7 +590,10 @@
             onclick={() => openModal(p)}
           >
             {#if p.fresh}<span class="fresh">new!</span>{/if}
-            <span class="thumb"><img src="/assets/prize_{imgOf(p)}.png" alt={p.alt} loading="lazy" /></span>
+            <span class="thumb">
+              <img class="sd" src="/assets/prize_{imgOf(p)}.png" alt={p.alt} loading="lazy" />
+              {#if WIDE_FIG.has(p.src)}<img class="md" src="/assets/prizemd_{imgOf(p)}.png" alt="" loading="lazy" />{/if}
+            </span>
             <span class="name">{p.name}</span>
           </button>
         </li>
@@ -691,7 +703,7 @@
     <div
       class="modal"
       class:duo={modal.kind === 'item' || modal.kind === 'game'}
-      class:wide-fig={modal.kind === 'item' && modal.p?.src === 'tshirt'}
+      class:wide-fig={modal.kind === 'item' && WIDE_FIG.has(modal.p?.src)}
       class:addr={modal.kind === 'address'}
       role="dialog"
       aria-modal="true"
@@ -1389,7 +1401,53 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(calc(180px * var(--scale)), 1fr));
     gap: calc(12px * var(--scale));
+    grid-auto-flow: dense; /* small tiles backfill the holes the 2x2s leave */
   }
+  /* the featured shirts: double-wide tiles, so two of them sit side by side
+     across the top of a 4-column grid. Height follows the art + name instead of
+     a fixed row, so there's no dead space above or below the shirts. The art is
+     the 156px medium sprite at exactly 2x (pixelated like everything else);
+     the 1x sprite stays hidden until the narrow fallback below. */
+  .grid li.big {
+    grid-column: span 2;
+  }
+  .grid li.big .tile {
+    height: auto;
+  }
+  .grid li.big .thumb {
+    height: auto;
+  }
+  .grid li.big .sd {
+    display: none;
+  }
+  .grid li.big .md {
+    width: 312px;
+    height: auto;
+  }
+  /* the double-wides only pair up across a 4-column grid (4 x 180px + 3 x 12px
+     gaps, x0.9 --scale = 680px). Narrower, they're ordinary tiles with the 1x
+     sprite that still lead the grid, rather than each eating a whole row. */
+  .stuff {
+    container-type: inline-size;
+  }
+  @container (max-width: 679px) {
+    .grid li.big {
+      grid-column: auto;
+    }
+    .grid li.big .tile {
+      height: calc(240px * var(--scale));
+    }
+    .grid li.big .thumb {
+      height: calc(108px * var(--scale));
+    }
+    .grid li.big .sd {
+      display: block;
+    }
+    .grid li.big .md {
+      display: none;
+    }
+  }
+
   /* every card the same size, no borders; hover paints the lumpy 9-slice bg
      (one of 3 skins via --h9, rolled per item per page load) */
   .tile {
@@ -1779,8 +1837,8 @@
     align-items: center;
     text-align: left;
   }
-  /* the tshirt shot is a detailed landscape mockup with a high-res sprite - give
-     it a wider figure column + less padding so the design reads bigger */
+  /* the shirt shots are detailed landscape mockups with high-res sprites - give
+     them a wider figure column + less padding so the designs read bigger */
   .modal.duo.wide-fig {
     grid-template-columns: minmax(0, calc(460px * var(--scale))) 1fr;
   }

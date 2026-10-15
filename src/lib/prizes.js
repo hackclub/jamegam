@@ -93,6 +93,7 @@ export const PRIZES = [
   { src: 'endacopia',       alt: 'Endacopia',              name: 'endacopia',              c: '#b991db', s: 90,  r: 7,   fresh: true, game: true, shopOnly: true, href: 'https://store.steampowered.com/app/2684630/Endacopia/' },
   { src: 'whiteknuckle',    alt: 'White Knuckle',          name: 'white knuckle',          c: '#97db91', s: 90,  r: -9,  fresh: true, game: true, shopOnly: true, href: 'https://store.steampowered.com/app/3195790/White_Knuckle/' },
   { src: 'tshirt',          alt: 'Jame Gam t-shirt',        name: 'jame gam t-shirt',       c: '#97db91', s: 96,  r: 8,   opts: [SIZE_OPTION], note: ' (preorder, ships early aug)', blurb: 'official jame gam shirt! preorder - ships early august. <a href="https://cdn.hackclub.com/01a03f1a-92dc-7fa3-a8c6-a15cd20afbf9/1.png" target="_blank" rel="noopener">size chart</a>' },
+  { src: 'hcshirt',         alt: 'Hack Club t-shirt',       name: 'hack club t-shirt',      c: '#db9591', s: 96,  r: -7,  fresh: true, opts: [SIZE_OPTION], blurb: 'the hack club shirt! "hack club" on the front, "hacker kit" on the back' },
 
   // ---- winners bracket ----
   // The top-10 tier. Upgraded versions of pool prizes reuse the pool's art via
@@ -155,7 +156,7 @@ export const PRIZE_HD = new Set([
   'silksong',
   'deltarune', 'megabonk', 'otamatone', 'ceiling', 'minecraft',
   'fangamer', 'magazine',
-  'terraria', 'omori', 'oneshot', 'bandcamp', 'tshirt', 'nektar', 'stylophone',
+  'terraria', 'omori', 'oneshot', 'bandcamp', 'tshirt', 'hcshirt', 'nektar', 'stylophone',
   'cultofthelamb', 'deadcells', 'bindingofisaac', 'geometrydash',
   'mecchachameleon', 'denshattack', 'levelup', 'lpd8', 'assetforge', 'tinytraffic', 'endacopia', 'whiteknuckle',
   'tilesetter', 'pixelover', 'humblebundle', 'xppen',
