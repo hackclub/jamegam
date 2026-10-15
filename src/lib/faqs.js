@@ -55,6 +55,11 @@ export const FAQS = [
     a: "sorry, no! you need to make a fully custom game for jame gam. if you're just starting out, you should try following a tutorial before the jam so you know the basics ;)"
   },
   {
+    id: 'other-events',
+    q: 'can i submit a game i made for another game jam or hackathon?',
+    a: "nope! your game has to be made for this month's jam. if you made it for a different event, or you're entering it in one at the same time, it can't count for jame gam.<span class=\"faq-break\"></span><span class=\"faq-dim\">once you've shipped it to jame gam, you're free to keep working on it for anything you like :)</span>"
+  },
+  {
     id: 'ai',
     q: 'can i use ai?',
     a: 'you <span class="faq-em">may not</span> use generative ai for art or audio. you can use ai to help you code, but it\'s mildly discouraged :p'
