@@ -20,14 +20,13 @@ import { config } from '$lib/server/config.js';
 export const prerender = false;
 
 // A copy of the channel's anchored message - change the pin, change this.
-const welcome = (user) => `:jamegam-yay: <@${user}> welcome to jame gam!!! every month we crash a game jam together, and anyone who submits gets a prize
-
-:jamegam-welcome: new here?
-1. sign up at <https://slack-no-unfurl.vercel.app/?u=https%3A%2F%2Fjamegam.hackclub.com|jamegam.hackclub.com>,
-2. *read the pinned message in <#C0BBDUFF7K8> for info on what to do!*
-3. ping :jamegam-sticker-thing: <!subteam^S0BHFMR6G1E> in <#C0BBFQASBV2> if you need help, and read the faq! it's quicker than dms ;)
-
-if you have questions, ask in <#C0BBDUEMF0E>!`;
+const welcome = (user) => `:jamegam-yay: <@${user}> welcome to jame gam!!!
+:jamegam-welcome: new here? the _jame gam game jam_ runs from thursday 10/22 at 5pm EST to sunday 10/25 at 5pm EST. here's what to do:
+1. join the jam on itch: <https://slack-no-unfurl.vercel.app/?u=https%3A%2F%2Fjamegam.hackclub.com%2Fjam|itch.io/jam/jame-gam-game-jam>. you're not signed up unless you click the join button!
+2. if you haven't already, sign up at <https://slack-no-unfurl.vercel.app/?u=https%3A%2F%2Fjamegam.hackclub.com|jamegam.hackclub.com>!
+3. introduce yourself in here! maybe find a team by <https://slack-no-unfurl.vercel.app/?u=https%3A%2F%2Fhackclub.enterprise.slack.com%2Fdocs%2FT0266FRGM%2FF0BBNGJE6QZ|clicking here>?
+4. check out <#C0BBDUFF7K8>! that's where more updates will be posted
+questions about jame gam, hack club, or anything else? read the <https://slack-no-unfurl.vercel.app/?u=https%3A%2F%2Fhackclub.enterprise.slack.com%2Fdocs%2FT0266FRGM%2FF0BBT4JD9P0|faq> and ask in <#C0BBDUEMF0E> :)`;
 
 // #jame-gam-help, #jame-gam-tickets and the bts channel: the transcript in
 // hackclub/nephthys (transcripts/jame_gam.py) holds the same three ids.
