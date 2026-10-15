@@ -4,11 +4,11 @@
 import { json } from '@sveltejs/kit';
 import { checkAccount, accountState } from '$lib/server/hca.js';
 import { findByEmail, upsertSignup } from '$lib/server/airtable.js';
-import { sendTransactional } from '$lib/server/loops.js';
+import { sendWelcome } from '$lib/server/welcome.js';
 import { lookupSlackIdByEmail, inviteToChannel } from '$lib/server/slack.js';
 import { rateLimit } from '$lib/server/ratelimit.js';
 import { config, F } from '$lib/server/config.js';
-import { JAM, isBetweenJams } from '$lib/jam.js';
+import { JAM } from '$lib/jam.js';
 
 export const prerender = false;
 
@@ -24,6 +24,9 @@ export async function POST({ request, getClientAddress }) {
 
   const email = String(body?.email ?? '').trim().toLowerCase();
   const honeypot = String(body?.company ?? '').trim(); // hidden field; only bots fill it
+  // /jam (the jam's front door) re-runs the Slack invite for people who
+  // already signed up, since they may have left a channel or predate one.
+  const fromJoin = body?.source === 'join';
 
   // silently accept-and-drop bots so they don't learn they were caught
   if (honeypot) return json({ ok: true, hasAccount: true });
@@ -42,6 +45,14 @@ export async function POST({ request, getClientAddress }) {
   try {
     const existing = await findByEmail(email);
     if (existing) {
+      if (fromJoin) {
+        try {
+          const slackId = existing.fields?.[F.slackId] || (await lookupSlackIdByEmail(email));
+          if (slackId) await inviteToChannel(slackId);
+        } catch (err) {
+          console.error('[signup] join re-invite skipped:', err);
+        }
+      }
       return json({ ok: true, hasAccount: !!existing.fields?.[F.hadAccount], alreadySignedUp: true });
     }
   } catch (err) {
@@ -86,22 +97,8 @@ export async function POST({ request, getClientAddress }) {
 
   // 4. welcome email (transactional). Best-effort: the signup is already saved
   //    and on the list, so a send failure is logged but still reports success.
-  //    the normal emails assume an upcoming/running jam; between jams (ended,
-  //    next not announced) send the "we'll be back" variants instead.
-  const tx = isBetweenJams()
-    ? (hasAccount ? config.loops.txBetweenHasAccount : config.loops.txBetweenNoAccount)
-    : (hasAccount ? config.loops.txHasAccount : config.loops.txNoAccount);
   try {
-    await sendTransactional({
-      transactionalId: tx,
-      email,
-      dataVariables: {
-        name: 'chat', // first email: we only have their email, not their name
-        joinUrl: `${origin}/api/auth/login?email=${encodeURIComponent(email)}`,
-        jamName: JAM.displayName,
-        jamLink: JAM.itchUrl
-      }
-    });
+    await sendWelcome({ email, hasAccount, origin });
   } catch (err) {
     console.error('[signup] welcome email failed:', err);
   }

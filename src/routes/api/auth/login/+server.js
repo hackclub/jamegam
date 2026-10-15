@@ -4,6 +4,8 @@
 //     callback returns them there with their identity prefilled)
 //   - the prize shop (passes ?flow=shop -> the callback mints a session cookie
 //     and lands them back on /prizes)
+//   - /jam (passes ?flow=join -> a normal signup, then the callback sends
+//     them back to /jam, which forwards them to the jam's itch page)
 // Sets a CSRF state cookie (+ a return/flow cookie as needed) and 302s to HCA's
 // authorize URL.
 import { redirect } from '@sveltejs/kit';
@@ -26,8 +28,9 @@ export async function GET({ url, cookies }) {
 
   // Shop flow: the callback reads this cookie and mints the shop session
   // instead of running the signup/submit paths.
-  const shop = url.searchParams.get('flow') === 'shop';
-  if (shop) cookies.set('hca_flow', 'shop', cookieOpts);
+  const flow = url.searchParams.get('flow');
+  const shop = flow === 'shop';
+  if (shop || flow === 'join') cookies.set('hca_flow', flow, cookieOpts);
   else cookies.delete('hca_flow', { path: '/' });
 
   // Submit flow: stash the (validated, forms.hackclub.com-only) form URL so the

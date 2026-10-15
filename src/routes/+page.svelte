@@ -32,8 +32,9 @@
   // FAQ answers carry inline HTML; flatten to plain text for the schema.
   const stripHtml = (s) => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 
-  // JSON-LD. note the Event describes jame gam's monthly community participation
-  // (organizer: Hack Club), NOT the external jam itself, which we don't run.
+  // JSON-LD. note the Event describes jame gam's monthly community jam
+  // (organizer: Hack Club). most months that means entering someone else's jam
+  // together, so describe our participation, not the external jam itself.
   const schema = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -57,9 +58,9 @@
       {
         '@type': 'Event',
         '@id': `${SITE_URL}/#current-jam`,
-        name: 'Jame Gam - September 2026 game jam',
+        name: 'Jame Gam - October 2026 game jam',
         description:
-          "Jame Gam's monthly community jam. This September, teenage game devs build games together while taking part in the Cozy Fall Jam 2026. Free and online, open to ages 13 to 18, run by Hack Club.",
+          "Jame Gam's monthly community jam. This October, teenage game devs build games together in the Jame Gam Game Jam, jame gam's own three-day jam on itch.io. Free and online, open to ages 13 to 18, run by Hack Club.",
         startDate: JAM.startDate,
         endDate: JAM.endDate,
         eventStatus: 'https://schema.org/EventScheduled',

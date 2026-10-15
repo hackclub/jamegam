@@ -356,13 +356,11 @@
            visitor gets no date - just the invitation to sign in. Signed in, it's
            the where-you-stand notes, or the 'closed' state for someone whose own
            pick window ran out. -->
-      {#if data.state === 'signedout'}
-        <!-- (the deadline lives at the page bottom for noaddress) -->
-        <p class="deadline deadline-top">
-          if you participated in <span class="jam-name">{data.jamName}</span>, sign in to select
-          your prize!
-        </p>
-      {:else if data.state === 'closed'}
+      <!-- signed out gets no line, just the sign-in button below: naming the
+           newest shop cycle ("if you participated in the cozy fall jam") reads
+           stale once the homepage has moved on to the next jam. (the deadline
+           lives at the page bottom for noaddress) -->
+      {#if data.state === 'closed'}
         <p class="deadline deadline-top loud">
           the {jamMonth} prize shop has closed and you never picked your prize! post in
           #jame-gam-help and i'll sort you out.

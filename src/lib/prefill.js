@@ -19,21 +19,28 @@ const HCA_ISSUER = (env.PUBLIC_HCA_ISSUER || 'https://auth.hackclub.com').replac
 // The signed-in visitor's email, or '' while unknown / not signed in.
 export const prefillEmail = writable('');
 
-let started = false;
+let probe = null;
 
 // Probe whoami once per page load. Safe to call from several mount points.
-export async function loadPrefill() {
-  if (!browser || started) return;
-  started = true;
-  try {
-    const res = await fetch(`${HCA_ISSUER}/api/external/whoami`, {
-      credentials: 'include',
-      headers: { Accept: 'application/json' }
-    });
-    if (!res.ok) return;
-    const data = await res.json();
-    if (data && data.signed_in && data.email) prefillEmail.set(data.email);
-  } catch {
-    // not signed in / offline / origin not allowlisted - leave the boxes empty
-  }
+// Resolves to the signed-in email, or '' when there isn't one (never rejects).
+export function loadPrefill() {
+  if (!browser) return Promise.resolve('');
+  probe ??= (async () => {
+    try {
+      const res = await fetch(`${HCA_ISSUER}/api/external/whoami`, {
+        credentials: 'include',
+        headers: { Accept: 'application/json' }
+      });
+      if (!res.ok) return '';
+      const data = await res.json();
+      if (data && data.signed_in && data.email) {
+        prefillEmail.set(data.email);
+        return data.email;
+      }
+    } catch {
+      // not signed in / offline / origin not allowlisted - leave the boxes empty
+    }
+    return '';
+  })();
+  return probe;
 }

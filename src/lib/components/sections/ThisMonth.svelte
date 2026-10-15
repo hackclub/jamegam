@@ -4,8 +4,28 @@
 
   let countdownEl;
   let monthEl;
+  let whenEl;
+  let whatEl;
   let durEl;
   let nextEl;
+
+  // whole days from the dates, so the duration line can't drift from jam.js
+  const DAYS = Math.round((Date.parse(JAM.endDate) - Date.parse(JAM.startDate)) / 86400000);
+  const daysText = `${DAYS} day${DAYS === 1 ? '' : 's'}`;
+  // our own jam is "the jam"; someone else's is "this jam"
+  const theJam = JAM.hosted ? 'the jam' : 'this jam';
+
+  // caption: JAM.captionRainbow (a suffix of displayName) gets one site
+  // palette colour per letter, red first, cycling; spaces don't use a colour.
+  const RAINBOW = ['#db9591', '#dbaf91', '#dbd991', '#97db91', '#91a4db', '#b991db'];
+  const rainbowPart =
+    JAM.captionRainbow && JAM.displayName.endsWith(JAM.captionRainbow) ? JAM.captionRainbow : '';
+  const capHead = JAM.displayName.slice(0, JAM.displayName.length - rainbowPart.length);
+  let k = 0;
+  const capRainbow = [...rainbowPart].map((ch) => ({
+    ch,
+    color: ch === ' ' ? null : RAINBOW[k++ % RAINBOW.length]
+  }));
 
   onMount(() => {
     // dates come from $lib/jam.js (shared with the Event JSON-LD). times are UTC.
@@ -18,7 +38,7 @@
     const clamp = () => { durEl.style.whiteSpace = 'normal'; durEl.style.maxWidth = '400px'; };
     const fmt = (ms) => {
       const s = Math.floor(ms / 1000);
-      return `in ${Math.floor(s / 86400)}:${z2(Math.floor((s % 86400) / 3600))}:${z2(Math.floor((s % 3600) / 60))}:${z2(s % 60)}`;
+      return `${JAM.hosted ? 'it starts ' : ''}in ${Math.floor(s / 86400)}:${z2(Math.floor((s % 86400) / 3600))}:${z2(Math.floor((s % 3600) / 60))}:${z2(s % 60)}`;
     };
     function tick() {
       const now = Date.now();
@@ -35,8 +55,14 @@
         // "this month" would be wrong - say "last month" instead. UTC, like the dates.
         const end = new Date(END), today = new Date(now);
         const sameMonth = end.getUTCFullYear() === today.getUTCFullYear() && end.getUTCMonth() === today.getUTCMonth();
-        monthEl.textContent = sameMonth ? "this month we crashed" : "last month we crashed";
-        durEl.innerHTML = `this jam ran for <span style="color:${JAM.color};">3 days</span>!`;
+        const when = sameMonth ? "this month" : "last month";
+        if (JAM.hosted) {
+          whenEl.textContent = `${when}...`;
+          whatEl.textContent = 'we ran our own!';
+        } else {
+          monthEl.textContent = `${when} we crashed`;
+        }
+        durEl.innerHTML = `${theJam} ran for <span style="color:${JAM.color};">${daysText}</span>!`;
         nextEl.style.display = "";   // reveal the "join us next month" line
         clamp();
       }
@@ -54,40 +80,50 @@
      box, centred. -->
 <section id="this-month" class="sec sec-month">
   <div class="col month-inner">
-    <h2 bind:this={monthEl} id="jam-month" class="txt month-head">this month we&rsquo;re crashing</h2>
+    {#if !JAM.hosted}
+      <h2 bind:this={monthEl} id="jam-month" class="txt month-head">this month we&rsquo;re crashing</h2>
+    {/if}
 
     <div class="titlerow">
       <!-- jam title: two stacked transparent layers (same construction as the
            june comp, figma node 1:45): the gray hand-drawn border as one whole
            image (always connects its corners) with this month's title art
-           layered inside, over a solid fill. Cozy Fall Jam's lockup keyed out
-           of its itch banner's orange blob and shaded into the site palette;
-           a wide card, so the box is shorter than it was for brackeys'
-           squarer lockup. -->
+           layered inside, over a fill. art + fill come from JAM.titleArt /
+           JAM.titleFill. -->
       <div class="jamcol">
+        {#if JAM.hosted}
+          <!-- our own jam: a small "this month..." kicker pinned to the box's
+               top-left stroke, then the punchline at headline size centred
+               over the box, both tilted to match the hand-drawn border. inside
+               .jamcol so both can measure off the box itself. -->
+          <h2 id="jam-month" class="month-head hosted">
+            <span bind:this={whenEl} class="txt month-when">this month...</span>
+            <span bind:this={whatEl} class="txt month-what">we&rsquo;re running our own!</span>
+          </h2>
+        {/if}
         <a class="jamtitle" href={JAM.itchUrl} target="_blank" rel="noopener" aria-label="{JAM.name} on itch.io">
           <!-- big "open in new tab" icon tucked under the box's right edge; the
                whole box is the link, and hovering anywhere darkens the icon -->
           <span class="jamtitle-newtab" aria-hidden="true"><img src="/assets/newtab.png" alt="" /></span>
-          <span class="jamtitle-bg" aria-hidden="true"></span>
-          <img class="jamtitle-card" src="/assets/cozy_text.png" alt={JAM.name} />
+          <span class="jamtitle-bg" style="background-image: url('{JAM.titleFill}');" aria-hidden="true"></span>
+          {#if JAM.titleArt}<img class="jamtitle-card" src={JAM.titleArt} alt={JAM.name} />{/if}
           <span class="jamtitle-border" aria-hidden="true"></span>
         </a>
         <!-- which jam the box above is, in the headline's voice and style
              (JAM.displayName, so this rolls over with the rest of jam.js). -->
-        <p class="txt jamtitle-cap">{JAM.displayName}</p>
+        <p class="txt jamtitle-cap">{capHead}{#each capRainbow as { ch, color }}<span style:color={color}>{ch}</span>{/each}</p>
       </div>
     </div>
 
     <!-- countdown -->
-    <p bind:this={countdownEl} id="countdown" class="txt month-count">in 7:18:40:53</p>
-    <p bind:this={durEl} id="jam-duration" class="txt month-dur">this jam will run for <span style="color:{JAM.color};">3 days</span>!</p>
+    <p bind:this={countdownEl} id="countdown" class="txt month-count">{JAM.hosted ? 'it starts ' : ''}in 7:18:40:53</p>
+    <p bind:this={durEl} id="jam-duration" class="txt month-dur">{theJam} will run for <span style="color:{JAM.color};">{daysText}</span>!</p>
     <!-- post-jam only: revealed by tick() once the jam has ended (hidden until then) -->
     <div bind:this={nextEl} id="jam-next" style="display:none;">
       <p class="txt month-next">made a game? <a href={JAM.submitUrl}>submit it here</a>!</p>
       <p class="txt month-next">and join us next month for another jam!</p>
     </div>
-    <p class="txt month-disclaimer">(not affiliated with virtual turtle games)</p>
+    {#if JAM.disclaimer}<p class="txt month-disclaimer">{JAM.disclaimer}</p>{/if}
   </div>
 </section>
 
@@ -115,6 +151,35 @@
     font-size: var(--t-title);
     color: #504b49;
     line-height: 1.05;
+    text-wrap: balance;      /* when it wraps on phones, no lone last word */
+  }
+  .month-head.hosted {
+    display: flex;
+    flex-direction: column;
+    /* same net gap to the box as the plain headline gets (its 10px less the
+       .titlerow's -18px pull-up, which sits above this one instead) */
+    margin-bottom: calc(-8px * var(--scale));
+  }
+  /* both lines tilt with the border (same angle as the caption under the box) */
+  .month-when {
+    align-self: flex-start;
+    /* left edge on the border's top-left stroke: the box's 14px nudge, plus
+       where title_border.png's stroke starts (x=24 of its 45px left slice,
+       which border-image draws at 3.4% of the box width = ~1.8%). pivoting on
+       the bottom-left keeps that corner put while the text tilts. */
+    margin-left: calc(14px * var(--scale) + 1.8%);
+    font-size: calc(30px * var(--scale));
+    transform: rotate(1.3deg);
+    transform-origin: left bottom;
+  }
+  .month-what {
+    align-self: center;
+    text-align: center;
+    /* .jamcol is the box plus its 14px left nudge, so the box's centre sits
+       7px right of the column's */
+    position: relative;
+    left: calc(7px * var(--scale));
+    transform: rotate(1.3deg);
   }
   /* on wide, the title row is a touch wider than the column, so widen the
      headline to match and keep its left edge near the border's. */
@@ -180,8 +245,9 @@
     /* nudged off the column's left edge; the caption below stays put, so the
        box sits a touch right of the headline above it. */
     margin-left: calc(14px * var(--scale));
-    /* sized for the wide (3.2:1) cozy fall banner: a shallow box that scales
-       with its width, so narrow screens don't leave air above and below it. */
+    /* sized for cozy fall's wide (3.2:1) lockup: a shallow box that scales
+       with its width, so narrow screens don't leave air above and below it.
+       the fill images are cut at this aspect, so change them together. */
     aspect-ratio: 545 / 225;
   }
   .jamtitle-border {
@@ -195,23 +261,29 @@
     image-rendering: pixelated;
   }
   /* the box has a fixed aspect, so the fill is one pre-rendered image at that
-     aspect: augie's crop of the itch page's doodle pattern (pumpkins, leaves,
-     antlers) mixed 50/50 with the page background, cut to the border's inner area with a mask rendered from the
-     real 9-sliced border, so it stops exactly at the stroke's inner pixels.
-     rebuild: claude-workspace/make-cozy-fill.sh (needs the dev server up). */
+     aspect, cut to the border's inner area with a mask rendered from the real
+     9-sliced border, so it stops exactly at the stroke's inner pixels. cozy
+     fall's (cozy_pattern.png) is augie's crop of its itch doodle pattern mixed
+     50/50 with the page background; rebuild: claude-workspace/make-cozy-fill.sh
+     (needs the dev server up). the jame gam game jam's (jggj_title_fill.png)
+     is augie's title art scaled to 1115px wide and cut with that same mask. */
   .jamtitle-bg {
     position: absolute; inset: 0;
     z-index: 1;
-    background: url('/assets/cozy_pattern.png') center / 100% 100% no-repeat;
+    /* image comes from JAM.titleFill (inline style) */
+    background-position: center;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
   }
   .jamtitle-card {
     position: absolute;
     left: 9%;
-    top: 20%;               /* the fill's inner area runs ~9% to ~88% (it tilts);
-                               this inset leaves air around the lockup so it
-                               doesn't crowd the stroke */
+    top: 16%;               /* the border's stroke bands are ~18% (top) and
+                               ~15% (bottom) of the box height; this tucks the
+                               art just inside them so it fills the box without
+                               crowding the stroke */
     width: 82%;
-    height: 60%;
+    height: 68%;
     z-index: 2;
     object-fit: contain;
     object-position: 50% 50%;

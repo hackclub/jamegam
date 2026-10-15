@@ -7,6 +7,8 @@
 //     (hca_id_token carries HCA's signed id_token as the anti-forgery anchor)
 //   - shop flow    -> mint the signed shop session cookie (identity + addresses
 //     from this grant, no signup side effects) and land on /prizes
+//   - join flow    -> the signup flow, plus the welcome email for a new signup,
+//     then back to /jam?done=1 (which forwards to the jam's itch page)
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import {
@@ -16,12 +18,14 @@ import {
   normalizeAddresses,
   tokenExpiresAt
 } from '$lib/server/hca.js';
-import { upsertSignup, markById } from '$lib/server/airtable.js';
+import { findByEmail, upsertSignup, markById } from '$lib/server/airtable.js';
+import { sendWelcome } from '$lib/server/welcome.js';
 import { inviteToChannel } from '$lib/server/slack.js';
 import { lookupSlackProfile } from '$lib/server/cachet.js';
 import { buildSubmitRedirect, submitErrorUrl } from '$lib/server/submit.js';
 import { createSession, SESSION_COOKIE, SESSION_MAX_AGE } from '$lib/server/session.js';
 import { config, F } from '$lib/server/config.js';
+import { JAM } from '$lib/jam.js';
 
 export const prerender = false;
 
@@ -37,17 +41,28 @@ export async function GET({ url, cookies }) {
 
   // Set only on the shop flow.
   const shop = cookies.get('hca_flow') === 'shop';
+  // Set only on the join flow.
+  const join = cookies.get('hca_flow') === 'join';
   cookies.delete('hca_flow', { path: '/' });
 
   const site = config.origin || url.origin;
-  const fail = shop ? `${site}/prizes?auth=error` : ret ? submitErrorUrl(ret) : `${site}/?join=error`;
+  // /jam promises the jam page, so even a failed or declined sign-in still
+  // lands there rather than stranding them on an error.
+  const joinDone = `${site}/jam?done=1`;
+  const fail = shop
+    ? `${site}/prizes?auth=error`
+    : ret
+      ? submitErrorUrl(ret)
+      : join
+        ? joinDone
+        : `${site}/?join=error`;
 
   // bad/forged callback or user denied - bounce back with an error flag
   if (!code || !state || !saved || state !== saved) {
     redirect(302, fail);
   }
 
-  let dest = shop ? `${site}/prizes` : `${site}/?join=ok`;
+  let dest = shop ? `${site}/prizes` : join ? joinDone : `${site}/?join=ok`;
   try {
     const tokens = await exchangeCode({ code, redirectUri: `${site}/api/auth/callback` });
     // /api/v1/me returns every field the app's scopes grant, including
@@ -107,6 +122,15 @@ export async function GET({ url, cookies }) {
         fields[F.hcaToken] = tokens.access_token;
         fields[F.hcaTokenExpires] = tokenExpiresAt(tokens);
       }
+      // A brand-new signup from /jam gets what the email box would have given
+      // them: the jam link, signup_origin, and the welcome email.
+      // had_account_at_signup stays unset: by now they have an account either
+      // way, and there's no telling whether it was made a minute ago.
+      const isNew = join && !(await findByEmail(email));
+      if (isNew) {
+        fields[F.signupOrigin] = new URL(site).host;
+        fields[F.jam] = [JAM.airtableRecordId];
+      }
       const rec = await upsertSignup(fields);
 
       // HCA account == Slack account, so slack_id is present -> auto-add to #jame-gam
@@ -116,6 +140,14 @@ export async function GET({ url, cookies }) {
           await markById(rec.id, { [F.slackInvited]: true });
         } catch (err) {
           console.error('[callback] slack invite failed:', err);
+        }
+      }
+
+      if (isNew) {
+        try {
+          await sendWelcome({ email, hasAccount: true, origin: site });
+        } catch (err) {
+          console.error('[callback] welcome email failed:', err);
         }
       }
 
