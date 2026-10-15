@@ -12,6 +12,8 @@
 //   email, first_name, last_name, slack_id, slack_handle, verification_status,
 //   birthday, address_line_1, address_line_2, city, state_province,
 //   zip_postal_code, country, phone_number, hca_id_token
+// hca_id_token can instead be a VISIBLE required field (hidden fields can't be
+// required): this script finds it by its label and hides it on every form.
 // Display/control-only (read by this script; NO hidden field needed):
 //   slack_avatar, addresses (JSON list for the address picker), addr (selected id)
 //
@@ -36,6 +38,10 @@
   // Where the "edit on Hack Club Auth" link points (their HCA identity page).
   var HCA_SETTINGS = 'https://auth.hackclub.com/identity/edit';
   var SENTINEL = '[[hc-signin]]';
+  // Fields to force-hide by their aria-label (Fillout sets aria-label to the
+  // field's label), for data-capture fields that must stay "visible" in the
+  // editor so they can be marked required.
+  var HIDE_FIELDS = ['hca_id_token'];
 
   // Inline icons (no emojis in UI). currentColor = inherit the line's text color.
   var IC = {
@@ -71,9 +77,7 @@
     '#hc-signin .hc-addr-sel:hover{background-color:#f1f1f1}' +
     '#hc-signin .hc-addr-sel:focus{outline:none}' +
     '#hc-signin .hc-btn .hc-req{opacity:.8;font-weight:500}' +
-    '#hc-signin .hc-err{color:#ec3750;font-size:.85rem;margin-top:.4rem}' +
-    // Page-level: hide the Fillout widget #widget-gLZC (and its wrapper).
-    'div:has(> div > div > #widget-gLZC){display:none !important}';
+    '#hc-signin .hc-err{color:#ec3750;font-size:.85rem;margin-top:.4rem}';
 
   var host = null; // the Fillout element holding the sentinel
   var container = null; // our injected #hc-signin
@@ -102,6 +106,7 @@
   }
 
   function tick() {
+    hideFields();
     if (container && document.body.contains(container)) {
       if (host) host.style.display = 'none';
       return;
@@ -120,6 +125,24 @@
     host.parentNode.insertBefore(container, host);
     render(container);
     log('mounted into', host);
+  }
+
+  // Hide the raw data-capture fields (e.g. the hca_id_token input) wherever they
+  // ended up on this form. Widget IDs differ per form, so match on the input's
+  // aria-label (Fillout sets it to the field's label) and hide the enclosing
+  // fillout-field wrapper.
+  function hideFields() {
+    for (var i = 0; i < HIDE_FIELDS.length; i++) {
+      var sel = 'input[aria-label="' + HIDE_FIELDS[i] + '"],textarea[aria-label="' + HIDE_FIELDS[i] + '"]';
+      var inputs = document.querySelectorAll(sel);
+      for (var j = 0; j < inputs.length; j++) {
+        var w = inputs[j].closest('[class*="fillout-field"]');
+        if (w && w.style.display !== 'none') {
+          w.style.display = 'none';
+          log('hid field', HIDE_FIELDS[i]);
+        }
+      }
+    }
   }
 
   function findSentinel() {

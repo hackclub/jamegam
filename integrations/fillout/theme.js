@@ -45,7 +45,11 @@
     // fade right down once a doodle underlaps the centred column (set at runtime
     // by measureCrowded), and on mobile where the column fills the width.
     '.jg-doodle.crowded{opacity:.03}',
-    '@media(max-width:639px){.jg-doodle,.jg-doodle.crowded{opacity:.02}}'
+    '@media(max-width:639px){.jg-doodle,.jg-doodle.crowded{opacity:.02}}',
+    // password step: dust only, and a lock above the title (see below)
+    'body.jg-pw #jg-rainbow,body.jg-pw #jg-doodles{display:none!important}',
+    '#jg-lock{display:block;margin:0 auto .6rem;width:56px;height:56px;color:#a7a5a4}',
+    '#jg-lock svg{display:block;width:100%;height:100%}'
   ].join('');
 
   // a few of the site's edge doodles (shorter page -> just three), spread down
@@ -76,7 +80,44 @@
     document.head.appendChild(s);
   }
 
-  function mount() {
+  // ---- the password step ---------------------------------------------------
+  // Once a jam closes, the form sits behind Fillout's password gate (a "login"
+  // step: one centred title + caption + password input, rendered inside the same
+  // #question-container). It is a quiet page, so it gets the dust only - no
+  // rainbow, no doodles - plus a lock above the title. The step is a client-side
+  // render, so this has to flip both ways as the user moves off it.
+  var LOCK = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">' +
+    '<path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>';
+
+  function isPasswordStep() {
+    return !!document.querySelector('#question-container input[type="password"]');
+  }
+
+  // The title is one Quill block whose leading empty <h3><br></h3> lines are
+  // deliberate vertical spacing, so anchor to its first line with real text
+  // rather than to the top of the block (which would sit ~8 blank lines up).
+  function mountLock() {
+    if (document.getElementById('jg-lock')) return;
+    var qc = document.getElementById('question-container');
+    var ed = qc && qc.querySelector('.ql-editor');
+    if (!ed) return;
+    var anchor = null;
+    for (var i = 0; i < ed.children.length; i++) {
+      // zero-width space + nbsp count as blank here; Fillout emits both
+      if ((ed.children[i].textContent || '').replace(/[\s​ ]/g, '')) { anchor = ed.children[i]; break; }
+    }
+    var box = document.createElement('span');
+    box.id = 'jg-lock'; box.setAttribute('aria-hidden', 'true');
+    box.innerHTML = LOCK;
+    ed.insertBefore(box, anchor); // insertBefore(x, null) === appendChild
+  }
+
+  function unmountLock() {
+    var l = document.getElementById('jg-lock');
+    if (l && l.parentNode) l.parentNode.removeChild(l);
+  }
+
+  function mount(pw) {
     var qc = document.getElementById('question-container');
     if (!qc) return false;
     // Anchor to #question-container's PARENT (the `pb-6 sm:pb-20 w-full flex
@@ -91,6 +132,7 @@
       host.insertBefore(c, host.firstChild);
       startDust(c);
     }
+    if (pw) return true; // password step: dust only
     if (!document.getElementById('jg-rainbow')) {
       var d = document.createElement('div');
       d.id = 'jg-rainbow'; d.setAttribute('aria-hidden', 'true');
@@ -174,7 +216,17 @@
   window.addEventListener('resize', scheduleMeasure);
   try { new ResizeObserver(scheduleMeasure).observe(document.body); } catch (e) {}
 
-  // mount now + retry for ~12s to catch the SPA's late render
+  // mount now + retry for ~12s to catch the SPA's late render. The clock resets
+  // while the password gate is up, so the effects still land when the user gets
+  // through it minutes later.
   injectStyle();
-  var n = 0, iv = setInterval(function () { injectStyle(); mount(); measureCrowded(); if (++n > 48) clearInterval(iv); }, 250);
+  var n = 0, iv = setInterval(function () {
+    injectStyle();
+    var pw = isPasswordStep();
+    if (document.body) document.body.classList.toggle('jg-pw', pw);
+    if (pw) { n = 0; mountLock(); } else unmountLock();
+    mount(pw);
+    measureCrowded();
+    if (++n > 48) clearInterval(iv);
+  }, 250);
 })();
