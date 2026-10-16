@@ -24,9 +24,11 @@ export async function POST({ request, getClientAddress }) {
 
   const email = String(body?.email ?? '').trim().toLowerCase();
   const honeypot = String(body?.company ?? '').trim(); // hidden field; only bots fill it
-  // /jam (the jam's front door) re-runs the Slack invite for people who
-  // already signed up, since they may have left a channel or predate one.
-  const fromJoin = body?.source === 'join';
+  // /jam (the jam's front door) and the itch page's embedded box re-run the
+  // Slack invite for people who already signed up, since they may have left a
+  // channel or predate one.
+  const fromItch = body?.source === 'itch';
+  const fromJoin = body?.source === 'join' || fromItch;
 
   // silently accept-and-drop bots so they don't learn they were caught
   if (honeypot) return json({ ok: true, hasAccount: true });
@@ -85,7 +87,7 @@ export async function POST({ request, getClientAddress }) {
   const fields = {
     [F.email]: email,
     [F.hadAccount]: hasAccount,
-    [F.signupOrigin]: new URL(origin).host,
+    [F.signupOrigin]: fromItch ? 'itch.io' : new URL(origin).host, // itch = the box embedded on the jam page
     [F.jam]: [JAM.airtableRecordId] // link to the current jam (a linked-record field)
   };
   if (accountState(result) !== 'unknown') fields[F.status] = result;

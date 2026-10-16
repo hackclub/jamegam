@@ -11,7 +11,7 @@ export const signup = writable({ done: false, message: '' });
 // POST one email to /api/signup, guarding against a repeat submit in this
 // session. Returns { ok } (+ { error } on failure); on success it sets the
 // shared `signup` store, which every box subscribes to.
-export async function submitSignup({ email, company }) {
+export async function submitSignup({ email, company, source }) {
   const v = String(email || '').trim();
   if (!v) return { ok: false };
   if (get(signup).done) return { ok: true }; // already signed up this session
@@ -19,7 +19,7 @@ export async function submitSignup({ email, company }) {
   const res = await fetch('/api/signup', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: v, company })
+    body: JSON.stringify({ email: v, company, source })
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok || !data.ok) return { ok: false, error: data.error };
@@ -30,5 +30,5 @@ export async function submitSignup({ email, company }) {
     ? 'you’re already in :]'
     : 'you’re in! check your email :]';
   signup.set({ done: true, message });
-  return { ok: true };
+  return { ok: true, message };
 }
