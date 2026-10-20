@@ -28,9 +28,9 @@ const welcome = (user) => `:jamegam-yay: <@${user}> welcome to jame gam!!!
 4. check out <#C0BBDUFF7K8>! that's where more updates will be posted
 questions about jame gam, hack club, or anything else? read the <https://slack-no-unfurl.vercel.app/?u=https%3A%2F%2Fhackclub.enterprise.slack.com%2Fdocs%2FT0266FRGM%2FF0BBT4JD9P0|faq> and ask in <#C0BBDUEMF0E> :)`;
 
-// #jame-gam-help, #jame-gam-tickets and the bts channel: the transcript in
-// hackclub/nephthys (transcripts/jame_gam.py) holds the same three ids.
-const NEPHTHYS_CHANNELS = ['C0BBDUEMF0E', 'C0C2EHLQ96X', 'C0BV87R7YBE'];
+// #jame-gam-help and #jame-gam-tickets (also the helper list): the transcript in
+// hackclub/nephthys (transcripts/jame_gam.py) holds the same two ids.
+const NEPHTHYS_CHANNELS = ['C0BBDUEMF0E', 'C0C2EHLQ96X'];
 
 // Every verified event from those channels is also handed to nephthys (the #jame-gam-help ticket bot),
 // because a Slack app gets one Events URL and this endpoint already owns it.
