@@ -260,7 +260,7 @@
 
   .page {
     /* wider than the shop's column: the covers are the point here */
-    max-width: calc(1120px * var(--scale));
+    max-width: calc(1600px * var(--scale));
     margin: 0 auto;
     position: relative;
     z-index: 1;
@@ -367,8 +367,8 @@
     margin: 0;
     padding: 0;
     display: grid;
-    /* 3-up at full width - big covers, room for the words underneath */
-    grid-template-columns: repeat(auto-fill, minmax(calc(300px * var(--scale)), 1fr));
+    /* 5-up at full width, stepping down as the window narrows */
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(290px * var(--scale))), 1fr));
     gap: calc(26px * var(--scale)) calc(16px * var(--scale));
   }
   /* the prize-tile anatomy as a link, but a proper card: the lumpy 9-slice
