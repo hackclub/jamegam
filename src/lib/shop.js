@@ -10,7 +10,8 @@
 export const SHOP = {
   cycles: {
     '2026-08': 'the brackeys 2026.2 game jam',
-    '2026-09': 'the cozy fall jam'
+    '2026-09': 'the cozy fall jam',
+    '2026-10': 'the jame gam game jam'
   }
 };
 
