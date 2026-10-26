@@ -16,6 +16,8 @@
 
   // CSS px per dust pixel — chunky, pixel-art motes matching the site's look.
   const DUST_PX = 4;
+  // repaints per second; see frame() for why this can be so low.
+  const DUST_FPS = 4;
   // lightest → darkest; the roll is squared so most motes whisper at the light end.
   const DUST_COLORS = ['#eceae8', '#e6e4e1', '#dedbd8', '#d6d3cf', '#cdc9c5', '#c6c2be'];
 
@@ -100,10 +102,16 @@
       ctx.globalAlpha = 1;
     }
 
+    // motes crawl at most 1.5 dust px/s and draw at whole-pixel positions, so a
+    // few repaints a second look identical to 60 - and on a tall page each
+    // repaint re-uploads the whole document-sized canvas. The dt cap only
+    // guards against a long gap (a backgrounded tab), not ordinary frames.
     function frame(now) {
-      let dt = (now - last) / 1000; last = now; if (dt > 0.05) dt = 0.05;
-      draw(dt);
       rafId = requestAnimationFrame(frame);
+      if (now - last < 1000 / DUST_FPS) return;
+      const dt = Math.min((now - last) / 1000, 1);
+      last = now;
+      draw(dt);
     }
 
     init();
