@@ -7,19 +7,23 @@
 // want the button. This script finds that placeholder, hides it, and renders the
 // button (or, on return from Hack Club Auth, a "signed in as ..." card) in its place.
 //
-// HIDDEN FIELDS to add (prefill-from-URL-parameter, names matching exactly), and
-// map to the Submission Form columns:
-//   email, first_name, last_name, slack_id, slack_handle, verification_status,
-//   birthday, address_line_1, address_line_2, city, state_province,
-//   zip_postal_code, country, phone_number, hca_id_token
-// hca_id_token can instead be a VISIBLE required field (hidden fields can't be
-// required): this script finds it by its label and hides it on every form.
-// Display/control-only (read by this script; NO hidden field needed):
-//   slack_avatar, addresses (JSON list for the address picker), addr (selected id)
+// Token mode: after sign-in the form URL carries only  submit_token  (a signed
+// pointer to their Sign Ups row) plus  addr  (the picked HCA address id), so no
+// personal data lands in browser history. The card's details come from
+// jamegam.hackclub.com/api/submit/card, and the identity fields on the
+// Submission Form row are written server-side after submit, by the "resolve
+// identity" Airtable automation (integrations/fillout/resolve-automation.js).
+//
+// FIELDS to add (prefill-from-URL-parameter, names matching exactly), mapped to
+// the Submission Form columns of the same name:
+//   submit_token - a VISIBLE required field (hidden fields can't be required),
+//                  which is what forces sign-in; this script hides it by label
+//   addr         - hidden field
+// Do NOT map email / name / address / etc. from the form any more: the resolve
+// automation fills those, and a form-side value would be user-editable.
 //
 // Self-contained: injects its own CSS and reads the form's own URL, so the same
-// paste works on every jam form with no edits. Hidden fields still do the actual
-// data capture via Fillout's native URL-param prefill.
+// paste works on every jam form with no edits.
 //
 // DEBUG: set DEBUG=true to log to the console while wiring it up.
 (function () {
@@ -35,13 +39,14 @@
   log('script loaded; readyState =', document.readyState);
 
   var BROKER = 'https://jamegam.hackclub.com/api/auth/login';
+  var CARD_API = 'https://jamegam.hackclub.com/api/submit/card';
   // Where the "edit on Hack Club Auth" link points (their HCA identity page).
   var HCA_SETTINGS = 'https://auth.hackclub.com/identity/edit';
   var SENTINEL = '[[hc-signin]]';
   // Fields to force-hide by their aria-label (Fillout sets aria-label to the
   // field's label), for data-capture fields that must stay "visible" in the
   // editor so they can be marked required.
-  var HIDE_FIELDS = ['hca_id_token'];
+  var HIDE_FIELDS = ['submit_token'];
 
   // Inline icons (no emojis in UI). currentColor = inherit the line's text color.
   var IC = {
@@ -77,7 +82,8 @@
     '#hc-signin .hc-addr-sel:hover{background-color:#f1f1f1}' +
     '#hc-signin .hc-addr-sel:focus{outline:none}' +
     '#hc-signin .hc-btn .hc-req{opacity:.8;font-weight:500}' +
-    '#hc-signin .hc-err{color:#ec3750;font-size:.85rem;margin-top:.4rem}';
+    '#hc-signin .hc-err{color:#ec3750;font-size:.85rem;margin-top:.4rem}' +
+    '#hc-signin .hc-loading{color:#999;font-size:.85rem;text-align:center;padding:.6rem 0}';
 
   var host = null; // the Fillout element holding the sentinel
   var container = null; // our injected #hc-signin
@@ -127,7 +133,7 @@
     log('mounted into', host);
   }
 
-  // Hide the raw data-capture fields (e.g. the hca_id_token input) wherever they
+  // Hide the raw data-capture fields (e.g. the submit_token input) wherever they
   // ended up on this form. Widget IDs differ per form, so match on the input's
   // aria-label (Fillout sets it to the field's label) and hide the enclosing
   // fillout-field wrapper.
@@ -172,78 +178,96 @@
 
   function render(root) {
     var q = new URLSearchParams(location.search);
-    log('render; hca_id_token present =', !!q.get('hca_id_token'));
-    if (q.get('hca_id_token')) {
-      var name = [q.get('first_name'), q.get('last_name')].filter(Boolean).join(' ');
-      var email = q.get('email') || '';
-      var handle = q.get('slack_handle') || '';
-      var avatar = q.get('slack_avatar') || '';
-      var who = name || handle || email;
-      var sub = handle ? ('@' + handle) : email;
-      var birthday = q.get('birthday') || '';
-      var addresses = [];
-      try { addresses = JSON.parse(q.get('addresses') || '[]'); } catch (e) { addresses = []; }
-      var selId = q.get('addr') || (addresses[0] && addresses[0].id) || '';
-      var selAddr = null;
-      for (var j = 0; j < addresses.length; j++) {
-        if (String(addresses[j].id) === String(selId)) { selAddr = addresses[j]; break; }
-      }
-      if (!selAddr) selAddr = addresses[0] || null;
-      var phone = selAddr && selAddr.phone ? selAddr.phone : '';
-      // Sign out = reload the form at its clean URL, dropping the identity params
-      // so the hidden fields clear and it flips back to the sign-in button.
-      var clean = location.origin + location.pathname;
+    var token = q.get('submit_token');
+    log('render; submit_token present =', !!token);
+    if (!token) { renderSignIn(root, q.get('hca_error') ? 'Sign-in did not go through - give it another try.' : ''); return; }
 
-      // 1 address (the common case) stays plain text; >1 becomes a subtle picker.
-      var addrHtml;
-      if (addresses.length > 1) {
-        var opts = '';
-        for (var i = 0; i < addresses.length; i++) {
-          var a = addresses[i];
-          opts += '<option value="' + esc(a.id) + '"' +
-            (String(a.id) === String(selId) ? ' selected' : '') + '>' + esc(addrText(a)) + '</option>';
-        }
-        addrHtml = '<div class="hc-line hc-addr">' + IC.pin +
-          '<select class="hc-addr-sel" aria-label="Mailing address">' + opts + '</select></div>';
-      } else if (addresses.length === 1) {
-        addrHtml = '<div class="hc-line">' + IC.pin + '<span>' + esc(addrText(addresses[0])) + '</span></div>';
-      } else {
-        addrHtml = '<div class="hc-line hc-muted">' + IC.pin + '<span>no address on file</span></div>';
-      }
+    root.innerHTML = '<div class="hc-loading">loading your Hack Club info...</div>';
+    fetch(CARD_API + '?t=' + encodeURIComponent(token))
+      .then(function (r) { return r.json().then(function (d) { return { status: r.status, d: d }; }); })
+      .then(function (res) {
+        if (res.d && res.d.ok) renderCard(root, res.d, q.get('addr'));
+        else if (res.status === 401) renderSignIn(root, 'Your sign-in expired - sign in again to submit.');
+        else renderSignIn(root, 'Could not load your Hack Club info - try signing in again.');
+      })
+      .catch(function (e) {
+        log('card fetch failed:', e && e.message);
+        renderSignIn(root, 'Could not load your Hack Club info - try signing in again.');
+      });
+  }
 
-      root.innerHTML =
-        '<div class="hc-card">' +
-          '<div class="hc-head">' +
-            (avatar ? '<img class="hc-av" src="' + esc(avatar) + '" alt="" />' : '') +
-            '<div class="hc-id">' +
-              '<div class="hc-name">' + esc(who) + '</div>' +
-              (sub && sub !== who ? '<div class="hc-sub">' + esc(sub) + '</div>' : '') +
-            '</div>' +
-            '<span class="hc-status">' + IC.check + '<span>signed in</span></span>' +
-          '</div>' +
-          '<div class="hc-data">' +
-            (birthday ? '<div class="hc-line">' + IC.cal + '<span>' + esc(fmtBirthday(birthday)) + '</span></div>' : '') +
-            addrHtml +
-            (phone ? '<div class="hc-line">' + IC.phone + '<span>' + esc(fmtPhone(phone)) + '</span></div>' : '') +
-          '</div>' +
-          '<div class="hc-foot">' +
-            '<a class="hc-edit" href="' + HCA_SETTINGS + '" target="_blank" rel="noopener"><span>edit on Hack Club Auth</span>' + IC.ext + '</a>' +
-            '<a class="hc-signout" href="' + esc(clean) + '">sign out</a>' +
-          '</div>' +
-        '</div>';
+  function renderSignIn(root, err) {
+    var url = BROKER + '?v=2&to=' + encodeURIComponent(location.origin + location.pathname);
+    root.innerHTML =
+      '<div class="hc-out">' +
+        '<a class="hc-btn" href="' + url + '">Sign in with Hack Club <span class="hc-req">(required)</span></a>' +
+        (err ? '<div class="hc-err">' + esc(err) + '</div>' : '') +
+      '</div>';
+  }
 
-      var sel = root.querySelector('.hc-addr-sel');
-      if (sel) sel.addEventListener('change', function () { pickAddress(this.value, addresses); });
-    } else {
-      var url = BROKER + '?to=' + encodeURIComponent(location.origin + location.pathname);
-      root.innerHTML =
-        '<div class="hc-out">' +
-          '<a class="hc-btn" href="' + url + '">Sign in with Hack Club <span class="hc-req">(required)</span></a>' +
-          (q.get('hca_error')
-            ? '<div class="hc-err">Sign-in did not go through - give it another try.</div>'
-            : '') +
-        '</div>';
+  function renderCard(root, d, selId) {
+    var name = [d.firstName, d.lastName].filter(Boolean).join(' ');
+    var email = d.email || '';
+    var handle = d.slackHandle || '';
+    var avatar = d.slackAvatar || '';
+    var who = name || handle || email;
+    var sub = handle ? ('@' + handle) : email;
+    var birthday = d.birthday || '';
+    var addresses = d.addresses || [];
+    var selAddr = null;
+    for (var j = 0; j < addresses.length; j++) {
+      if (String(addresses[j].id) === String(selId)) { selAddr = addresses[j]; break; }
     }
+    if (!selAddr) {
+      for (var k = 0; k < addresses.length; k++) if (addresses[k].primary) { selAddr = addresses[k]; break; }
+    }
+    if (!selAddr) selAddr = addresses[0] || null;
+    selId = selAddr ? selAddr.id : '';
+    var phone = selAddr && selAddr.phone ? selAddr.phone : '';
+    // Sign out = reload the form at its clean URL, dropping the identity params
+    // so the hidden fields clear and it flips back to the sign-in button.
+    var clean = location.origin + location.pathname;
+
+    // 1 address (the common case) stays plain text; >1 becomes a subtle picker.
+    var addrHtml;
+    if (addresses.length > 1) {
+      var opts = '';
+      for (var i = 0; i < addresses.length; i++) {
+        var a = addresses[i];
+        opts += '<option value="' + esc(a.id) + '"' +
+          (String(a.id) === String(selId) ? ' selected' : '') + '>' + esc(addrText(a)) + '</option>';
+      }
+      addrHtml = '<div class="hc-line hc-addr">' + IC.pin +
+        '<select class="hc-addr-sel" aria-label="Mailing address">' + opts + '</select></div>';
+    } else if (addresses.length === 1) {
+      addrHtml = '<div class="hc-line">' + IC.pin + '<span>' + esc(addrText(addresses[0])) + '</span></div>';
+    } else {
+      addrHtml = '<div class="hc-line hc-muted">' + IC.pin + '<span>no address on file</span></div>';
+    }
+
+    root.innerHTML =
+      '<div class="hc-card">' +
+        '<div class="hc-head">' +
+          (avatar ? '<img class="hc-av" src="' + esc(avatar) + '" alt="" />' : '') +
+          '<div class="hc-id">' +
+            '<div class="hc-name">' + esc(who) + '</div>' +
+            (sub && sub !== who ? '<div class="hc-sub">' + esc(sub) + '</div>' : '') +
+          '</div>' +
+          '<span class="hc-status">' + IC.check + '<span>signed in</span></span>' +
+        '</div>' +
+        '<div class="hc-data">' +
+          (birthday ? '<div class="hc-line">' + IC.cal + '<span>' + esc(fmtBirthday(birthday)) + '</span></div>' : '') +
+          addrHtml +
+          (phone ? '<div class="hc-line">' + IC.phone + '<span>' + esc(fmtPhone(phone)) + '</span></div>' : '') +
+        '</div>' +
+        '<div class="hc-foot">' +
+          '<a class="hc-edit" href="' + HCA_SETTINGS + '" target="_blank" rel="noopener"><span>edit on Hack Club Auth</span>' + IC.ext + '</a>' +
+          '<a class="hc-signout" href="' + esc(clean) + '">sign out</a>' +
+        '</div>' +
+      '</div>';
+
+    var sel = root.querySelector('.hc-addr-sel');
+    if (sel) sel.addEventListener('change', function () { pickAddress(this.value); });
   }
 
   function esc(s) {
@@ -269,30 +293,13 @@
     return m ? '(' + m[1] + ') ' + m[2] + '-' + m[3] : s; // others: as-is
   }
 
-  // Switch the active mailing address: reload the form with the chosen address in
-  // the URL params so Fillout re-prefills the hidden fields. Cheap because the
-  // picker sits at the top, before anything is filled in.
-  function pickAddress(id, list) {
-    var a = null;
-    for (var i = 0; i < list.length; i++) {
-      if (String(list[i].id) === String(id)) { a = list[i]; break; }
-    }
-    if (!a) return;
+  // Switch the active mailing address: reload with the chosen HCA address id in
+  // `addr`, which prefills the hidden field the resolve automation reads. Cheap
+  // because the picker sits at the top, before anything is filled in.
+  function pickAddress(id) {
     var u = new URL(location.href);
-    setParam(u, 'address_line_1', a.line1);
-    setParam(u, 'address_line_2', a.line2);
-    setParam(u, 'city', a.city);
-    setParam(u, 'state_province', a.region);
-    setParam(u, 'zip_postal_code', a.postal);
-    setParam(u, 'country', a.country);
-    setParam(u, 'phone_number', a.phone);
-    u.searchParams.set('addr', a.id);
+    u.searchParams.set('addr', id);
     location.href = u.toString();
-  }
-
-  function setParam(u, k, v) {
-    if (v) u.searchParams.set(k, v);
-    else u.searchParams.delete(k);
   }
 
   function injectCSS() {

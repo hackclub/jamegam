@@ -57,6 +57,14 @@ export async function countSignups() {
   return count;
 }
 
+export async function getSignupById(id) {
+  const res = await fetch(`${tableUrl()}/${encodeURIComponent(id)}`, { headers: headers() });
+  // Airtable answers a well-formed but unknown record id with 403, not 404.
+  if (res.status === 404 || res.status === 403) return null;
+  if (!res.ok) throw new Error(`Airtable get failed: ${res.status} ${await res.text()}`);
+  return res.json();
+}
+
 export async function markById(id, fields) {
   const res = await fetch(`${tableUrl()}/${id}`, {
     method: 'PATCH',

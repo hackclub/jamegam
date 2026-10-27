@@ -75,6 +75,17 @@ export function buildSubmitRedirect(to, id) {
   return u.toString();
 }
 
+// Token mode (?v=2 forms): the URL carries only the signed submit token (plus
+// `addr`, the picked HCA address id, which the form's JS adds). The card and the
+// stored fields are both looked up server-side from it.
+export function buildTokenRedirect(to, token) {
+  const u = safeReturnUrl(to);
+  if (!u) return null;
+  for (const k of [...SUBMIT_PARAMS, 'submit_token', 'hca_error']) u.searchParams.delete(k);
+  u.searchParams.set('submit_token', token);
+  return u.toString();
+}
+
 // Bounce back to the form with an error flag so its JS can re-show the button.
 export function submitErrorUrl(to) {
   const u = safeReturnUrl(to);

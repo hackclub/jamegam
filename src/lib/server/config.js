@@ -48,6 +48,9 @@ export const config = {
     yswsTable: env.AIRTABLE_YSWS_TABLE || 'YSWS Project Submission', // the unified DB component
     jamsTable: env.AIRTABLE_JAMS_TABLE || 'Jams' // one row per jam; /gallery names its sections from it
   },
+  // Shared with the Submission Form "resolve identity" Airtable automation
+  // (input.secret), which sends it as a Bearer token to /api/submit/resolve.
+  submitResolveSecret: env.SUBMIT_RESOLVE_SECRET,
   origin: env.ORIGIN, // optional; otherwise derived from the request origin
   // Apliiq print-on-demand: used only by /prizes/track-shirt to look up a
   // t-shirt order's status. Absent creds just make that one page say tracking
@@ -73,7 +76,7 @@ export const F = {
   // Submit flow only: the HCA access token (~6mo) + its ISO expiry, kept so a
   // later manual pull (GET {issuer}/api/v1/me with the token as Bearer) can
   // fetch live identity data - e.g. an address added to HCA after submitting.
-  // Clear them once used.
+  // Don't clear them: /api/submit/resolve reads the token to fill submissions.
   hcaToken: 'hca_access_token',
   hcaTokenExpires: 'hca_token_expires_at'
 };

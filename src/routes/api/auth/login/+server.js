@@ -1,7 +1,8 @@
 // GET /api/auth/login - kicks off "Sign in with Hack Club". Three callers:
 //   - the newcomer email CTA (passes ?email= -> prefilled via login_hint)
 //   - a Fillout submission form (passes ?to=<form url> -> the submit flow; the
-//     callback returns them there with their identity prefilled)
+//     callback returns them there with their identity prefilled. ?v=2 is the
+//     token mode: only a signed submit_token goes back in the form URL)
 //   - the prize shop (passes ?flow=shop -> the callback mints a session cookie
 //     and lands them back on /prizes)
 //   - /jam (passes ?flow=join -> a normal signup, then the callback sends
@@ -38,6 +39,7 @@ export async function GET({ url, cookies }) {
   const ret = shop ? null : safeReturnUrl(url.searchParams.get('to'));
   if (ret) cookies.set('hca_return', ret.toString(), cookieOpts);
   else cookies.delete('hca_return', { path: '/' });
+  if (ret && url.searchParams.get('v') === '2') cookies.set('hca_flow', 'token', cookieOpts);
 
   // Submit + shop both step up to the address+birthdate scope (prize shipping
   // + age); plain signups stay on the minimal scope.

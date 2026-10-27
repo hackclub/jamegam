@@ -73,7 +73,15 @@ export async function createRecord(table, fields) {
   return res.json();
 }
 
-export async function patchRecord(table, id, fields) {
+export async function getRecord(table, id) {
+  const res = await fetch(tableUrl(table, encodeURIComponent(id)), { headers: headers() });
+  // Airtable answers a well-formed but unknown record id with 403, not 404.
+  if (res.status === 404 || res.status === 403) return null;
+  if (!res.ok) throw new Error(`Airtable get ${table} failed: ${res.status} ${await res.text()}`);
+  return res.json();
+}
+
+export async function patchRecord(table, id, fields, { typecast = false } = {}) {
   if (MOCK) {
     if (table === config.shop.ordersTable && mockOrder) {
       mockOrder = { ...mockOrder, fields: { ...mockOrder.fields, ...fields } };
@@ -83,7 +91,7 @@ export async function patchRecord(table, id, fields) {
   const res = await fetch(tableUrl(table, id), {
     method: 'PATCH',
     headers: headers(),
-    body: JSON.stringify({ fields })
+    body: JSON.stringify(typecast ? { fields, typecast } : { fields })
   });
   if (!res.ok) throw new Error(`Airtable patch ${table} failed: ${res.status} ${await res.text()}`);
   return res.json();
