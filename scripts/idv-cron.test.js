@@ -30,7 +30,7 @@ function simulate(statusOn, last = 45, row = heldRow()) {
   const log = {};
   const dms = {};
   for (let day = 1; day <= last; day++) {
-    if (!cronOwns(row)) break; // released / cancelled rows leave the sweep
+    if (!cronOwns(row)) break; // released / canceled rows leave the sweep
     const d = decideIdv(row, new Date(CREATED).toISOString(), statusOn(day), at(day));
     if (d.actions.length) log[day] = d.actions;
     if (d.dm) dms[day] = d.dm;
@@ -46,7 +46,7 @@ describe('worked examples from PLAN.md', () => {
     expect(dms[23]).toMatchObject({ kind: 'remind2', rejected: false, deadline: at(30) });
     expect(dms[30]).toEqual({ kind: 'cancel', ineligible: false });
     expect(row.status).toBe('canceled');
-    expect(row.idv_status).toBe('cancelled');
+    expect(row.idv_status).toBe('canceled');
   });
 
   test('pending on day 7 gets nothing; rejected day 10 gets the first reminder that day', () => {
@@ -114,12 +114,12 @@ describe('single decisions', () => {
   test('ineligible cancels right away with the ineligible DM', () => {
     const d = decideIdv(heldRow(), created, 'ineligible', now);
     expect(d.actions).toEqual(['cancel']);
-    expect(d.patch).toMatchObject({ status: 'canceled', idv_status: 'cancelled', idv_last_status: 'ineligible' });
+    expect(d.patch).toMatchObject({ status: 'canceled', idv_status: 'canceled', idv_last_status: 'ineligible' });
     expect(d.dm).toEqual({ kind: 'cancel', ineligible: true });
   });
 
   test('unknown status (not_found / error / garbage) is a skip with no writes', () => {
-    for (const raw of ['not_found', 'error', undefined, 'something_new']) {
+    for (const raw of ['not_found', 'unknown', 'error', undefined, 'something_new']) {
       const d = decideIdv(heldRow(), created, mapCheckResult(raw), now);
       expect(d).toEqual({ actions: ['skip'], patch: null, dm: null });
     }
@@ -157,7 +157,7 @@ describe('skip-manual', () => {
     expect(cronOwns(heldRow({ status: 'not fulfilled' }))).toBe(false); // released by hand
     expect(cronOwns(heldRow({ status: 'canceled' }))).toBe(false);
     expect(cronOwns(heldRow({ idv_status: 'verified' }))).toBe(false);
-    expect(cronOwns(heldRow({ idv_status: 'cancelled', status: 'canceled' }))).toBe(false);
+    expect(cronOwns(heldRow({ idv_status: 'canceled', status: 'canceled' }))).toBe(false);
     expect(isHeld(heldRow())).toBe(true);
   });
 });

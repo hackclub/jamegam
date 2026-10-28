@@ -1,5 +1,5 @@
 // Releasing a held order: the one path both the daily cron and the instant
-// releases (shop sign-in, /prizes load) go through, so a jammer gets exactly
+// release on a verified shop sign-in go through, so a jammer gets exactly
 // one verified-noticed DM however they got verified.
 import { getRecord, patchRecord } from './shopdb.js';
 import { postDM } from './slack.js';
@@ -45,8 +45,8 @@ export async function sendIdvDM(orderId, fields, dm) {
 /**
  * The shop sign-in's instant release: every held order this person has across
  * the open cycles (not just the one /prizes will show), released when their
- * fresh sign-in says verified. Best-effort; the /prizes load and the cron are
- * the backstops.
+ * fresh sign-in says verified. Best-effort; the daily cron is
+ * the backstop.
  */
 export async function releaseHeldFor(email, slackId) {
   const { orders } = await findMine(email, slackId);

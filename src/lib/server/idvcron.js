@@ -8,7 +8,7 @@ const DAY = 86400000;
 
 // The day counts. A held order that never starts verifying gets the first
 // reminder FIRST_REMINDER_DAYS after it was placed, the final one
-// FINAL_REMINDER_DAYS before its deadline, and is cancelled at the deadline.
+// FINAL_REMINDER_DAYS before its deadline, and is canceled at the deadline.
 // The deadline is HOLD_DAYS after the order was placed, pushed out to
 // RESUBMIT_GRACE_DAYS after a pending review last came back not-approved.
 // Time spent pending in HCA review never counts against anyone.
@@ -118,7 +118,7 @@ export function releasePatch(now) {
 }
 
 function cancelPatch() {
-  return { status: 'canceled', idv_status: IDV.cancelled };
+  return { status: 'canceled', idv_status: IDV.canceled };
 }
 
 /** The Slack text for a decideIdv dm, for this order row. Copy is Augie's, verbatim. */

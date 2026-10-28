@@ -12,7 +12,7 @@ export const HELD_STATUS = 'held for verification';
 export const IDV = {
   held: 'held',
   verified: 'verified',
-  cancelled: 'cancelled',
+  canceled: 'canceled',
   grandfathered: 'grandfathered'
 };
 

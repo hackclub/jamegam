@@ -4,7 +4,6 @@
 //   signedout | nosubmission | pending | rejected | awaitingdm | noaddress |
 //   closed | shop (pick UI / order summary) | error
 import { readSession, SESSION_COOKIE, SESSION_MAX_AGE } from '$lib/server/session.js';
-import { releaseHeld } from '$lib/server/idvhold.js';
 import { isHeld } from '$lib/idv.js';
 import { loadCycle } from '$lib/server/shopcycle.js';
 import {
@@ -93,18 +92,9 @@ export async function load({ cookies, url }) {
   }
   const closedForThem = base.closed;
 
-  // ---- the IDV gate: instant release ----
-  // A held order whose sign-in now says verified is released on the spot (same
-  // releaseHeld as the cron: flips the status, sends the verified-noticed DM),
-  // so someone who verifies and comes back doesn't wait for the daily sweep.
-  if (orderRec && isHeld(orderRec.fields) && session.verificationStatus === 'verified') {
-    try {
-      const r = await releaseHeld(orderRec.id);
-      if (r.released) orderRec = { ...orderRec, fields: r.fields };
-    } catch (err) {
-      console.error('[shop] instant release failed:', err);
-    }
-  }
+  // A held order (the IDV gate) shows the held banner. This load never writes:
+  // the instant release happens in the shop sign-in callback, which is where a
+  // verified status first arrives ("i verified, check again" is a re-sign-in).
   const held = !!orderRec && isHeld(orderRec.fields);
 
   const order = orderRec
