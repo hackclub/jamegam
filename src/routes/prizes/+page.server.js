@@ -3,7 +3,9 @@
 // one `state` string the page renders. States:
 //   signedout | nosubmission | pending | rejected | awaitingdm | noaddress |
 //   closed | shop (pick UI / order summary) | error
-import { readSession, SESSION_COOKIE } from '$lib/server/session.js';
+import { readSession, SESSION_COOKIE, SESSION_MAX_AGE } from '$lib/server/session.js';
+import { releaseHeld } from '$lib/server/idvhold.js';
+import { isHeld } from '$lib/idv.js';
 import { loadCycle } from '$lib/server/shopcycle.js';
 import {
   SHOP,
@@ -46,7 +48,7 @@ export async function load({ cookies, url }) {
 
   let submissions, orderRec;
   try {
-    const cycle = await loadCycle(session.email);
+    const cycle = await loadCycle(session.email, session.slackId);
     ({ submissions, order: orderRec } = cycle);
     Object.assign(base, { jam: cycle.jam, jamName: cycle.jamName });
   } catch (err) {
@@ -91,6 +93,20 @@ export async function load({ cookies, url }) {
   }
   const closedForThem = base.closed;
 
+  // ---- the IDV gate: instant release ----
+  // A held order whose sign-in now says verified is released on the spot (same
+  // releaseHeld as the cron: flips the status, sends the verified-noticed DM),
+  // so someone who verifies and comes back doesn't wait for the daily sweep.
+  if (orderRec && isHeld(orderRec.fields) && session.verificationStatus === 'verified') {
+    try {
+      const r = await releaseHeld(orderRec.id);
+      if (r.released) orderRec = { ...orderRec, fields: r.fields };
+    } catch (err) {
+      console.error('[shop] instant release failed:', err);
+    }
+  }
+  const held = !!orderRec && isHeld(orderRec.fields);
+
   const order = orderRec
     ? {
         type: orderRec.fields.prize_type === 'indie games' ? 'games' : 'prize',
@@ -101,6 +117,10 @@ export async function load({ cookies, url }) {
           .split('\n')
           .filter(Boolean),
         status: orderRec.fields.status || 'not fulfilled',
+        // which held banner to show (needs_submission / pending), from
+        // whichever is fresher: this sign-in or the cron's last check
+        idvHeld: held,
+        idvStatus: held ? heldCopyStatus(session, orderRec.fields) : null,
         noStickers: orderRec.fields.no_stickers === true,
         address: {
           line1: orderRec.fields.address_line_1 || '',
@@ -153,4 +173,18 @@ export async function load({ cookies, url }) {
   if (!dmSentAt) return { ...base, state: 'awaitingdm', me, gameTitles };
   if (!addresses.length) return { ...base, state: 'noaddress', me, gameTitles };
   return { ...base, state: 'shop', me, gameTitles, addresses, order: null, locked: false };
+}
+
+// The status a held order's banner talks about. The session is live as of its
+// sign-in (minted SESSION_MAX_AGE before it expires); the cron's idv_last_status
+// as of idv_checked_at. The newer of the two wins; anything that isn't one of
+// the two held states falls back to needs_submission (the "verify now" copy).
+function heldCopyStatus(session, fields) {
+  const HELD = ['needs_submission', 'pending'];
+  const signedInAt = (session.exp ?? 0) - SESSION_MAX_AGE * 1000;
+  const checkedAt = Date.parse(fields.idv_checked_at ?? '') || 0;
+  const order = checkedAt > signedInAt
+    ? [fields.idv_last_status, session.verificationStatus]
+    : [session.verificationStatus, fields.idv_last_status];
+  return order.find((s) => HELD.includes(s)) ?? 'needs_submission';
 }

@@ -34,6 +34,7 @@
   // both order as a single `prize`, so anything reading an order back has to
   // look in both.
   const PRIZE_ITEMS = [...PRIZE_STUFF, ...PRIZE_BRACKET];
+  const VERIFY_URL = 'https://auth.hackclub.com/verifications/new';
   // the shirts: detailed landscape mockups, so they lead the stuff grid as
   // double-wide tiles side by side (a 156px prizemd_ sprite at 2x), and their
   // item modal gets the wide figure
@@ -56,6 +57,9 @@
   let modalEl = $state(null);
   let submitting = $state(false);
   let errorMsg = $state('');
+  // the order endpoint said their HCA account is ineligible: no order was
+  // placed, and the whole page swaps to the ineligible screen
+  let ineligible = $state(false);
   let now = $state(Date.now()); // ticks every second for the deadline countdown
   // with an order in place the grids collapse behind a "change my pick" link
   let browsing = $state(false);
@@ -209,6 +213,13 @@
         body: JSON.stringify(body)
       });
       const out = await res.json().catch(() => ({}));
+      if (out.ineligible) {
+        modal = null;
+        ineligible = true;
+        scrollTo({ top: 0 });
+        submitting = false;
+        return;
+      }
       if (!res.ok || !out.ok) throw new Error(out.error || 'something went wrong. try again?');
       // committing to a prize drops any in-progress game picks (and vice versa
       // the games order simply becomes the pick)
@@ -255,7 +266,7 @@
 
   // panel-only states hold a paragraph or two; centre those vertically. The
   // pick UI and the browse list are a normal top-to-bottom document scroll.
-  const slim = $derived(data.state === 'shop' ? !!data.locked : !browseOnly);
+  const slim = $derived(ineligible || (data.state === 'shop' ? !!data.locked : !browseOnly));
 
   // the bracket section only renders for winners; this still guards the modal
   // in case a bracket prize is opened some other way.
@@ -350,7 +361,15 @@
   <!-- ambient dust motes, same full-bleed breakout as the doodle layer -->
   <div class="shop-dust" aria-hidden="true"><Dust /></div>
 
-  {#if browseOnly}
+  {#if ineligible}
+    <section class="panel">
+      <p class="lede">
+        sorry, your hack club account isn't eligible for prizes, so we can't send you a prize. if
+        you think that's a mistake, reach out to
+        <a href="mailto:auth@hackclub.com">auth@hackclub.com</a>.
+      </p>
+    </section>
+  {:else if browseOnly}
     <!-- the browse list: full grids for everyone without a pick to make, with
          a one-line note in the header saying where they stand (the modals
          drop their order buttons too) -->
@@ -468,6 +487,7 @@
               </p>
             </div>
           </div>
+          {#if data.order.idvHeld}{@render heldBanner()}{/if}
         </section>
       {/if}
     {:else}
@@ -535,6 +555,7 @@
               {/if}
             </div>
           </div>
+          {#if data.order.idvHeld}{@render heldBanner()}{/if}
           {#if !browsing}
             <button class="go picked-change" type="button" onclick={() => (browsing = true)}>
               change my pick<img class="chev" src="/assets/chevron.png" alt="" />
@@ -562,6 +583,38 @@
     </p>
   {/if}
 </main>
+
+<!-- the IDV hold: their order is in, but it ships only once Hack Club Auth
+     says they're verified (the cron or the next sign-in releases it). Copy is
+     Augie's, verbatim. "i verified, check again" is a fresh shop sign-in,
+     which carries the new status and releases the order on the spot. -->
+{#snippet heldBanner()}
+  <div class="held">
+    {#if data.order.idvStatus === 'pending'}
+      <p class="lede">
+        your selection has been recorded! your hack club identity verification is still being
+        reviewed, so there's nothing you need to do right now.
+      </p>
+    {:else}
+      <p class="lede">
+        your selection has been recorded! one more step before you can get it: you need to verify
+        your identity with hack club. it only takes a few minutes at
+        <a href={VERIFY_URL} target="_blank" rel="noopener"><strong>auth.hackclub.com/verifications/new</strong></a>
+      </p>
+    {/if}
+    <p class="lede">
+      once you're verified, your prize will be sent out automatically! you don't need to message
+      anyone or post anywhere for it to happen. you'll get a DM once your ID is verified, and
+      another DM when your prize is sent!
+    </p>
+    {#if data.order.idvStatus !== 'pending'}
+      <p class="held-actions">
+        <a class="go" href={VERIFY_URL} target="_blank" rel="noopener">verify now</a>
+        <a class="go" href="/api/auth/login?flow=shop">i verified, check again</a>
+      </p>
+    {/if}
+  </div>
+{/snippet}
 
 <!-- the two prize grids, shared by the pick UI and the browse-only states.
      The selection classes (sel/dim, the pick counter) all key off state that's
@@ -1203,6 +1256,28 @@
   .err {
     margin: 0;
     color: var(--accent);
+  }
+
+  /* the IDV hold banner, under the your-pick card: the two paragraphs, then the
+     two actions side by side (they wrap on a phone) */
+  .held {
+    max-width: calc(620px * var(--scale));
+    margin-top: calc(26px * var(--scale));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(14px * var(--scale));
+    text-align: center;
+  }
+  .held a {
+    color: var(--accent);
+  }
+  .held-actions {
+    margin: calc(4px * var(--scale)) 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: calc(10px * var(--scale)) calc(32px * var(--scale));
   }
 
   /* ===== "your pick" card (existing order, still changeable) =====
