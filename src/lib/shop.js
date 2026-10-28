@@ -35,11 +35,20 @@ export const SHOP_CURRENT = SHOP_JAMS[SHOP_JAMS.length - 1];
 export function resolveCycle(submissions, orders) {
   const hasOrder = new Set(orders.map((o) => o.fields.jam));
   const jams = [...SHOP_JAMS].reverse();
-  const pickable = jams.find(
-    (j) =>
-      !hasOrder.has(j) &&
-      submissions.some((r) => r.fields.jam === j && SHOP_STATUSES.includes(r.fields.review_status))
-  );
+  // Prefer a cycle whose pick window is open, so a newer approval that hasn't
+  // been DMed yet doesn't hide an older prize that can be picked right now.
+  const pick = (open) =>
+    jams.find(
+      (j) =>
+        !hasOrder.has(j) &&
+        submissions.some(
+          (r) =>
+            r.fields.jam === j &&
+            SHOP_STATUSES.includes(r.fields.review_status) &&
+            (!open || (r.fields.approved_dm_sent_at && closesAtFor(r.fields.approved_dm_sent_at) > Date.now()))
+        )
+    );
+  const pickable = pick(true) ?? pick(false);
   if (pickable) return pickable;
   return jams.find((j) => submissions.some((r) => r.fields.jam === j)) ?? SHOP_CURRENT;
 }
