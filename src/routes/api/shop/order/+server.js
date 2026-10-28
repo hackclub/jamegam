@@ -4,6 +4,13 @@
 // per person per jam - a repeat POST updates the same row until it's fulfilled
 // or the shop closes.
 //
+// The IDV gate (idv.js orderGate) applies to NEW orders only: a verified
+// session places it as usual, an unverified one places it held (status
+// `held for verification`, which fulfillment never picks up), an ineligible one
+// gets a 403 with `ineligible: true` and no order. Anyone whose prize DM went
+// out before IDV_GATE_FROM is grandfathered. Changing an existing order never
+// re-gates it and never touches its status (the cron owns held rows).
+//
 // Ordering also BACKFILLS the unified-DB-required identity fields (address,
 // birthday) onto any of their submission rows still missing them, plus the
 // linked YSWS component rows - so every ordered project can actually be
@@ -14,7 +21,15 @@ import { createRecord, patchRecord } from '$lib/server/shopdb.js';
 import { loadCycle } from '$lib/server/shopcycle.js';
 import { rateLimit } from '$lib/server/ratelimit.js';
 import { config } from '$lib/server/config.js';
-import { SHOP_STATUSES, variantText, itemBlockedIn, closesAtFor, closesTextFor } from '$lib/shop.js';
+import {
+  SHOP_STATUSES,
+  IDV_GATE_FROM,
+  variantText,
+  itemBlockedIn,
+  closesAtFor,
+  closesTextFor
+} from '$lib/shop.js';
+import { HELD_STATUS, IDV, orderGate } from '$lib/idv.js';
 import { PRIZE_GAMES, PRIZE_STUFF, PRIZE_BRACKET, GAME_PICK_COUNT } from '$lib/prizes.js';
 
 export const prerender = false;
@@ -74,7 +89,7 @@ export async function POST({ request, cookies, getClientAddress }) {
   // Same gate as the page: reviewer-approved (or Prize Only), not "has a staged
   // YSWS row". Same cycle as the page too: resolved from their rows, so the
   // order lands on the month they were actually shown.
-  const { jam, submissions, order: existing } = await loadCycle(session.email);
+  const { jam, submissions, order: existing } = await loadCycle(session.email, session.slackId);
   const approved = submissions.filter((r) => SHOP_STATUSES.includes(r.fields.review_status));
   if (!approved.length) {
     return json({ ok: false, error: 'no approved submission for this jam yet' }, { status: 403 });
@@ -100,6 +115,21 @@ export async function POST({ request, cookies, getClientAddress }) {
   }
   if (Date.now() > closesAtFor(dmSentAt)) {
     return json({ ok: false, error: `the shop closed ${closesTextFor(dmSentAt)}` }, { status: 403 });
+  }
+
+  // ---- the IDV gate (new orders only) ----
+  // Checked before the address so an ineligible account hears that first,
+  // rather than fixing a phone number for an order that can't be placed.
+  const gate = existing ? null : orderGate(dmSentAt, session.verificationStatus, IDV_GATE_FROM);
+  if (gate === 'ineligible') {
+    return json(
+      {
+        ok: false,
+        error: "your hack club account isn't eligible for prizes, so this order can't be placed",
+        ineligible: true
+      },
+      { status: 403 }
+    );
   }
 
   // ---- resolve the shipping address ----
@@ -187,9 +217,19 @@ export async function POST({ request, cookies, getClientAddress }) {
   // and never written again, so changing a pick can't stomp on where Augie has
   // moved the order to. It's a single select: only the options that actually
   // exist on the field are writable (no typecast), so anything else 422s.
+  // The IDV fields are the same: written once on create, then owned by the cron.
   try {
     if (existing) await patchRecord(config.shop.ordersTable, existing.id, fields);
-    else await createRecord(config.shop.ordersTable, { ...fields, status: 'not fulfilled' });
+    else {
+      await createRecord(config.shop.ordersTable, {
+        ...fields,
+        status: gate === IDV.held ? HELD_STATUS : 'not fulfilled',
+        idv_status: gate,
+        hca_id: session.hcaId,
+        // '' when HCA gave no status; the cron fills it on its first check
+        idv_last_status: session.verificationStatus
+      });
+    }
   } catch (err) {
     console.error('[shop] order write failed:', err);
     return json({ ok: false, error: 'could not save your pick! try again in a minute' }, { status: 502 });

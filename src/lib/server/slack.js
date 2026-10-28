@@ -42,3 +42,27 @@ export async function inviteToChannel(slackUserId) {
   if (failed) throw failed.reason;
   return results;
 }
+
+// DM a jammer as the jame gam bot (chat.postMessage to their user id opens the
+// DM; needs chat:write + im:write, which the DM automations already use). Real
+// sends are gated on IDV_DMS=on: otherwise the text is only logged and nothing
+// leaves the server. Returns { sent }; throws on a Slack error so callers can
+// log it (every caller treats DMs as best-effort).
+export async function postDM(slackId, text) {
+  if (!slackId) throw new Error('postDM: no slack id');
+  if (!config.slack.idvDms) {
+    console.log(`[slack] DM not sent (IDV_DMS is not on) to ${slackId}:\n${text}`);
+    return { sent: false };
+  }
+  const res = await fetch('https://slack.com/api/chat.postMessage', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${config.slack.botToken}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    },
+    body: JSON.stringify({ channel: slackId, text, unfurl_links: false })
+  });
+  const data = await res.json();
+  if (!data.ok) throw new Error(`Slack DM to ${slackId} failed: ${data.error}`);
+  return { sent: true };
+}

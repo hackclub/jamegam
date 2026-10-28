@@ -59,6 +59,26 @@ async function listRecords(table, formula, maxRecords = 10) {
   }
 }
 
+// Every match, paged (listRecords stops at one page). For the IDV cron's
+// held-order sweep, which can outgrow 100 rows in a busy month.
+export async function listAll(table, formula) {
+  const out = [];
+  let offset;
+  do {
+    const params = new URLSearchParams({ pageSize: '100', filterByFormula: formula });
+    if (offset) params.set('offset', offset);
+    const res = await fetch(`${tableUrl(table)}?${params}`, {
+      headers: headers(),
+      signal: AbortSignal.timeout(15000)
+    });
+    if (!res.ok) throw new Error(`Airtable list ${table} failed: ${res.status} ${await res.text()}`);
+    const data = await res.json();
+    out.push(...(data.records ?? []));
+    offset = data.offset;
+  } while (offset);
+  return out;
+}
+
 export async function createRecord(table, fields) {
   if (MOCK) {
     if (table === config.shop.ordersTable) mockOrder = { id: 'recMOCKORDER', fields };
@@ -113,5 +133,23 @@ export function findSubmissions(email, jams) {
 export function findOrders(email, jams) {
   if (MOCK) return Promise.resolve(mockOrder ? [mockOrder] : []);
   const formula = `AND(LOWER({email})='${esc(email.toLowerCase())}', ${jamsClause(jams)})`;
+  return listRecords(config.shop.ordersTable, formula, jams.length);
+}
+
+// The slack_id fallbacks for when the email finds nothing: someone who signed
+// into the shop with a different HCA email than the one on their submission
+// (or their order). The slack id comes from the same HCA sign-in, so it names
+// the same person. Only well-formed Slack user ids are queried.
+const SLACK_ID = /^[UW][A-Z0-9]{6,}$/;
+
+export function findSubmissionsBySlack(slackId, jams) {
+  if (MOCK || !SLACK_ID.test(slackId ?? '')) return Promise.resolve([]);
+  const formula = `AND({slack_id}='${esc(slackId)}', ${jamsClause(jams)})`;
+  return listRecords(config.shop.submissionsTable, formula, 10 * jams.length);
+}
+
+export function findOrdersBySlack(slackId, jams) {
+  if (MOCK || !SLACK_ID.test(slackId ?? '')) return Promise.resolve([]);
+  const formula = `AND({slack_id}='${esc(slackId)}', ${jamsClause(jams)})`;
   return listRecords(config.shop.ordersTable, formula, jams.length);
 }

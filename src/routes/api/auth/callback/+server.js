@@ -28,6 +28,8 @@ import { mintSubmitToken } from '$lib/server/submittoken.js';
 import { createSession, SESSION_COOKIE, SESSION_MAX_AGE } from '$lib/server/session.js';
 import { config, F } from '$lib/server/config.js';
 import { JAM } from '$lib/jam.js';
+import { normalizeSessionStatus } from '$lib/idv.js';
+import { releaseHeldFor } from '$lib/server/idvhold.js';
 
 export const prerender = false;
 
@@ -97,6 +99,7 @@ export async function GET({ url, cookies }) {
       // Shop flow: no signup side effects - just mint the session /prizes reads.
       // Addresses capped so the cookie stays comfortably under the 4KB limit.
       const addresses = normalizeAddresses(id.addresses, claims.address, accountPhone).slice(0, 5);
+      const verificationStatus = normalizeSessionStatus(id.verification_status);
       cookies.set(
         SESSION_COOKIE,
         createSession({
@@ -105,10 +108,24 @@ export async function GET({ url, cookies }) {
           lastName: id.last_name ?? '',
           slackId: slackId ?? '',
           birthday,
-          addresses
+          addresses,
+          // live as of this sign-in: the order endpoint gates on it, and /prizes
+          // releases a held order on the spot when it says verified
+          verificationStatus,
+          // HCA identity public id (ident_...), the IDV cron's lookup key
+          hcaId: id.id ?? ''
         }),
         { path: '/', httpOnly: true, secure: !dev, sameSite: 'lax', maxAge: SESSION_MAX_AGE }
       );
+      // instant release: they verified and signed in again ("i verified, check
+      // again"), so any order of theirs still held goes out now, DM and all
+      if (verificationStatus === 'verified') {
+        try {
+          await releaseHeldFor(email, slackId ?? '');
+        } catch (err) {
+          console.error('[callback] instant release failed:', err);
+        }
+      }
     } else {
       const fields = {
         [F.email]: email,

@@ -147,6 +147,14 @@ export const GALLERY_STATUSES = ['Approved', 'Prize Only', 'No Prize'];
 // not told about - un-DMed means no clock, and the shop stays open for them.
 export const PICK_WINDOW_DAYS = 4;
 
+// ---- the IDV prize gate ----
+// Orders placed for anyone whose prize DM went out at or after this instant are
+// gated on Hack Club identity verification (orderGate in idv.js): unverified
+// means the order is placed held, ineligible means no order. Anyone DMed before
+// it picked under the old rules, so their new order is written `grandfathered`
+// and never held. SET THIS TO THE DEPLOY TIME when the gate ships.
+export const IDV_GATE_FROM = '2026-10-29T00:00:00Z';
+
 const ET = 'America/New_York';
 
 // How far ET is behind UTC at a given instant, in ms (+4h during EDT).
