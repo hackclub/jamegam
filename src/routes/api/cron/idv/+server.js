@@ -11,10 +11,15 @@
 // `?dry=1` reports what it would do without writing to Airtable or DMing (the
 // DM text is logged). Real DMs also need IDV_DMS=on (postDM).
 //
+// `?now=<ISO>` (local dev server only, ignored in any build) runs the rules as
+// of that instant, so the reminder and cancel paths can be exercised on fresh
+// test rows. It sits behind the same CRON_SECRET check as everything else.
+//
 // Response: { ok, dry, checked, actions: [{ order, action, status }] }, where
 // `checked` counts the rows looked up in HCA and `status` is the live HCA status
 // (or the skip reason).
 import { json } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 import { timingSafeEqual } from 'node:crypto';
 import { listAll, getRecord, patchRecord } from '$lib/server/shopdb.js';
 import { checkIdentity } from '$lib/server/hca.js';
@@ -41,7 +46,8 @@ function authorized(request) {
 export async function GET({ request, url }) {
   if (!authorized(request)) return json({ ok: false, error: 'unauthorized' }, { status: 401 });
   const dry = url.searchParams.get('dry') === '1';
-  const now = Date.now();
+  const fakeNow = dev ? Date.parse(url.searchParams.get('now') ?? '') : NaN;
+  const now = Number.isFinite(fakeNow) ? fakeNow : Date.now();
   const actions = [];
   let checked = 0;
 
