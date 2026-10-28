@@ -6,7 +6,7 @@
 //
 // The IDV gate (idv.js orderGate) applies to NEW orders only: a verified
 // session places it as usual, an unverified one places it held (status
-// `held for verification`, which fulfillment never picks up), an ineligible one
+// `held for id verification`, which fulfillment never picks up), an ineligible one
 // gets a 403 with `ineligible: true` and no order. Anyone whose prize DM went
 // out before IDV_GATE_FROM is grandfathered. Changing an existing order never
 // re-gates it and never touches its status (the cron owns held rows).

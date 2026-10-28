@@ -12,7 +12,7 @@ import { releasePatch, dmText } from './idvcron.js';
  * Release one held order: `status` to `not fulfilled`, `idv_status` to
  * `verified`, `idv_released_at` = now, then the verified-noticed DM. Re-reads
  * the row first and does nothing unless it is still held (status
- * `held for verification` AND idv_status `held`), so a second caller racing the
+ * `held for id verification` AND idv_status `held`), so a second caller racing the
  * first, or a row someone moved by hand, is a no-op. `extra` rides along in the
  * same write (the cron's idv_last_status / idv_checked_at).
  *

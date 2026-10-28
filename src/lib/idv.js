@@ -6,7 +6,7 @@
 // No imports, so the page, the server and the plain-bun tests can all use it.
 
 /** The Shop Orders `status` option a held order sits in. */
-export const HELD_STATUS = 'held for verification';
+export const HELD_STATUS = 'held for id verification';
 
 /** The Shop Orders `idv_status` options. Blank on the row = placed before the gate. */
 export const IDV = {

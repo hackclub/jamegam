@@ -152,7 +152,7 @@ describe('single decisions', () => {
 });
 
 describe('skip-manual', () => {
-  test('cronOwns only rows still in held for verification with idv_status held', () => {
+  test('cronOwns only rows still in held for id verification with idv_status held', () => {
     expect(cronOwns(heldRow())).toBe(true);
     expect(cronOwns(heldRow({ status: 'not fulfilled' }))).toBe(false); // released by hand
     expect(cronOwns(heldRow({ status: 'canceled' }))).toBe(false);
