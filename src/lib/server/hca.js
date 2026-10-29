@@ -17,6 +17,25 @@ export async function checkAccount(email) {
   }
 }
 
+// The IDV gate's live lookup: the same public endpoint, by the HCA identity id
+// captured at shop sign-in (`ident_...`), which names exactly the account that
+// ordered. slack_id is only the fallback for a row with no hca_id. Returns the
+// raw result string, or 'error' (including when neither id is given).
+export async function checkIdentity({ hcaId, slackId }) {
+  const q = hcaId ? `idv_id=${encodeURIComponent(hcaId)}` : slackId ? `slack_id=${encodeURIComponent(slackId)}` : null;
+  if (!q) return 'error';
+  try {
+    const res = await fetch(`${config.hca.issuer}/api/external/check?${q}`, {
+      signal: AbortSignal.timeout(8000)
+    });
+    if (!res.ok) return 'error';
+    const data = await res.json();
+    return data.result ?? 'error';
+  } catch {
+    return 'error';
+  }
+}
+
 // 'has' (account exists) | 'none' (no account) | 'unknown' (check failed)
 export function accountState(result) {
   if (result === 'not_found') return 'none';

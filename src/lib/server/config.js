@@ -40,6 +40,10 @@ export const config = {
     announceChannelId: env.SLACK_JAMEGAM_ANNOUNCE_CHANNEL_ID || 'C0BBDUFF7K8',
     signingSecret: env.SLACK_SIGNING_SECRET, // verifies the Events API callbacks (/api/slack/events)
     nephthysEventsUrl: env.NEPHTHYS_EVENTS_URL, // https://<nephthys host>/slack/events; unset = no forwarding
+    // The IDV gate's DMs (postDM) only really send when this is exactly 'on'.
+    // Anything else, including unset, logs the DM text instead, so local dev and
+    // previews can never message a jammer.
+    idvDms: env.IDV_DMS === 'on'
   },
   shop: {
     sessionSecret: env.SESSION_SECRET, // HMAC key for the shop session cookie
@@ -51,6 +55,9 @@ export const config = {
   // Shared with the Submission Form "resolve identity" Airtable automation
   // (input.secret), which sends it as a Bearer token to /api/submit/resolve.
   submitResolveSecret: env.SUBMIT_RESOLVE_SECRET,
+  // Vercel sends it as a Bearer token on every cron invocation (/api/cron/idv).
+  // Unset means the cron route rejects everything, dry runs included.
+  cronSecret: env.CRON_SECRET,
   origin: env.ORIGIN, // optional; otherwise derived from the request origin
   // Apliiq print-on-demand: used only by /prizes/track-shirt to look up a
   // t-shirt order's status. Absent creds just make that one page say tracking

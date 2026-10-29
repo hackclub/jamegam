@@ -1,7 +1,7 @@
 // Signed shop session: "base64url(payload).base64url(hmac-sha256)" in an
 // httpOnly cookie. The payload carries the HCA identity snapshot the shop needs
-// (email, name, addresses, birthday) so we never store tokens or call HCA again
-// mid-session. Forging it requires SESSION_SECRET; expiry rides inside the
+// (email, name, addresses, birthday, HCA verification status + identity id) so
+// we never store tokens or call HCA again mid-session. Forging it requires SESSION_SECRET; expiry rides inside the
 // signed payload so a client can't stretch it.
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { config } from './config.js';
@@ -36,6 +36,10 @@ export function readSession(token) {
   try {
     const data = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
     if (!data.exp || Date.now() > data.exp) return null;
+    // The IDV gate reads verificationStatus + hcaId from the session. One minted
+    // before the gate shipped lacks them, so it counts as signed out: one
+    // re-sign-in, and the shop never guesses at a status it wasn't given.
+    if (typeof data.verificationStatus !== 'string' || typeof data.hcaId !== 'string') return null;
     return data;
   } catch {
     return null;
