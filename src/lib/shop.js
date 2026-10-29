@@ -153,7 +153,7 @@ export const PICK_WINDOW_DAYS = 4;
 // means the order is placed held, ineligible means no order. Anyone DMed before
 // it picked under the old rules, so their new order is written `grandfathered`
 // and never held. SET THIS TO THE DEPLOY TIME when the gate ships.
-export const IDV_GATE_FROM = '2026-10-29T00:00:00Z';
+export const IDV_GATE_FROM = '2026-10-29T00:50:05Z';
 
 const ET = 'America/New_York';
 
