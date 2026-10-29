@@ -44,7 +44,8 @@ describe('worked examples from PLAN.md', () => {
     const { log, dms, row } = simulate(() => 'needs_submission');
     expect(log).toEqual({ 7: ['remind1'], 23: ['remind2'], 30: ['cancel'] });
     expect(dms[23]).toMatchObject({ kind: 'remind2', rejected: false, deadline: at(30) });
-    expect(dms[30]).toEqual({ kind: 'cancel', ineligible: false });
+    expect(dms[30]).toEqual({ kind: 'cancel', ineligible: false, rejected: false });
+    expect(dmText(dms[30], heldRow())).toContain('within 30 days');
     expect(row.status).toBe('canceled');
     expect(row.idv_status).toBe('canceled');
   });
@@ -58,6 +59,10 @@ describe('worked examples from PLAN.md', () => {
     const { log, dms, row } = simulate((d) => (d >= 3 && d < 34 ? 'pending' : 'needs_submission'), 50);
     expect(log).toEqual({ 34: ['pending-ended', 'remind2'], 41: ['cancel'] });
     expect(dms[34]).toMatchObject({ kind: 'remind2', rejected: true, deadline: at(41) });
+    expect(dms[41]).toEqual({ kind: 'cancel', ineligible: false, rejected: true });
+    expect(dmText(dms[41], heldRow())).toBe(
+      "your jame gam prize order (jame gam hoodie) was canceled because your identity verification needed changes and wasn't resubmitted in time. sorry!"
+    );
     expect(row.idv_pending_ended_at).toBe(new Date(at(34)).toISOString());
     expect(row.status).toBe('canceled');
   });
@@ -151,6 +156,30 @@ describe('single decisions', () => {
   });
 });
 
+describe('cancellation variant', () => {
+  const created = new Date(CREATED).toISOString();
+  test('no rejection on record: the 30-day DM', () => {
+    const d = decideIdv(heldRow(), created, 'needs_submission', at(30));
+    expect(d.dm).toEqual({ kind: 'cancel', ineligible: false, rejected: false });
+    expect(dmText(d.dm, heldRow())).toContain("didn't start identity verification within 30 days");
+  });
+  test('grace after a rejection ran out (idv_pending_ended_at set): the needs-changes DM', () => {
+    const row = heldRow({ idv_pending_ended_at: new Date(at(34)).toISOString(), idv_final_reminder_at: new Date(at(34)).toISOString() });
+    const d = decideIdv(row, created, 'needs_submission', at(41));
+    expect(d.dm).toEqual({ kind: 'cancel', ineligible: false, rejected: true });
+    expect(dmText(d.dm, row)).toContain("needed changes and wasn't resubmitted in time");
+  });
+  test('rejected early (day 10), still canceled at day 30: the needs-changes DM', () => {
+    const row = heldRow({ idv_pending_ended_at: new Date(at(10)).toISOString() });
+    const d = decideIdv(row, created, 'needs_submission', at(30));
+    expect(d.dm.rejected).toBe(true);
+  });
+  test('ineligible keeps the ineligible variant', () => {
+    const d = decideIdv(heldRow({ idv_pending_ended_at: new Date(at(10)).toISOString() }), created, 'ineligible', at(12));
+    expect(dmText(d.dm, heldRow())).toContain("isn't eligible for prizes");
+  });
+});
+
 describe('skip-manual', () => {
   test('cronOwns only rows still in held for id verification with idv_status held', () => {
     expect(cronOwns(heldRow())).toBe(true);
@@ -209,7 +238,8 @@ describe('DM copy', () => {
       { kind: 'remind1' },
       { kind: 'remind2', deadline: at(30), rejected: false },
       { kind: 'remind2', deadline: at(41), rejected: true },
-      { kind: 'cancel', ineligible: false },
+      { kind: 'cancel', ineligible: false, rejected: false },
+      { kind: 'cancel', ineligible: false, rejected: true },
       { kind: 'cancel', ineligible: true }
     ];
     for (const dm of dms) {

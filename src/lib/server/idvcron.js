@@ -88,7 +88,8 @@ export function decideIdv(fields, createdTime, live, now) {
     if (now >= deadline) {
       actions.push('cancel');
       Object.assign(patch, cancelPatch());
-      dm = { kind: 'cancel', ineligible: false };
+      // after a rejection grace ran out the 30-day line would be wrong
+      dm = { kind: 'cancel', ineligible: false, rejected: pendingEnded != null };
     } else if (
       now >= deadline - FINAL_REMINDER_DAYS * DAY &&
       (finalAt == null || (pendingEnded != null && finalAt < pendingEnded))
@@ -143,9 +144,11 @@ export function dmText(dm, fields) {
       return `${first}\nverify here: ${VERIFY_LINK}\nonce you're verified it will be sent out automatically!`;
     }
     case 'cancel':
-      return dm.ineligible
-        ? `your jame gam prize order (${prize}) was canceled because your hack club account isn't eligible for prizes. if you think that's a mistake, reach out to auth@hackclub.com.`
-        : `your jame gam prize order (${prize}) was canceled because you didn't start identity verification within 30 days. sorry!`;
+      if (dm.ineligible)
+        return `your jame gam prize order (${prize}) was canceled because your hack club account isn't eligible for prizes. if you think that's a mistake, reach out to auth@hackclub.com.`;
+      if (dm.rejected)
+        return `your jame gam prize order (${prize}) was canceled because your identity verification needed changes and wasn't resubmitted in time. sorry!`;
+      return `your jame gam prize order (${prize}) was canceled because you didn't start identity verification within 30 days. sorry!`;
     default:
       throw new Error(`dmText: unknown dm kind ${dm.kind}`);
   }
