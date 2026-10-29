@@ -586,8 +586,9 @@
 
 <!-- the IDV hold: their order is in, but it ships only once Hack Club Auth
      says they're verified (the cron or the next sign-in releases it). Copy is
-     Augie's, verbatim. "i verified, check again" is a fresh shop sign-in,
-     which carries the new status and releases the order on the spot. -->
+     Augie's, verbatim. "i verified, check again" (and "check my status" on the
+     pending variant) is a fresh shop sign-in, which carries the new status and
+     releases the order on the spot. -->
 {#snippet heldBanner()}
   <div class="held">
     {#if data.order.idvStatus === 'pending'}
@@ -607,12 +608,14 @@
       anyone or post anywhere for it to happen. you'll get a DM once your ID is verified, and
       another DM when your prize is sent!
     </p>
-    {#if data.order.idvStatus !== 'pending'}
-      <p class="held-actions">
+    <p class="held-actions">
+      {#if data.order.idvStatus === 'pending'}
+        <a class="go" href="/api/auth/login?flow=shop">check my status</a>
+      {:else}
         <a class="go" href={VERIFY_URL} target="_blank" rel="noopener">verify now</a>
         <a class="go" href="/api/auth/login?flow=shop">i verified, check again</a>
-      </p>
-    {/if}
+      {/if}
+    </p>
   </div>
 {/snippet}
 
