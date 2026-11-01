@@ -35,7 +35,7 @@ if there's a problem with your game, we'll let you know via email.
 yes! however, while the jam is open to anyone, only those between the ages of 13-18 (inclusive) can receive prizes.
 
 **can i use ai for just the code?**
-no. this jam bans generative ai for everything, code included. if you've done jame gam before, heads up: this is stricter than our usual rules.
+no!
 
 **can i reuse code or assets?**
 asset packs, libraries, and code snippets are fine, as long as you credit everything you didn't make in your game's description. the game itself has to be made during the jam.
