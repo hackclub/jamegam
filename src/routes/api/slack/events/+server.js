@@ -21,12 +21,12 @@ export const prerender = false;
 
 // A copy of the channel's anchored message - change the pin, change this.
 const welcome = (user) => `:jamegam-yay: <@${user}> welcome to jame gam!!!
-:jamegam-welcome: new here? the _jame gam game jam_ runs from thursday 10/22 at 5pm EST to sunday 10/25 at 5pm EST. here's what to do:
-1. join the jam on itch: <https://slack-no-unfurl.vercel.app/?u=https%3A%2F%2Fjamegam.hackclub.com%2Fjam|itch.io/jam/jame-gam-game-jam>. you're not signed up unless you click the join button!
-2. if you haven't already, sign up at <https://slack-no-unfurl.vercel.app/?u=https%3A%2F%2Fjamegam.hackclub.com|jamegam.hackclub.com>!
+:jamegam-welcome: jame gam is hack club's community of teenage game devs: every month we all enter a game jam together, and every teen who ships a game gets a prize. this month it's the _mfg gambler's jam_, hosted by retrocrow and hack club, from saturday 12/5 at 6pm EST to sunday 12/13 at noon EST. here's what to do:
+1. join the jam on itch: <https://slack-no-unfurl.vercel.app/?u=https%3A%2F%2Fitch.io%2Fjam%2Fthe-mfg-gamblers-jam|itch.io/jam/the-mfg-gamblers-jam>. you're not signed up unless you click the join button!
+2. read how prizes work for this jam: <https://slack-no-unfurl.vercel.app/?u=https%3A%2F%2Fjamegam.hackclub.com%2Fgamblers-jam|jamegam.hackclub.com/gamblers-jam>
 3. introduce yourself in here! maybe find a team by <https://slack-no-unfurl.vercel.app/?u=https%3A%2F%2Fhackclub.enterprise.slack.com%2Fdocs%2FT0266FRGM%2FF0BBNGJE6QZ|clicking here>?
 4. check out <#C0BBDUFF7K8>! that's where more updates will be posted
-questions about jame gam, hack club, or anything else? read the <https://slack-no-unfurl.vercel.app/?u=https%3A%2F%2Fhackclub.enterprise.slack.com%2Fdocs%2FT0266FRGM%2FF0BBT4JD9P0|faq> and ask in <#C0BBDUEMF0E> :)`;
+questions about the jam, hack club, or anything else? ask in <#C0BBDUEMF0E> :)`;
 
 // #jame-gam-help and #jame-gam-tickets (also the helper list): the transcript in
 // hackclub/nephthys (transcripts/jame_gam.py) holds the same two ids.
