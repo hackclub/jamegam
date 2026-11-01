@@ -31,6 +31,9 @@ if there's a problem with your game, we'll let you know via email.
 
 ## faq
 
+**is this legit?**
+yes! hack club is a 501(c)(3) nonprofit (EIN 81-2908499), supported by partners like github, amd, nasa, futo, and proton, and [our finances are public](https://hcb.hackclub.com/hq). we've run programs like this for years, including [a bunch of game jams](https://gamedev.hackclub.com).
+
 **i'm not 13 to 18. can i still join?**
 yes! however, while the jam is open to anyone, only those between the ages of 13-18 (inclusive) can receive prizes.
 
