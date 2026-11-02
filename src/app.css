@@ -329,3 +329,16 @@ canvas.jw-ul {
   -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
   transform: translate3d(0,0,0);
 }
+
+/* use:rainbowBorder: its fill is a plain rectangle until the outline mask is
+   built (the pieces load async), so keep it hidden from first paint until the
+   action adds .rb-ready (src/lib/actions/rainbowBorder.js) */
+.rainbow-box:not(.rb-ready) {
+  visibility: hidden;
+}
+
+/* text selection: the site's sketch-box gray instead of the browser's blue */
+::selection {
+  background: #d9d4d8;
+  color: var(--ink);
+}

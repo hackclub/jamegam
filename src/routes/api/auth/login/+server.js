@@ -14,6 +14,7 @@ import { dev } from '$app/environment';
 import { authorizeUrl } from '$lib/server/hca.js';
 import { safeReturnUrl } from '$lib/server/submit.js';
 import { config } from '$lib/server/config.js';
+import { cleanRef } from '$lib/signupref.js';
 
 export const prerender = false;
 
@@ -33,6 +34,10 @@ export async function GET({ url, cookies }) {
   const shop = flow === 'shop';
   if (shop || flow === 'join') cookies.set('hca_flow', flow, cookieOpts);
   else cookies.delete('hca_flow', { path: '/' });
+  // join flow: /jam's ?ref= campaign tag, for a new signup's signup_origin
+  const ref = flow === 'join' ? cleanRef(url.searchParams.get('ref')) : '';
+  if (ref) cookies.set('hca_ref', ref, cookieOpts);
+  else cookies.delete('hca_ref', { path: '/' });
 
   // Submit flow: stash the (validated, forms.hackclub.com-only) form URL so the
   // callback knows to send them back there instead of to the homepage.

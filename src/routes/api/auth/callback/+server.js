@@ -30,6 +30,7 @@ import { config, F } from '$lib/server/config.js';
 import { JAM } from '$lib/jam.js';
 import { normalizeSessionStatus } from '$lib/idv.js';
 import { releaseHeldFor } from '$lib/server/idvhold.js';
+import { originTag } from '$lib/signupref.js';
 
 export const prerender = false;
 
@@ -50,6 +51,9 @@ export async function GET({ url, cookies }) {
   // Set only on the token-mode submit flow.
   const tokenMode = !!ret && cookies.get('hca_flow') === 'token';
   cookies.delete('hca_flow', { path: '/' });
+  // Set only on a tagged join flow (/jam?ref=...).
+  const ref = cookies.get('hca_ref');
+  cookies.delete('hca_ref', { path: '/' });
 
   const site = config.origin || url.origin;
   // /jam promises the jam page, so even a failed or declined sign-in still
@@ -152,6 +156,8 @@ export async function GET({ url, cookies }) {
         fields[F.signupOrigin] = new URL(site).host;
         if (JAM.airtableRecordId) fields[F.jam] = [JAM.airtableRecordId];
       }
+      // a tagged /jam link (?ref=...) says so in signup_origin
+      if (isNew && ref) fields[F.signupOrigin] = originTag(new URL(site).host, { page: 'jam', ref });
       const rec = await upsertSignup(fields);
 
       // HCA account == Slack account, so slack_id is present -> auto-add to #jame-gam

@@ -9,6 +9,7 @@ import { lookupSlackIdByEmail, inviteToChannel } from '$lib/server/slack.js';
 import { rateLimit } from '$lib/server/ratelimit.js';
 import { config, F } from '$lib/server/config.js';
 import { JAM } from '$lib/jam.js';
+import { originTag } from '$lib/signupref.js';
 
 export const prerender = false;
 
@@ -96,6 +97,9 @@ export async function POST({ request, getClientAddress }) {
     fields[F.slackId] = slackId;
     fields[F.slackInvited] = true;
   }
+  // which box and campaign it came from (page + ref, see $lib/signupref.js);
+  // untagged boxes keep the plain host / itch.io
+  fields[F.signupOrigin] = originTag(fields[F.signupOrigin], body);
   await upsertSignup(fields);
 
   // 4. welcome email (transactional). Best-effort: the signup is already saved

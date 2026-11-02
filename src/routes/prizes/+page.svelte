@@ -27,8 +27,44 @@
   import { variantValues, itemBlockedIn, listOr, PICK_WINDOW_DAYS } from '$lib/shop.js';
   import { frameVars } from '$lib/frames.js';
   import Dust from '$lib/components/Dust.svelte';
+  import { replaceState } from '$app/navigation';
+  import TeenSignupBox from '$lib/components/TeenSignupBox.svelte';
+  import TeenSignupPopup from '$lib/components/TeenSignupPopup.svelte';
+  import { cleanRef, ITCH_PRIZE_REFS } from '$lib/signupref.js';
 
   let { data } = $props();
+
+  // ---- teen signup (the box up top + the itch-only popup) ----
+  // An itch jam page's prize links add ?ref=<slug>. Read it once, strip it
+  // from the url (a reload or a shared link shouldn't re-open the popup), and
+  // keep it to tag the signup. The popup opens only for a ref in
+  // ITCH_PRIZE_REFS, only when signed out, and not again once dismissed here.
+  const TEEN_SEEN = 'jg-teen-popup-seen';
+  let teenRef = $state('');
+  let teenPopup = $state(false);
+  onMount(() => {
+    const url = new URL(location.href);
+    if (!url.searchParams.has('ref')) return;
+    teenRef = cleanRef(url.searchParams.get('ref'));
+    url.searchParams.delete('ref');
+    // the router isn't up yet during this first mount; strip on the next tick
+    setTimeout(() => {
+      try {
+        replaceState(url, {});
+      } catch {}
+    });
+    let seen = false;
+    try {
+      seen = !!localStorage.getItem(TEEN_SEEN);
+    } catch {}
+    if (ITCH_PRIZE_REFS.includes(teenRef) && data.state === 'signedout' && !seen) teenPopup = true;
+  });
+  function closeTeen() {
+    teenPopup = false;
+    try {
+      localStorage.setItem(TEEN_SEEN, '1');
+    } catch {}
+  }
 
   // the whole "instead of one thing" pool: the stuff and the winners bracket
   // both order as a single `prize`, so anything reading an order back has to
@@ -362,7 +398,8 @@
   <div class="shop-dust" aria-hidden="true"><Dust /></div>
 
   {#if ineligible}
-    <section class="panel">
+    <section class="panel boxed">
+      {@render boxFrame()}
       <p class="lede">
         sorry, your hack club account isn't eligible for prizes, so we can't send you a prize. if
         you think that's a mistake, reach out to
@@ -380,52 +417,53 @@
       <p class="lede center intro2">
         along with every prize, you'll be shipped stickers!
       </p>
-      <!-- the context line. The only deadline is a personal one, so a signed-out
-           visitor gets no date - just the invitation to sign in. Signed in, it's
-           the where-you-stand notes, or the 'closed' state for someone whose own
-           pick window ran out. -->
-      <!-- signed out gets no line, just the sign-in button below: naming the
-           newest shop cycle ("if you participated in the cozy fall jam") reads
-           stale once the homepage has moved on to the next jam. (the deadline
-           lives at the page bottom for noaddress) -->
-      {#if data.state === 'closed'}
-        <p class="deadline deadline-top loud">
-          the {jamMonth} prize shop has closed and you never picked your prize! post in
-          #jame-gam-help and i'll sort you out.
-        </p>
-      {:else if data.state === 'pending'}
-        <p class="deadline deadline-top loud">
-          your {jamMonth} submission is in, but hasn't been reviewed yet! you'll get a DM once
-          it's approved, then you can come back and pick :)
-        </p>
-      {:else if data.state === 'awaitingdm'}
-        <!-- deliberately does NOT say they were approved: a reviewer's yes still
-             has to clear the spotcheck, and a first-pass approval we later walk
-             back is worse than saying nothing. reads as in-review, which is true. -->
-        <p class="deadline deadline-top loud">
-          your {jamMonth} submission is in and being reviewed! you'll get a slack DM once it's
-          approved, then you'll have {PICK_WINDOW_DAYS} days to pick your prize :)
-        </p>
-      {/if}
-      {#if data.state === 'signedout'}
-        {#if data.authError}
-          <p class="err">that sign-in didn't go through, give it another try!</p>
-        {/if}
-        <a class="signin signin-top" href="/api/auth/login?flow=shop">
-          <img src="/assets/signin.png" alt="sign in with hack club" />
-        </a>
-      {/if}
     </header>
+    <!-- the prize box: where this visitor stands, under the header. Signed
+         out it's the teen signup (+ a quiet sign-in); signed in, the
+         in-review / closed notes. No submission has nothing to say, so no box.
+         (Naming the newest shop cycle to a signed-out visitor reads stale once
+         the homepage has moved on, so they get no cycle line.) -->
+    {#if data.state !== 'nosubmission'}
+      <section class="pbox">
+        {@render boxFrame()}
+        {#if data.state === 'closed'}
+          <p class="pbox-note">
+            the {jamMonth} prize shop has closed and you never picked your prize! post in
+            #jame-gam-help and we'll sort you out.
+          </p>
+        {:else if data.state === 'pending'}
+          <p class="pbox-note">
+            your {jamMonth} submission is in, but hasn't been reviewed yet! you'll get a DM once
+            it's approved, then you can come back and pick :)
+          </p>
+        {:else if data.state === 'awaitingdm'}
+          <!-- deliberately does NOT say they were approved: a reviewer's yes still
+               has to clear the spotcheck, and a first-pass approval we later walk
+               back is worse than saying nothing. reads as in-review, which is true. -->
+          <p class="pbox-note">
+            your {jamMonth} submission is in and being reviewed! you'll get a slack DM once it's
+            approved, then you'll have {PICK_WINDOW_DAYS} days to pick your prize :)
+          </p>
+        {:else if data.state === 'signedout'}
+          {#if data.authError}
+            <p class="err">that sign-in didn't go through, give it another try!</p>
+          {/if}
+          <TeenSignupBox ref={teenRef} />
+        {/if}
+      </section>
+    {/if}
     {@render prizeGrids()}
   {:else if data.state === 'rejected'}
-    <section class="panel">
+    <section class="panel boxed">
+      {@render boxFrame()}
       <p class="lede">
         i couldn't approve your submission this time, so there's no prize pick here. if that seems
-        wrong, post in #jame-gam-help and i'll take another look!
+        wrong, post in #jame-gam-help and we'll take another look!
       </p>
     </section>
   {:else if data.state === 'noaddress'}
-    <section class="panel addr-need">
+    <section class="panel boxed addr-need">
+      {@render boxFrame()}
       <p class="lede">
         your game{data.gameTitles.length ? ` "${data.gameTitles[0]}"` : ''} is approved! before you
         can pick a prize, you need to set your mailing address on
@@ -435,7 +473,8 @@
       <a class="go" href="/api/auth/login?flow=shop">i added it, check again</a>
     </section>
   {:else if data.state === 'error'}
-    <section class="panel">
+    <section class="panel boxed">
+      {@render boxFrame()}
       <p class="lede">something broke on our end! refresh to try again, or ask in #jame-gam.</p>
     </section>
   {:else if data.state === 'shop'}
@@ -443,7 +482,8 @@
       <!-- locked order: the rainbow your-pick card, read-only (no address
            link, no change-my-pick). a canceled order collapses to one line. -->
       {#if data.order.status === 'canceled'}
-        <section class="panel">
+        <section class="panel boxed">
+          {@render boxFrame()}
           <p class="lede">
             your order for {jamMonth} was cancelled, post in #jame-gam-help if that sounds wrong!
           </p>
@@ -499,24 +539,31 @@
         <p class="lede center intro2">
           along with every prize, you'll be shipped stickers!
         </p>
-        <!-- only someone whose prize DM has gone out has a clock to count down -->
-        {#if data.closesAt}
-          <p class="lede center intro2 countdown">
-            you have <span class="cd-time">{countdown}</span> to pick your prize!
-          </p>
-        {/if}
-        <!-- shipping note lives in the your-pick card once an order exists -->
-        {#if address && !data.order}
-          <p class="ship-note">
-            {#if !noStickers}shipping to{/if}
-            <button class="addr-edit" type="button" onclick={() => (modal = { kind: 'address' })}>
-              {noStickers
-                ? 'not shipping you any stickers'
-                : `${address.line1}, ${address.city}`}<img class="pencil" src="/assets/pencil.png" alt="" />
-            </button>
-          </p>
-        {/if}
       </header>
+
+      <!-- the prize box, nothing picked yet: the clock (only someone whose
+           prize DM has gone out has one) + where it ships. Once there's an
+           order, the box is the rainbow your-pick card below instead. -->
+      {#if !data.order && (data.closesAt || address)}
+        <section class="pbox">
+          {@render boxFrame()}
+          {#if data.closesAt}
+            <p class="pbox-note countdown">
+              you have <span class="cd-time">{countdown}</span> to pick your prize!
+            </p>
+          {/if}
+          {#if address}
+            <p class="ship-note">
+              {#if !noStickers}shipping to{/if}
+              <button class="addr-edit" type="button" onclick={() => (modal = { kind: 'address' })}>
+                {noStickers
+                  ? 'not shipping you any stickers'
+                  : `${address.line1}, ${address.city}`}<img class="pencil" src="/assets/pencil.png" alt="" />
+              </button>
+            </p>
+          {/if}
+        </section>
+      {/if}
 
       {#if data.order}
         <!-- existing order: a rainbow-bordered card between the header and the
@@ -553,6 +600,9 @@
               {#if browsing}
                 <p class="fine">you can switch your pick below before i get around to fulfilling it ;)</p>
               {/if}
+              {#if data.closesAt}
+                <p class="fine">you have <span class="cd-time">{countdown}</span> to pick your prize!</p>
+              {/if}
             </div>
           </div>
           {#if data.order.idvHeld}{@render heldBanner()}{/if}
@@ -583,6 +633,12 @@
     </p>
   {/if}
 </main>
+
+<!-- the prize box's frame: the your-pick card's hand-drawn outline
+     (use:rainbowBorder), filled flat light gray instead of rainbow -->
+{#snippet boxFrame()}
+  <div class="pbox-frame rainbow-box gray" use:rainbowBorder={{ bleed: 8, notch: false }} aria-hidden="true"></div>
+{/snippet}
 
 <!-- the IDV hold: their order is in, but it ships only once Hack Club Auth
      says they're verified (the cron or the next sign-in releases it). Copy is
@@ -751,6 +807,10 @@
     </p>
   {/if}
 {/snippet}
+
+{#if teenPopup}
+  <TeenSignupPopup ref={teenRef} onclose={closeTeen} />
+{/if}
 
 <!-- ===== the item modal (info + order/add) ===== -->
 {#if modal}
@@ -1067,12 +1127,6 @@
     max-width: calc(var(--col) * 0.75); /* 3/4 of the landing centre column */
     line-height: 1.05;
   }
-  /* the live deadline countdown, right under the intro: the framing words
-     recede, the ticking part stays full ink */
-  .lede.center.countdown {
-    margin-top: calc(12px * var(--scale));
-    color: rgba(80, 75, 73, 0.55);
-  }
   .cd-time {
     color: var(--ink);
   }
@@ -1174,35 +1228,6 @@
     margin-left: calc(8px * var(--scale));
   }
 
-  /* "sign in with hack club" - image button, same treatment as the landing
-     page's "i'm in" (bare art, opacity lift on hover) */
-  .signin {
-    display: block;
-    margin-top: calc(24px * var(--scale)); /* extra air under the big title */
-    opacity: 0.8;
-  }
-  .signin:hover {
-    opacity: 0.9;
-  }
-  /* sized by height (like .email-im's 40px) so the art's width just follows
-     its own aspect ratio */
-  .signin img {
-    display: block;
-    height: calc(40px * var(--scale));
-    width: auto;
-    max-width: 100%;
-  }
-  /* the header version (signed-out browse): inline-block so the centered
-     header actually centres it, and a touch smaller - it's a nudge, not the
-     whole page like the old signed-out panel */
-  .signin.signin-top {
-    display: inline-block;
-    margin-top: calc(28px * var(--scale));
-  }
-  .signin.signin-top img {
-    height: calc(34px * var(--scale));
-  }
-
   /* the order deadline, pinned to the bottom of the slim states */
   .deadline {
     margin: calc(48px * var(--scale)) auto 0;
@@ -1216,15 +1241,6 @@
   }
   /* the signed-out header version: tucked under the intro, fainter (element
      opacity so the red jam name fades with the rest) */
-  .deadline.deadline-top {
-    margin-top: calc(14px * var(--scale));
-    opacity: 0.6;
-  }
-  /* the signed-in context lines (no submission / in review / shop closed):
-     full strength, they're the answer to "where's my pick", not ambience */
-  .deadline.deadline-top.loud {
-    opacity: 1;
-  }
 
   /* "signed in as ..." - pinned to the very bottom, same size as everything else */
   .who-bottom {
@@ -1396,6 +1412,72 @@
     mask-size: 100% 100%;
     -webkit-mask-position: 0 0;
     mask-position: 0 0;
+  }
+
+  /* the prize box: the your-pick card's frame and spacing, in the outline
+     gray of the site's sketch boxes (email_box542 / prize_line #d9d4d8) */
+  /* sized to what it holds (up to the column), padded evenly: the vertical
+     and horizontal insets are one step apart on the page's scale */
+  .pbox {
+    position: relative;
+    box-sizing: border-box;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: calc(32px * var(--scale)) calc(40px * var(--scale));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(12px * var(--scale));
+    text-align: center;
+  }
+  /* the header ends with its own 28px; these top it up to the same 40px the
+     box keeps below it, so the box sits evenly between the stickers line and
+     the suggest line (and the your-pick card the same under the header) */
+  .head + .pbox,
+  .head + .picked {
+    margin-top: calc(12px * var(--scale));
+  }
+  .pbox + .suggest-note.suggest-top {
+    margin-top: calc(40px * var(--scale));
+  }
+  .pbox > :not(.pbox-frame),
+  .panel.boxed > :not(.pbox-frame) {
+    position: relative; /* over the frame layer */
+  }
+  .pbox-frame {
+    position: absolute;
+    inset: -8px;
+    pointer-events: none;
+  }
+  .rainbow-box.gray {
+    background-image: none;
+    background-color: #d9d4d8;
+  }
+  .pbox-note {
+    margin: 0;
+    max-width: calc(560px * var(--scale)); /* the slim panels' measure */
+    line-height: 1.15;
+  }
+  .pbox-note.countdown {
+    color: rgba(80, 75, 73, 0.55);
+  }
+  .pbox .ship-note {
+    margin: 0;
+  }
+  /* the panel-only states (not eligible, rejected, no address, error,
+     cancelled) sit in the same gray box */
+  .panel.boxed {
+    position: relative;
+    box-sizing: border-box;
+    max-width: calc(640px * var(--scale)); /* 560 of text + the insets */
+    padding: calc(32px * var(--scale)) calc(40px * var(--scale));
+  }
+  @media (max-width: 639px) {
+    .pbox,
+    .panel.boxed {
+      padding: calc(24px * var(--scale));
+    }
   }
 
   /* ===== groups + tile grid ===== */

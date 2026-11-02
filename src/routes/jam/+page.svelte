@@ -9,8 +9,12 @@
   // The forward is a client-side navigation from this origin on purpose, so
   // itch sees jamegam.hackclub.com as the referrer (a 302 chain from HCA would
   // carry auth.hackclub.com or nothing). utm_source rides along as well.
+  //
+  // ?ref= is an optional campaign tag (e.g. /jam?ref=announcements) that lands
+  // in a new signup's signup_origin, see $lib/signupref.js.
   import { onMount } from 'svelte';
   import { JAM } from '$lib/jam.js';
+  import { cleanRef } from '$lib/signupref.js';
   import { loadPrefill } from '$lib/prefill.js';
   import Dust from '$lib/components/Dust.svelte';
   import BottomGlow from '$lib/components/BottomGlow.svelte';
@@ -30,9 +34,13 @@
       return;
     }
 
+    const params = new URLSearchParams(location.search);
+    const ref = cleanRef(params.get('ref'));
     const email = await within(loadPrefill(), 4000, '');
     if (!email) {
-      location.replace('/api/auth/login?flow=join');
+      const login = new URLSearchParams({ flow: 'join' });
+      if (ref) login.set('ref', ref);
+      location.replace(`/api/auth/login?${login}`);
       return;
     }
 
@@ -40,7 +48,7 @@
       fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'join' }),
+        body: JSON.stringify({ email, source: 'join', page: ref ? 'jam' : '', ref }),
         keepalive: true
       }).catch(() => null),
       8000,

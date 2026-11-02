@@ -134,6 +134,9 @@ function buildMask(el, opts, a) {
   const url = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
   el.style.webkitMaskImage = url;
   el.style.maskImage = url;
+  // app.css keeps a .rainbow-box hidden until this lands, so its fill never
+  // paints as an unclipped rectangle while the pieces are still loading
+  el.classList.add('rb-ready');
 }
 
 /** Svelte action: paint a dynamic rainbow border, rebuilding on resize. */

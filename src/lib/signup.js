@@ -9,9 +9,11 @@ import { writable, get } from 'svelte/store';
 export const signup = writable({ done: false, message: '' });
 
 // POST one email to /api/signup, guarding against a repeat submit in this
-// session. Returns { ok } (+ { error } on failure); on success it sets the
+// session. page + ref tag where it came from (signup_origin, see signupref.js).
+// Returns { ok } (+ { error } on failure); on success it sets the
 // shared `signup` store, which every box subscribes to.
-export async function submitSignup({ email, company, source }) {
+/** @param {{ email: string, company?: string, source?: string, page?: string, ref?: string }} args */
+export async function submitSignup({ email, company, source, page, ref }) {
   const v = String(email || '').trim();
   if (!v) return { ok: false };
   if (get(signup).done) return { ok: true }; // already signed up this session
@@ -19,7 +21,7 @@ export async function submitSignup({ email, company, source }) {
   const res = await fetch('/api/signup', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: v, company, source })
+    body: JSON.stringify({ email: v, company, source, page, ref })
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok || !data.ok) return { ok: false, error: data.error };
