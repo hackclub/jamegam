@@ -58,9 +58,9 @@
       {
         '@type': 'Event',
         '@id': `${SITE_URL}/#current-jam`,
-        name: 'Jame Gam - October 2026 game jam',
+        name: 'Jame Gam - December 2026 game jam',
         description:
-          "Jame Gam's monthly community jam. This October, teenage game devs build games together in the Jame Gam Game Jam, jame gam's own three-day jam on itch.io. Free and online, open to ages 13 to 18, run by Hack Club.",
+          "Jame Gam's monthly community jam. This December, teenage game devs build games together in The MFG Gambler's Jam, an eight-day jam on itch.io that Hack Club runs with RetroCrow. Free and online, with prizes for ages 13 to 18.",
         startDate: JAM.startDate,
         endDate: JAM.endDate,
         eventStatus: 'https://schema.org/EventScheduled',

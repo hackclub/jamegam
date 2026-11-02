@@ -22,7 +22,7 @@ export const FAQS = [
   {
     id: 'busy',
     q: "i'm too busy :(",
-    a: "we run jams every month! if you can't make this one, you're still welcome in the community, and we'd love to see you at the next one. most of the jams we join are 4-8 days long, so you can also join in the middle!"
+    a: "we run jams almost every month! if you can't make this one, you're still welcome in the community, and we'd love to see you at the next one. most of the jams we join are 4-8 days long, so you can also join in the middle!"
   },
   {
     id: 'bad-game',

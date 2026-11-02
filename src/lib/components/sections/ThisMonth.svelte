@@ -4,16 +4,16 @@
 
   let countdownEl;
   let monthEl;
-  let whenEl;
-  let whatEl;
   let durEl;
   let nextEl;
 
   // whole days from the dates, so the duration line can't drift from jam.js
   const DAYS = Math.round((Date.parse(JAM.endDate) - Date.parse(JAM.startDate)) / 86400000);
   const daysText = `${DAYS} day${DAYS === 1 ? '' : 's'}`;
-  // our own jam is "the jam"; someone else's is "this jam"
-  const theJam = JAM.hosted ? 'the jam' : 'this jam';
+  // the headline over the box: we host our own jams and crash everyone else's
+  // (the caption under the box names the jam either way).
+  const headline = (when) => `${when} we\u2019re ${JAM.hosted ? 'hosting' : 'crashing'}`;
+  const headlinePast = (when) => `${when} we ${JAM.hosted ? 'hosted' : 'crashed'}`;
 
   // caption: JAM.captionRainbow (a suffix of displayName) gets one site
   // palette colour per letter, red first, cycling; spaces don't use a colour.
@@ -21,6 +21,20 @@
   const rainbowPart =
     JAM.captionRainbow && JAM.displayName.endsWith(JAM.captionRainbow) ? JAM.captionRainbow : '';
   const capHead = JAM.displayName.slice(0, JAM.displayName.length - rainbowPart.length);
+  // where the jam's start sits from `now`: "this month", "next month", or "in
+  // february" further out (jame gam skips a month now and then, so JAM can be
+  // set well ahead). UTC, like the dates.
+  const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+  function startWhen(now) {
+    const d = new Date(JAM.startDate), t = new Date(now);
+    const ahead = (d.getUTCFullYear() - t.getUTCFullYear()) * 12 + d.getUTCMonth() - t.getUTCMonth();
+    if (ahead <= 0) return 'this month';
+    return ahead === 1 ? 'next month' : `in ${MONTHS[d.getUTCMonth()]}`;
+  }
+  // first paint (the page is prerendered, so this is the build's guess);
+  // tick() below corrects it against the visitor's clock
+  const when0 = startWhen(Date.now());
+
   let k = 0;
   const capRainbow = [...rainbowPart].map((ch) => ({
     ch,
@@ -38,14 +52,17 @@
     const clamp = () => { durEl.style.whiteSpace = 'normal'; durEl.style.maxWidth = '400px'; };
     const fmt = (ms) => {
       const s = Math.floor(ms / 1000);
-      return `${JAM.hosted ? 'it starts ' : ''}in ${Math.floor(s / 86400)}:${z2(Math.floor((s % 86400) / 3600))}:${z2(Math.floor((s % 3600) / 60))}:${z2(s % 60)}`;
+      return `in ${Math.floor(s / 86400)}:${z2(Math.floor((s % 86400) / 3600))}:${z2(Math.floor((s % 3600) / 60))}:${z2(s % 60)}`;
     };
+    const setWhen = (when) => { monthEl.textContent = headline(when); };
     function tick() {
       const now = Date.now();
       if (now < START) {
         countdownEl.textContent = fmt(START - now);            // before it starts: count down to start
+        setWhen(startWhen(now));
       } else if (now < END) {
         countdownEl.textContent = "it's started!";
+        setWhen('this month');
         durEl.innerHTML = "it&rsquo;s never too late to join!!";
         clamp();
       } else {
@@ -56,13 +73,8 @@
         const end = new Date(END), today = new Date(now);
         const sameMonth = end.getUTCFullYear() === today.getUTCFullYear() && end.getUTCMonth() === today.getUTCMonth();
         const when = sameMonth ? "this month" : "last month";
-        if (JAM.hosted) {
-          whenEl.textContent = `${when}...`;
-          whatEl.textContent = 'we ran our own!';
-        } else {
-          monthEl.textContent = `${when} we crashed`;
-        }
-        durEl.innerHTML = `${theJam} ran for <span style="color:${JAM.color};">${daysText}</span>!`;
+        monthEl.textContent = headlinePast(when);
+        durEl.innerHTML = `this jam ran for <span style="color:${JAM.color};">${daysText}</span>!`;
         nextEl.style.display = "";   // reveal the "join us next month" line
         clamp();
       }
@@ -74,37 +86,26 @@
 </script>
 
 <!-- ===== THIS MONTH =====
-     Centre column flows normally: headline -> title box -> countdown ->
-     duration -> disclaimer. The title row used to pair the box with a jam
-     video (see git history for the video column); this month it is just the
-     box, centred. -->
+     Centre column flows normally: headline -> title row -> countdown ->
+     duration -> disclaimer. The title row holds the bordered jam title box and,
+     when JAM.video is set, the video as two side-by-side columns on wide
+     screens (>=960px); below that they stack (box, then video). With no video
+     the box sits alone, centred, with a big new-tab icon off its right edge. -->
 <section id="this-month" class="sec sec-month">
   <div class="col month-inner">
-    {#if !JAM.hosted}
-      <h2 bind:this={monthEl} id="jam-month" class="txt month-head">this month we&rsquo;re crashing</h2>
-    {/if}
+    <h2 bind:this={monthEl} id="jam-month" class="txt month-head">{headline(when0)}</h2>
 
-    <div class="titlerow">
+    <div class="titlerow" class:hasvid={JAM.video}>
       <!-- jam title: two stacked transparent layers (same construction as the
            june comp, figma node 1:45): the gray hand-drawn border as one whole
            image (always connects its corners) with this month's title art
            layered inside, over a fill. art + fill come from JAM.titleArt /
            JAM.titleFill. -->
-      <div class="jamcol">
-        {#if JAM.hosted}
-          <!-- our own jam: a small "this month..." kicker pinned to the box's
-               top-left stroke, then the punchline at headline size centred
-               over the box, both tilted to match the hand-drawn border. inside
-               .jamcol so both can measure off the box itself. -->
-          <h2 id="jam-month" class="month-head hosted">
-            <span bind:this={whenEl} class="txt month-when">this month...</span>
-            <span bind:this={whatEl} class="txt month-what">we&rsquo;re running our own!</span>
-          </h2>
-        {/if}
-        <a class="jamtitle" href={JAM.itchUrl} target="_blank" rel="noopener" aria-label="{JAM.name} on itch.io">
+      <div class="jamcol" class:ontop={JAM.titleArt && JAM.titleArtOnTop}>
+        <a class="jamtitle" style:aspect-ratio={JAM.titleAspect || null} href={JAM.itchUrl} target="_blank" rel="noopener" aria-label="{JAM.name} on itch.io">
           <!-- big "open in new tab" icon tucked under the box's right edge; the
                whole box is the link, and hovering anywhere darkens the icon -->
-          <span class="jamtitle-newtab" aria-hidden="true"><img src="/assets/newtab.png" alt="" /></span>
+          {#if !JAM.video}<span class="jamtitle-newtab" aria-hidden="true"><img src="/assets/newtab.png" alt="" /></span>{/if}
           <span class="jamtitle-bg" style="background-image: url('{JAM.titleFill}');" aria-hidden="true"></span>
           {#if JAM.titleArt}<img class="jamtitle-card" src={JAM.titleArt} alt={JAM.name} />{/if}
           <span class="jamtitle-border" aria-hidden="true"></span>
@@ -113,14 +114,28 @@
              (JAM.displayName, so this rolls over with the rest of jam.js). -->
         <p class="txt jamtitle-cap">{capHead}{#each capRainbow as { ch, color }}<span style:color={color}>{ch}</span>{/each}</p>
       </div>
+
+      {#if JAM.video}
+        <!-- video player: rotated photo + separately-rotated play icon on top
+             (figma node 1:53). Right column of the title row on wide screens;
+             in the stacked flow below 960px. The "watch the video" doodle is
+             pinned to the player's bottom-right corner (wide only). -->
+        <div class="vidcol">
+          <a class="video-link" href={JAM.video.url} target="_blank" rel="noopener" aria-label="watch the video">
+            <span class="el el-vidphoto"><img src={JAM.video.photo} alt={JAM.video.alt} /></span>
+            <span class="el el-vidplay"><img src="/assets/video_play.png" alt="play" /></span>
+          </a>
+          <span class="deco month-watch"><img src="/assets/dec556.png" alt="watch the video" /></span>
+        </div>
+      {/if}
     </div>
 
     <!-- countdown -->
-    <p bind:this={countdownEl} id="countdown" class="txt month-count">{JAM.hosted ? 'it starts ' : ''}in 7:18:40:53</p>
-    <p bind:this={durEl} id="jam-duration" class="txt month-dur">{theJam} will run for <span style="color:{JAM.color};">{daysText}</span>!</p>
+    <p bind:this={countdownEl} id="countdown" class="txt month-count">in 7:18:40:53</p>
+    <p bind:this={durEl} id="jam-duration" class="txt month-dur">this jam will run for <span style="color:{JAM.color};">{daysText}</span>!</p>
     <!-- post-jam only: revealed by tick() once the jam has ended (hidden until then) -->
     <div bind:this={nextEl} id="jam-next" style="display:none;">
-      <p class="txt month-next">made a game? <a href={JAM.submitUrl}>submit it here</a>!</p>
+      {#if JAM.submitUrl}<p class="txt month-next">made a game? <a href={JAM.submitUrl}>submit it here</a>!</p>{/if}
       <p class="txt month-next">and join us next month for another jam!</p>
     </div>
     {#if JAM.disclaimer}<p class="txt month-disclaimer">{JAM.disclaimer}</p>{/if}
@@ -153,34 +168,6 @@
     line-height: 1.05;
     text-wrap: balance;      /* when it wraps on phones, no lone last word */
   }
-  .month-head.hosted {
-    display: flex;
-    flex-direction: column;
-    /* same net gap to the box as the plain headline gets (its 10px less the
-       .titlerow's -18px pull-up, which sits above this one instead) */
-    margin-bottom: calc(-8px * var(--scale));
-  }
-  /* both lines tilt with the border (same angle as the caption under the box) */
-  .month-when {
-    align-self: flex-start;
-    /* left edge on the border's top-left stroke: the box's 14px nudge, plus
-       where title_border.png's stroke starts (x=24 of its 45px left slice,
-       which border-image draws at 3.4% of the box width = ~1.8%). pivoting on
-       the bottom-left keeps that corner put while the text tilts. */
-    margin-left: calc(14px * var(--scale) + 1.8%);
-    font-size: calc(30px * var(--scale));
-    transform: rotate(1.3deg);
-    transform-origin: left bottom;
-  }
-  .month-what {
-    align-self: center;
-    text-align: center;
-    /* .jamcol is the box plus its 14px left nudge, so the box's centre sits
-       7px right of the column's */
-    position: relative;
-    left: calc(7px * var(--scale));
-    transform: rotate(1.3deg);
-  }
   /* on wide, the title row is a touch wider than the column, so widen the
      headline to match and keep its left edge near the border's. */
   @media (min-width: 800px) {
@@ -194,6 +181,16 @@
     align-items: center;
     width: 100%;
     margin-top: calc(-18px * var(--scale));
+  }
+  @media (min-width: 960px) {
+    .titlerow.hasvid {
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    /* neither column may squeeze when the row overflows the centre column a
+       little; the overflow spreads symmetrically into the gutters instead. */
+    .titlerow.hasvid > * { flex-shrink: 0; }
   }
 
   /* ===== jam title block =====
@@ -217,7 +214,7 @@
      by about half of what sticks out and the box + icon read as one centred
      object (wide only: on narrow screens the box is full width). */
   @media (min-width: 800px) {
-    .jamcol { margin-left: calc(-60px * var(--scale)); }
+    .titlerow:not(.hasvid) .jamcol { margin-left: calc(-60px * var(--scale)); }
   }
   /* same face as the .month-head line above the box, smaller and set flush with
      the box's right edge. */
@@ -292,6 +289,21 @@
     image-rendering: pixelated;
   }
 
+  /* on top (JAM.titleArtOnTop): the art draws above the border, centred in
+     the box, so at its size it can lie over the stroke (the fill stays
+     inside). width-led, height follows the art; smooth-scaled since it's
+     drawn art near source size, not chunky pixel art. */
+  .ontop .jamtitle-card {
+    z-index: 4;
+    left: 50%;
+    top: 50%;
+    width: 82%;
+    height: auto;
+    transform: translate(-50%, -50%);
+    image-rendering: auto;
+    pointer-events: none;
+  }
+
   /* "open in new tab" icon: sits under the box (z-index 0, below the fill),
      poking out past the right edge, vertically centred. pixel art, so integer-
      ish scale via --scale and pixelated upscaling. */
@@ -346,6 +358,79 @@
     font-size: var(--t-small);
     color: #d9d4d8;
     line-height: 1.2;
+  }
+
+  /* ===== video (right column of the title row, when JAM.video is set) =====
+     Default (stacked): in-flow centred figure below the box, capped to natural
+     size. The wrapper (.vidcol) exists so the "watch the video" doodle can pin
+     to the player's corner without inheriting the hover tilt. */
+  .vidcol {
+    position: relative;
+    width: 100%;      /* the player inside sizes itself with width:100% +
+                         max-width, so this wrapper must not shrink-to-fit
+                         (its only child is out of flow and it would collapse) */
+  }
+  .video-link {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: calc(276px * var(--scale));
+    margin: calc(32px * var(--scale)) auto 0;
+    aspect-ratio: 276 / 155;
+    text-decoration: none;
+  }
+  .video-link .el { position: absolute; }
+  .el-vidphoto {
+    left: 0; top: 0; width: 100%; height: auto;
+    transform: rotate(-3deg); z-index: 2;
+  }
+  .el-vidphoto img { width: 100%; height: auto; display: block; }
+  /* mobile: shrink the player and pull it up so its top tucks against the bottom
+     of the title block instead of floating below it. */
+  @media (max-width: 800px) {
+    .video-link {
+      max-width: calc(210px * var(--scale));
+      margin-top: calc(-12px * var(--scale));
+    }
+  }
+  /* play icon centred over the photo (≈ comp offset) */
+  .el-vidplay {
+    left: 50%; top: 50%; width: 16.5%; height: auto;
+    transform: translate(-50%, -50%) rotate(-3deg); z-index: 3;
+  }
+  .el-vidplay img { width: 100%; height: auto; display: block; }
+  /* hover: tilt the whole player 8deg further left as one rigid unit (photo +
+     play together), instantly (no anim) */
+  .video-link:hover { transform: rotate(-8deg); transform-origin: center center; }
+
+  /* two-column mode: the video takes its fixed size beside the box, tucks
+     over the box's right border a little, vertically centred on the box, and
+     keeps the comp's deeper tilt. */
+  @media (min-width: 960px) {
+    .vidcol {
+      width: calc(276px * var(--scale));
+      margin-left: calc(-36px * var(--scale));
+      /* the row centres on .jamcol (box + caption), so nudge the player up by
+         about half the caption to sit level with the box itself. */
+      margin-top: calc(-64px * var(--scale));
+      z-index: 4;            /* above the box's border layer (z-index 3) */
+    }
+    .video-link { width: 100%; margin: 0; }
+    .el-vidphoto { transform: rotate(-6.24deg); }
+    .el-vidplay  { transform: translate(-50%, -50%) rotate(-6.24deg); }
+  }
+
+  /* "watch the video" doodle, pinned to the player's bottom-right corner (its
+     arrow points back at the player). Wide-only: in the stacked layout there's
+     no corner for it to hang off, so it hides below the two-column breakpoint. */
+  .month-watch {
+    position: absolute;
+    left: calc(205px * var(--scale));
+    top: calc(106px * var(--scale));
+    width: calc(126px * var(--scale)); height: calc(100px * var(--scale)); opacity: .43;
+  }
+  @media (max-width: 959px) {
+    .month-watch { display: none !important; }
   }
 
 </style>

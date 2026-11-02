@@ -87,9 +87,10 @@ export async function POST({ request, getClientAddress }) {
   const fields = {
     [F.email]: email,
     [F.hadAccount]: hasAccount,
-    [F.signupOrigin]: fromItch ? 'itch.io' : new URL(origin).host, // itch = the box embedded on the jam page
-    [F.jam]: [JAM.airtableRecordId] // link to the current jam (a linked-record field)
+    [F.signupOrigin]: fromItch ? 'itch.io' : new URL(origin).host // itch = the box embedded on the jam page
   };
+  // link to the current jam (a linked-record field), once its Jams row exists
+  if (JAM.airtableRecordId) fields[F.jam] = [JAM.airtableRecordId];
   if (accountState(result) !== 'unknown') fields[F.status] = result;
   if (slackId) {
     fields[F.slackId] = slackId;

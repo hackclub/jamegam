@@ -150,7 +150,7 @@ export async function GET({ url, cookies }) {
       const isNew = join && !(await findByEmail(email));
       if (isNew) {
         fields[F.signupOrigin] = new URL(site).host;
-        fields[F.jam] = [JAM.airtableRecordId];
+        if (JAM.airtableRecordId) fields[F.jam] = [JAM.airtableRecordId];
       }
       const rec = await upsertSignup(fields);
 
