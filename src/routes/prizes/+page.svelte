@@ -24,7 +24,7 @@
   import { jiggle } from '$lib/actions/jiggle.js';
   import { rainbowBorder } from '$lib/actions/rainbowBorder.js';
   import { PRIZE_GAMES, PRIZE_STUFF, PRIZE_BRACKET, PRIZE_HD, GAME_PICK_COUNT, imgOf } from '$lib/prizes.js';
-  import { variantValues, itemBlockedIn, listOr, PICK_WINDOW_DAYS } from '$lib/shop.js';
+  import { variantValues, itemBlockedIn, listOr, pickWindowDays } from '$lib/shop.js';
   import { frameVars } from '$lib/frames.js';
   import Dust from '$lib/components/Dust.svelte';
   import { replaceState } from '$app/navigation';
@@ -442,7 +442,7 @@
                back is worse than saying nothing. reads as in-review, which is true. -->
           <p class="pbox-note">
             your {jamMonth} submission is in and being reviewed! you'll get a slack DM once it's
-            approved, then you'll have {PICK_WINDOW_DAYS} days to pick your prize :)
+            approved, then you'll have {pickWindowDays(data.jam) === 7 ? '1 week' : `${pickWindowDays(data.jam)} days`} to pick your prize :)
           </p>
         {:else if data.state === 'signedout'}
           {#if data.authError}

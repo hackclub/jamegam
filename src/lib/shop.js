@@ -6,7 +6,7 @@
 // that month. Retire a cycle by deleting it once nothing from it is outstanding.
 // Oldest first, newest last; `resolveCycle` below picks one per person, so the
 // overlap is invisible to submitters. There is no shop-wide close date - see
-// PICK_WINDOW_DAYS below.
+// pickWindowDays below.
 export const SHOP = {
   cycles: {
     '2026-08': 'the brackeys 2026.2 game jam',
@@ -45,7 +45,7 @@ export function resolveCycle(submissions, orders) {
           (r) =>
             r.fields.jam === j &&
             SHOP_STATUSES.includes(r.fields.review_status) &&
-            (!open || (r.fields.approved_dm_sent_at && closesAtFor(r.fields.approved_dm_sent_at) > Date.now()))
+            (!open || (r.fields.approved_dm_sent_at && closesAtFor(r.fields.approved_dm_sent_at, j) > Date.now()))
         )
     );
   const pickable = pick(true) ?? pick(false);
@@ -138,14 +138,26 @@ export const REJECTED_STATUSES = ['Rejected', 'No Prize'];
 export const GALLERY_STATUSES = ['Approved', 'Prize Only', 'No Prize'];
 
 // ---- per-person deadlines ----
-// The DM is the only clock. Everyone gets PICK_WINDOW_DAYS from the moment their
+// The DM is the only clock. Everyone gets pickWindowDays(their cycle) from the moment their
 // "you can pick a prize" DM goes out (`approved_dm_sent_at` on their submission
 // row), expiring at 11:59pm ET that day. There is deliberately no shop-wide
 // backstop: it used to exist as a fulfillment batch end, but it expired for the
 // 72 July submitters who hadn't been DMed yet and told them they'd missed a
 // deadline that had never started. Nobody is ever locked out by a date they were
 // not told about - un-DMed means no clock, and the shop stays open for them.
-export const PICK_WINDOW_DAYS = 4;
+//
+// The window is per cycle: 4 days through the November 2026 cycle, 1 week from
+// the mfg gambler's jam ('2026-12') on. Cycle labels are 'YYYY-MM', so a string
+// compare orders them. claude-workspace/approved-dm-automation.js duplicates
+// this rule (Airtable can't import from the repo); change both together.
+export const PICK_WINDOW_DAYS = 7;
+export const OLD_PICK_WINDOW_DAYS = 4;
+export const PICK_WINDOW_WEEK_FROM = '2026-12';
+
+/** Days this cycle's submitters get to pick after their prize DM. */
+export function pickWindowDays(jam) {
+  return jam && jam < PICK_WINDOW_WEEK_FROM ? OLD_PICK_WINDOW_DAYS : PICK_WINDOW_DAYS;
+}
 
 // ---- the IDV prize gate ----
 // Orders placed for anyone whose prize DM went out at or after this instant are
@@ -179,17 +191,18 @@ function endOfEtDay(ms) {
 
 /**
  * When this person's shop closes, in ms. `dmSentAt` is an ISO string or null;
- * with no DM there is no clock, so this is Infinity (never closes).
+ * with no DM there is no clock, so this is Infinity (never closes). `jam` is
+ * the cycle label the DM was for, which sets the window length.
  */
-export function closesAtFor(dmSentAt) {
+export function closesAtFor(dmSentAt, jam) {
   const sent = dmSentAt ? Date.parse(dmSentAt) : NaN;
   if (!Number.isFinite(sent)) return Infinity;
-  return endOfEtDay(sent + PICK_WINDOW_DAYS * 86400000);
+  return endOfEtDay(sent + pickWindowDays(jam) * 86400000);
 }
 
 /** The same deadline as display copy ("sunday, august 9 at 11:59pm ET"), or null if no clock. */
-export function closesTextFor(dmSentAt) {
-  const at = closesAtFor(dmSentAt);
+export function closesTextFor(dmSentAt, jam) {
+  const at = closesAtFor(dmSentAt, jam);
   if (!Number.isFinite(at)) return null;
   const when = new Intl.DateTimeFormat('en-US', {
     timeZone: ET,

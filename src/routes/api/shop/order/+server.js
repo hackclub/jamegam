@@ -113,8 +113,8 @@ export async function POST({ request, cookies, getClientAddress }) {
   if (!dmSentAt) {
     return json({ ok: false, error: 'your prize DM has not gone out yet' }, { status: 403 });
   }
-  if (Date.now() > closesAtFor(dmSentAt)) {
-    return json({ ok: false, error: `the shop closed ${closesTextFor(dmSentAt)}` }, { status: 403 });
+  if (Date.now() > closesAtFor(dmSentAt, jam)) {
+    return json({ ok: false, error: `the shop closed ${closesTextFor(dmSentAt, jam)}` }, { status: 403 });
   }
 
   // ---- the IDV gate (new orders only) ----

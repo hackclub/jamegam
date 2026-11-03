@@ -77,16 +77,16 @@ export async function load({ cookies, url }) {
   // repeat submitter has several rows but only ever got one DM). The DM both
   // opens the window and starts its clock, so approved-but-not-yet-DMed can look
   // but not pick: they wait in 'awaitingdm' until Augie fires the DM, and only
-  // then does their 4 days start. Nobody picks before their own clock exists.
+  // then does their pick window start. Nobody picks before their own clock exists.
   const dmSentAt = approved
     .map((r) => r.fields.approved_dm_sent_at)
     .filter(Boolean)
     .sort()[0];
-  const closesAt = closesAtFor(dmSentAt);
+  const closesAt = closesAtFor(dmSentAt, base.jam);
   if (dmSentAt) {
     Object.assign(base, {
       closesAt: new Date(closesAt).toISOString(),
-      closesText: closesTextFor(dmSentAt),
+      closesText: closesTextFor(dmSentAt, base.jam),
       closed: Date.now() > closesAt
     });
   }
