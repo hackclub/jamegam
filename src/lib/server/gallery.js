@@ -43,7 +43,7 @@ export function normUrl(raw) {
 export function onWall(fields) {
   const preview = PREVIEW[fields.jam];
   if (!preview) return GALLERY_STATUSES.includes(fields.review_status) && Boolean(fields.augie_spotchecked);
-  if (fields.review_status === 'Rejected') return false;
+  if (fields.review_status === 'Rejected' || fields.review_status === 'Withdrawn') return false;
   const url = withScheme(fields.playable_url);
   return !(url && preview.hide.has(normUrl(url)));
 }

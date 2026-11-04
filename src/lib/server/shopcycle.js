@@ -25,7 +25,9 @@ export async function findMine(email, slackId) {
 }
 
 export async function loadCycle(email, slackId) {
-  const { all, orders } = await findMine(email, slackId);
+  const { all: rows, orders } = await findMine(email, slackId);
+  // a Withdrawn row (pulled, or replaced by a newer copy) is as if never submitted
+  const all = rows.filter((r) => r.fields.review_status !== 'Withdrawn');
   const jam = resolveCycle(all, orders);
   return {
     jam,
