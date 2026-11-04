@@ -3,9 +3,9 @@
 // identity, then branch on flow:
 //   - signup flow  -> upsert the signup, drop them into #jame-gam, back to the
 //     site (?join=ok)
-//   - submit flow  -> back into the Fillout form, identity prefilled in the URL
-//     (hca_id_token carries HCA's signed id_token as the anti-forgery anchor),
-//     or in token mode only a signed submit_token that names the Sign Ups row
+//   - submit flow  -> back into the Fillout form with only a signed
+//     submit_token in the URL, naming the Sign Ups row; the form's card and the
+//     resolve automation look the identity up from it
 //   - shop flow    -> mint the signed shop session cookie (identity + addresses
 //     from this grant, no signup side effects) and land on /prizes
 //   - join flow    -> the signup flow, plus the welcome email for a new signup,
@@ -23,7 +23,7 @@ import { findByEmail, upsertSignup, markById } from '$lib/server/airtable.js';
 import { sendWelcome } from '$lib/server/welcome.js';
 import { inviteToChannel } from '$lib/server/slack.js';
 import { lookupSlackProfile } from '$lib/server/cachet.js';
-import { buildSubmitRedirect, buildTokenRedirect, submitErrorUrl } from '$lib/server/submit.js';
+import { buildTokenRedirect, submitErrorUrl } from '$lib/server/submit.js';
 import { mintSubmitToken } from '$lib/server/submittoken.js';
 import { createSession, SESSION_COOKIE, SESSION_MAX_AGE } from '$lib/server/session.js';
 import { config, F } from '$lib/server/config.js';
@@ -48,8 +48,6 @@ export async function GET({ url, cookies }) {
   const shop = cookies.get('hca_flow') === 'shop';
   // Set only on the join flow.
   const join = cookies.get('hca_flow') === 'join';
-  // Set only on the token-mode submit flow.
-  const tokenMode = !!ret && cookies.get('hca_flow') === 'token';
   cookies.delete('hca_flow', { path: '/' });
   // Set only on a tagged join flow (/jam?ref=...).
   const ref = cookies.get('hca_ref');
@@ -85,7 +83,7 @@ export async function GET({ url, cookies }) {
     // Address + birthdate ride in the id_token's claims (step-up scope). Fall
     // back to /me in case HCA surfaces them there instead.
     let claims = {};
-    if (shop || ret) {
+    if (shop) {
       try {
         claims = decodeIdToken(tokens.id_token);
       } catch (err) {
@@ -178,47 +176,8 @@ export async function GET({ url, cookies }) {
         }
       }
 
-      if (tokenMode) {
+      if (ret) {
         const d = buildTokenRedirect(ret, mintSubmitToken(rec.id));
-        if (d) dest = d;
-      } else if (ret) {
-        // submit flow: return into the form with identity prefilled
-        let slackHandle = null;
-        let slackAvatar = null;
-        if (slackId) {
-          try {
-            const prof = await lookupSlackProfile(slackId);
-            slackHandle = prof?.handle ?? null;
-            slackAvatar = prof?.imageUrl ?? null;
-          } catch (err) {
-            console.error('[callback] cachet profile lookup failed:', err);
-          }
-        }
-        // Multiple mailing addresses possible; default to the primary, the form's
-        // picker can switch among the rest.
-        const addresses = normalizeAddresses(id.addresses, claims.address, accountPhone);
-        const active = addresses.find((a) => a.primary) || addresses[0] || null;
-
-        const d = buildSubmitRedirect(ret, {
-          email,
-          firstName: id.first_name,
-          lastName: id.last_name,
-          slackId,
-          slackHandle,
-          slackAvatar,
-          status: id.verification_status,
-          idToken: tokens.id_token,
-          birthday,
-          addresses,
-          addrId: active?.id,
-          addr1: active?.line1,
-          addr2: active?.line2,
-          city: active?.city,
-          region: active?.region,
-          postal: active?.postal,
-          country: active?.country,
-          phone: active?.phone
-        });
         if (d) dest = d;
       }
     }
