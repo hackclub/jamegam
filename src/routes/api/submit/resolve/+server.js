@@ -3,8 +3,10 @@
 // submit token the form captured. Called by the "resolve identity" Airtable
 // automation when a row is created, with SUBMIT_RESOLVE_SECRET as a Bearer
 // token. Reads the token + picked address id off the row itself, so the caller
-// only says which row. Body: { recordId, dry? } - dry returns the fields
-// without writing them.
+// only says which row. Body: { recordId, table?, dry? }. `table` defaults to
+// the Submission Form; the other forms on the sign-in script are listed in
+// TABLES with just the fields they store. dry returns the fields without
+// writing them.
 import { json } from '@sveltejs/kit';
 import { timingSafeEqual } from 'node:crypto';
 import { readSubmitToken } from '$lib/server/submittoken.js';
@@ -17,6 +19,11 @@ export const prerender = false;
 // Resolve runs seconds after submit; the slack covers a form left open for a
 // while and a manual re-run of the automation.
 const RESOLVE_MAX_AGE = 7 * 24 * 60 * 60;
+
+const TABLES = {
+  [config.shop.submissionsTable]: (ident, row) => submissionFields(ident, row.fields.addr),
+  'Prize Suggestions': (ident) => ({ email: ident.email })
+};
 
 function authorized(request) {
   const secret = config.submitResolveSecret;
@@ -40,7 +47,9 @@ export async function POST({ request }) {
     return json({ ok: false, error: 'bad recordId' }, { status: 400 });
   }
 
-  const table = config.shop.submissionsTable;
+  const table = body.table ? String(body.table) : config.shop.submissionsTable;
+  const toFields = TABLES[table];
+  if (!toFields) return json({ ok: false, error: `unknown table ${table}` }, { status: 400 });
   const row = await getRecord(table, recordId);
   if (!row) return json({ ok: false, error: 'row not found' }, { status: 404 });
 
@@ -49,7 +58,7 @@ export async function POST({ request }) {
 
   let fields;
   try {
-    fields = submissionFields(await loadSubmitIdentity(tok.s), row.fields.addr);
+    fields = toFields(await loadSubmitIdentity(tok.s), row);
   } catch (err) {
     console.error('[submit/resolve] identity load failed:', recordId, err);
     return json({ ok: false, error: String(err?.message ?? err) }, { status: 502 });

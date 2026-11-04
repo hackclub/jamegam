@@ -12,14 +12,17 @@
 // want the button. This script finds that placeholder, hides it, and renders the
 // button (or, on return from Hack Club Auth, the card) in its place.
 //
-// HIDDEN FIELDS to add (prefill-from-URL-parameter, names matching exactly): at
-// minimum  hca_id_token  and  email ; add first_name / last_name / slack_id /
-// slack_handle etc. if the form should capture them. slack_avatar is display-only
-// (read by this script; no hidden field needed).
+// Token mode, like signin.js: after sign-in the form URL carries only
+// submit_token (a signed pointer to their Sign Ups row), never their email. The
+// card's details come from jamegam.hackclub.com/api/submit/card, and the row's
+// identity fields are written after submit by the "resolve identity" Airtable
+// automation (integrations/fillout/resolve-automation.js, with `table` set to
+// the form's table, which must be listed in TABLES in /api/submit/resolve).
 //
-// Unlike signin.js (which hides the token field via a hardcoded widget ID), this
-// version hides any input whose aria-label is in HIDE_FIELDS, so the same paste
-// works on every form even when the field was left visible in the editor.
+// FIELDS to add: submit_token, a VISIBLE required field (hidden fields can't be
+// required) prefilled from the URL parameter of the same name and mapped to the
+// table's submit_token column. That's what forces sign-in; this script hides it.
+// Do NOT map email from the form: the resolve automation fills it.
 //
 // DEBUG: set DEBUG=true to log to the console while wiring it up.
 (function () {
@@ -35,10 +38,11 @@
   log('script loaded; readyState =', document.readyState);
 
   var BROKER = 'https://jamegam.hackclub.com/api/auth/login';
+  var CARD_API = 'https://jamegam.hackclub.com/api/submit/card';
   var SENTINEL = '[[hc-signin]]';
   // Fields to force-hide by their aria-label (Fillout sets aria-label to the
   // field's label), for fields that couldn't be made hidden in the editor.
-  var HIDE_FIELDS = ['hca_id_token'];
+  var HIDE_FIELDS = ['submit_token'];
 
   // Inline icons (no emojis in UI). currentColor = inherit the line's text color.
   var IC = {
@@ -60,7 +64,8 @@
     '#hc-signin .hc-signout:hover{color:#666;text-decoration:underline}' +
     '#hc-signin .hc-ic{flex:0 0 auto}' +
     '#hc-signin .hc-btn .hc-req{opacity:.8;font-weight:500}' +
-    '#hc-signin .hc-err{color:#ec3750;font-size:.85rem;margin-top:.4rem}';
+    '#hc-signin .hc-err{color:#ec3750;font-size:.85rem;margin-top:.4rem}' +
+    '#hc-signin .hc-loading{color:#999;font-size:.85rem;text-align:center;padding:.6rem 0}';
 
   var host = null; // the Fillout element holding the sentinel
   var container = null; // our injected #hc-signin
@@ -110,19 +115,28 @@
     log('mounted into', host);
   }
 
-  // Hide the raw data-capture fields (e.g. the hca_id_token input) wherever they
+  // Hide the raw data-capture fields (e.g. the submit_token input) wherever they
   // ended up on this form. Widget IDs differ per form, so match on the input's
-  // aria-label (Fillout sets it to the field's label) and hide the enclosing
-  // fillout-field wrapper.
+  // aria-label OR the rendered label text (the aria-label can be absent on the
+  // first render), then hide the enclosing fillout-field wrapper.
   function hideFields() {
     for (var i = 0; i < HIDE_FIELDS.length; i++) {
-      var sel = 'input[aria-label="' + HIDE_FIELDS[i] + '"],textarea[aria-label="' + HIDE_FIELDS[i] + '"]';
-      var inputs = document.querySelectorAll(sel);
-      for (var j = 0; j < inputs.length; j++) {
-        var w = inputs[j].closest('[class*="fillout-field"]');
+      var name = HIDE_FIELDS[i];
+      var hits = [].slice.call(document.querySelectorAll(
+        'input[aria-label="' + name + '"],textarea[aria-label="' + name + '"]'));
+      var labels = document.querySelectorAll('.fillout-field-label');
+      for (var k = 0; k < labels.length; k++) {
+        // strip the required asterisk (" *") off the label text
+        var t = (labels[k].textContent || '').replace(/\s*\*\s*$/, '').trim();
+        if (t === name) hits.push(labels[k]);
+      }
+      for (var j = 0; j < hits.length; j++) {
+        // nearest widget wrapper - NOT the label itself or #question-container
+        var w = hits[j].closest(
+          '[class*="fillout-field"]:not(.fillout-field-label):not(.fillout-field-container)');
         if (w && w.style.display !== 'none') {
           w.style.display = 'none';
-          log('hid field', HIDE_FIELDS[i]);
+          log('hid field', name);
         }
       }
     }
@@ -155,39 +169,54 @@
 
   function render(root) {
     var q = new URLSearchParams(location.search);
-    log('render; hca_id_token present =', !!q.get('hca_id_token'));
-    if (q.get('hca_id_token')) {
-      var name = [q.get('first_name'), q.get('last_name')].filter(Boolean).join(' ');
-      var email = q.get('email') || '';
-      var handle = q.get('slack_handle') || '';
-      var avatar = q.get('slack_avatar') || '';
-      var who = name || handle || email;
-      // Sign out = reload the form at its clean URL, dropping the identity params
-      // so the hidden fields clear and it flips back to the sign-in button.
-      var clean = location.origin + location.pathname;
+    var token = q.get('submit_token');
+    log('render; submit_token present =', !!token);
+    if (!token) { renderSignIn(root, q.get('hca_error') ? 'Sign-in did not go through - give it another try.' : ''); return; }
 
-      root.innerHTML =
-        '<div class="hc-card">' +
-          (avatar ? '<img class="hc-av" src="' + esc(avatar) + '" alt="" />' : '') +
-          '<div class="hc-id">' +
-            '<div class="hc-name">' + esc(who) + '</div>' +
-            (email && email !== who ? '<div class="hc-sub">' + esc(email) + '</div>' : '') +
-          '</div>' +
-          '<div class="hc-side">' +
-            '<span class="hc-status">' + IC.check + '<span>signed in</span></span>' +
-            '<a class="hc-signout" href="' + esc(clean) + '">sign out</a>' +
-          '</div>' +
-        '</div>';
-    } else {
-      var url = BROKER + '?to=' + encodeURIComponent(location.origin + location.pathname);
-      root.innerHTML =
-        '<div class="hc-out">' +
-          '<a class="hc-btn" href="' + url + '">Sign in with Hack Club <span class="hc-req">(required)</span></a>' +
-          (q.get('hca_error')
-            ? '<div class="hc-err">Sign-in did not go through - give it another try.</div>'
-            : '') +
-        '</div>';
-    }
+    root.innerHTML = '<div class="hc-loading">loading your Hack Club info...</div>';
+    fetch(CARD_API + '?t=' + encodeURIComponent(token))
+      .then(function (r) { return r.json().then(function (d) { return { status: r.status, d: d }; }); })
+      .then(function (res) {
+        if (res.d && res.d.ok) renderCard(root, res.d);
+        else if (res.status === 401) renderSignIn(root, 'Your sign-in expired - sign in again to submit.');
+        else renderSignIn(root, 'Could not load your Hack Club info - try signing in again.');
+      })
+      .catch(function (e) {
+        log('card fetch failed:', e && e.message);
+        renderSignIn(root, 'Could not load your Hack Club info - try signing in again.');
+      });
+  }
+
+  function renderSignIn(root, err) {
+    var url = BROKER + '?v=2&to=' + encodeURIComponent(location.origin + location.pathname);
+    root.innerHTML =
+      '<div class="hc-out">' +
+        '<a class="hc-btn" href="' + url + '">Sign in with Hack Club <span class="hc-req">(required)</span></a>' +
+        (err ? '<div class="hc-err">' + esc(err) + '</div>' : '') +
+      '</div>';
+  }
+
+  function renderCard(root, d) {
+    var name = [d.firstName, d.lastName].filter(Boolean).join(' ');
+    var email = d.email || '';
+    var avatar = d.slackAvatar || '';
+    var who = name || d.slackHandle || email;
+    // Sign out = reload the form at its clean URL, dropping the token so the
+    // field clears and it flips back to the sign-in button.
+    var clean = location.origin + location.pathname;
+
+    root.innerHTML =
+      '<div class="hc-card">' +
+        (avatar ? '<img class="hc-av" src="' + esc(avatar) + '" alt="" />' : '') +
+        '<div class="hc-id">' +
+          '<div class="hc-name">' + esc(who) + '</div>' +
+          (email && email !== who ? '<div class="hc-sub">' + esc(email) + '</div>' : '') +
+        '</div>' +
+        '<div class="hc-side">' +
+          '<span class="hc-status">' + IC.check + '<span>signed in</span></span>' +
+          '<a class="hc-signout" href="' + esc(clean) + '">sign out</a>' +
+        '</div>' +
+      '</div>';
   }
 
   function esc(s) {
