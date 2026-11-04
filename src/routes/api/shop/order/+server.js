@@ -14,7 +14,9 @@
 // Ordering also BACKFILLS the unified-DB-required identity fields (address,
 // birthday) onto any of their submission rows still missing them, plus the
 // linked YSWS component rows - so every ordered project can actually be
-// submitted to the unified DB.
+// submitted to the unified DB. A name the spotcheck would flag (an initial, a
+// handle, digits) is repaired the same way from the live HCA account name, when
+// that name passes the check (nameRepair in $lib/namesignals.js).
 import { json } from '@sveltejs/kit';
 import { readSession, SESSION_COOKIE } from '$lib/server/session.js';
 import { createRecord, patchRecord } from '$lib/server/shopdb.js';
@@ -31,6 +33,7 @@ import {
 } from '$lib/shop.js';
 import { HELD_STATUS, IDV, orderGate } from '$lib/idv.js';
 import { PRIZE_GAMES, PRIZE_STUFF, PRIZE_BRACKET, GAME_PICK_COUNT } from '$lib/prizes.js';
+import { nameRepair } from '$lib/namesignals.js';
 
 export const prerender = false;
 
@@ -241,9 +244,11 @@ export async function POST({ request, cookies, getClientAddress }) {
       const f = rec.fields;
       const missingAddr = !f.address_line_1 || !f.city || !f.zip_postal_code || !f.country;
       const missingBday = !f.birthday && session.birthday;
-      if (!missingAddr && !missingBday) continue;
+      const name = nameRepair(f, session);
+      if (!missingAddr && !missingBday && !name) continue;
 
       const patch = {};
+      if (name) Object.assign(patch, name);
       if (missingAddr) {
         Object.assign(patch, {
           address_line_1: addr.line1,
@@ -275,8 +280,15 @@ export async function POST({ request, cookies, getClientAddress }) {
           });
         }
         if (missingBday) ypatch.Birthday = session.birthday;
+        if (name) Object.assign(ypatch, { 'First Name': name.first_name, 'Last Name': name.last_name });
         await patchRecord(config.shop.yswsTable, yswsId, ypatch);
       }
+      // A unified record that already went out keeps the old name until someone
+      // re-ticks submit on the staged row, so say so where it can be found.
+      if (name)
+        console.log(
+          `[shop] repaired name on ${rec.id}: "${f.first_name ?? ''} ${f.last_name ?? ''}" -> "${name.first_name} ${name.last_name}"${yswsId ? `; if staged row ${yswsId} was already submitted, re-tick submit` : ''}`
+        );
     } catch (err) {
       console.error('[shop] backfill failed:', err);
     }
