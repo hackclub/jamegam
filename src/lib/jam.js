@@ -22,6 +22,10 @@ export const JAM = {
   // '' until the form exists: the "submit it here" line on the landing page
   // and /prizes hides itself.
   submitUrl: '',
+  // days after endDate the submission form stays open. the help bot (nephthys)
+  // reads it from /api/jam: with a submitUrl set, the form counts as open until
+  // endDate + this many days. update it if a jam's window is different.
+  submitWindowDays: 4,
   // record id of this jam's row in the "Jams" Airtable table; new signups get
   // linked to it via the Sign Ups `jam` field. create the new jam's row each
   // month and paste its rec... id here. '' until then: signups still go
