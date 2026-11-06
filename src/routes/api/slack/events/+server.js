@@ -30,7 +30,8 @@ questions about the jam, hack club, or anything else? ask in <#C0BBDUEMF0E> :)`;
 
 // #jame-gam-help and #jame-gam-tickets (also the helper list): the transcript in
 // hackclub/nephthys (transcripts/jame_gam.py) holds the same two ids.
-const NEPHTHYS_CHANNELS = ['C0BBDUEMF0E', 'C0C2EHLQ96X'];
+// C09BHTQH5V1 is #augie-bot-spam, the help bot's private test channel (JAMEGAM_TEST_CHANNEL on nephthys).
+const NEPHTHYS_CHANNELS = ['C0BBDUEMF0E', 'C0C2EHLQ96X', 'C09BHTQH5V1'];
 
 // Every verified event from those channels is also handed to nephthys (the #jame-gam-help ticket bot),
 // because a Slack app gets one Events URL and this endpoint already owns it.
