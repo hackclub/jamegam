@@ -62,7 +62,7 @@ export const FAQS = [
   {
     id: 'ai',
     q: 'can i use ai?',
-    a: 'you <span class="faq-em">may not</span> use generative ai for art or audio. you can use ai to help you code, but it\'s mildly discouraged :p'
+    a: 'you <span class="faq-em">may not</span> use generative ai for art or audio, including tracing over ai art. you can use ai to help you code, but it\'s mildly discouraged :p'
   },
   {
     id: 'age',
