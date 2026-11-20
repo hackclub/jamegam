@@ -75,8 +75,9 @@ export async function lookupOrder(orderId) {
 }
 
 // Best-effort carrier tracking link; falls back to empty (page shows the raw
-// number) when the carrier isn't one we recognise.
-function trackingUrl(carrier, num) {
+// number) when the carrier isn't one we recognise. Also used by printful.js,
+// whose carrier names (USPS, UPS, FEDEX, DHL) match the same checks.
+export function trackingUrl(carrier, num) {
   const c = carrier.toLowerCase();
   const n = encodeURIComponent(num);
   if (c.includes('usps')) return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${n}`;

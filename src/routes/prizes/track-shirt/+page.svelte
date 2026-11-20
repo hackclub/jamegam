@@ -1,6 +1,6 @@
 <script>
   // as nothing as possible: type an order number, see its status. logic is all
-  // server-side in +page.server.js / $lib/server/apliiq.js. styled to match the
+  // server-side in +page.server.js / $lib/server/{apliiq,printful}.js. styled to match the
   // rest of the site - the error page's centered shell (dust + pinned bottom
   // glow), the landing email box for the input, and the prize-shop order button.
   import { jiggle } from '$lib/actions/jiggle.js';
@@ -30,7 +30,7 @@
          landing email signup and the prize-shop order button -->
     <form class="lookup" method="GET">
       <span class="field">
-        <input name="order" inputmode="numeric" placeholder="order number" value={data.order} autocomplete="off" />
+        <input name="order" placeholder="1234 or p1234" aria-label="order number" value={data.order} autocomplete="off" />
       </span>
       <button class="cta" type="submit">check</button>
     </form>
@@ -43,15 +43,24 @@
           <p class="lede">couldn't check just now, try again in a sec</p>
         {:else if !r.found}
           <p class="lede">no order found with that number</p>
-        {:else if r.tracking}
-          <!-- has a tracking number, so it's shipped - never show apliiq's raw
-               status text, just the friendly line + the number -->
-          <p class="lede">order #{data.order} is on its way!</p>
-          <p class="fine">
-            tracking: {#if r.trackingUrl}<a href={r.trackingUrl} target="_blank" rel="noreferrer">{r.tracking}</a>{:else}{r.tracking}{/if}{#if r.carrier}{' '}({r.carrier}){/if}
-          </p>
+        {:else if r.stage === 'shipped'}
+          <!-- r is the server's Tracking shape: a friendly line per stage, never
+               the vendor's raw status text -->
+          <p class="lede">order #{r.label} is on its way!</p>
+          {#if r.tracking}
+            <p class="fine">
+              tracking: {#if r.trackingUrl}<a href={r.trackingUrl} target="_blank" rel="noreferrer">{r.tracking}</a>{:else}{r.tracking}{/if}{#if r.carrier}{' '}({r.carrier}){/if}{#if r.shipDate}, shipped {r.shipDate}{/if}
+            </p>
+          {/if}
+        {:else if r.stage === 'ordered'}
+          <p class="lede">order #{r.label} is ordered!</p>
+          <p class="fine">waiting to be printed</p>
+        {:else if r.stage === 'problem'}
+          <p class="lede">order #{r.label} hit a snag, we're sorting it out</p>
+        {:else if r.stage === 'canceled'}
+          <p class="lede">order #{r.label} was canceled</p>
         {:else}
-          <p class="lede">order #{data.order} is being made!</p>
+          <p class="lede">order #{r.label} is being made!</p>
           <p class="fine">no tracking yet{#if r.expected}, estimated arrival by {r.expected}{/if}</p>
         {/if}
       </div>

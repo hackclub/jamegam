@@ -65,6 +65,12 @@ export const config = {
   apliiq: {
     appId: env.APLIIQ_APP_ID,
     sharedSecret: env.APLIIQ_SHARED_SECRET
+  },
+  // Printful: also only for /prizes/track-shirt (orders typed as p<id>). No
+  // token just makes those lookups say tracking is unavailable.
+  printful: {
+    token: env.PRINTFUL_TOKEN,
+    storeId: env.PRINTFUL_STORE_ID || '18774672'
   }
 };
 
