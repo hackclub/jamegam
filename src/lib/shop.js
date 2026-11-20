@@ -28,8 +28,11 @@ export const SHOP_CURRENT = SHOP_JAMS[SHOP_JAMS.length - 1];
  * short:
  *   1. the newest cycle where they have an approved row and no order yet - a
  *      late-reviewed straggler picks for that month, whatever else is open;
- *   2. otherwise the newest cycle they have any row in - an order to look at,
- *      or a submission still in review.
+ *   2. otherwise the newest cycle with an active order (placed, not yet
+ *      fulfilled or canceled), so an order someone is waiting on is never
+ *      hidden behind a newer cycle's review or rejection;
+ *   3. otherwise the newest cycle they have any row in - a past order to look
+ *      at, or a submission still in review.
  * With no rows at all this is the newest open cycle ("no submission" state).
  */
 export function resolveCycle(submissions, orders) {
@@ -50,6 +53,10 @@ export function resolveCycle(submissions, orders) {
     );
   const pickable = pick(true) ?? pick(false);
   if (pickable) return pickable;
+  const active = jams.find((j) =>
+    orders.some((o) => o.fields.jam === j && !['fulfilled', 'canceled'].includes(o.fields.status))
+  );
+  if (active) return active;
   return jams.find((j) => submissions.some((r) => r.fields.jam === j)) ?? SHOP_CURRENT;
 }
 

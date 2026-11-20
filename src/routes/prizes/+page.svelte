@@ -457,7 +457,7 @@
     <section class="panel boxed">
       {@render boxFrame()}
       <p class="lede">
-        i couldn't approve your submission this time, so there's no prize pick here. if that seems
+        we couldn't approve your submission this time, so there's no prize pick here. if that seems
         wrong, post in #jame-gam-help and we'll take another look!
       </p>
     </section>
@@ -469,7 +469,7 @@
         can pick a prize, you need to set your mailing address on
         <a href="https://auth.hackclub.com/addresses" target="_blank" rel="noopener">auth.hackclub.com/addresses</a>
       </p>
-      <p class="lede">once it's set, come back and sign in again so i can grab it fresh.</p>
+      <p class="lede">once it's set, come back and sign in again so we can grab it fresh.</p>
       <a class="go" href="/api/auth/login?flow=shop">i added it, check again</a>
     </section>
   {:else if data.state === 'error'}
@@ -598,7 +598,7 @@
                 </button>
               </p>
               {#if browsing}
-                <p class="fine">you can switch your pick below before i get around to fulfilling it ;)</p>
+                <p class="fine">you can switch your pick below before we get around to fulfilling it ;)</p>
               {/if}
               {#if data.closesAt}
                 <p class="fine">you have <span class="cd-time">{countdown}</span> to pick your prize!</p>
