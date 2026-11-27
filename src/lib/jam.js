@@ -30,7 +30,7 @@ export const JAM = {
   // linked to it via the Sign Ups `jam` field. create the new jam's row each
   // month and paste its rec... id here. '' until then: signups still go
   // through, just without the link.
-  airtableRecordId: '',
+  airtableRecordId: 'recuvu8xx93bD55Lf',
   // true when jame gam runs this month's jam itself rather than crashing someone
   // else's; the jam section's headline then says "we're hosting" instead of
   // "we're crashing".
